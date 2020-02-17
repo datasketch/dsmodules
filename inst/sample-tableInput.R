@@ -1,6 +1,6 @@
 library(shiny)
 library(tidyverse)
-library(dsAppModules)
+library(dsmodules)
 
 ## Data upload module
 

@@ -1,5 +1,5 @@
 library(shiny)
-library(dsAppModules)
+library(dsmodules)
 library(tidyverse)
 library(rhandsontable)
 
