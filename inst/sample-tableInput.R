@@ -17,7 +17,7 @@ ui <- fluidPage(
 server <- function(input,output,session){
   inputData <- callModule(tableInput, "dataIn",
                           sampleFile =
-                            list("File1"="sample1.csv","Archivo2"="sample2.csv"))
+                            list("File1"="data_sample/sample1.csv"))
   output$debug <- renderPrint({
     inputData()
   })

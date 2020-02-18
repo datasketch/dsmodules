@@ -36,6 +36,7 @@ tableInput <- function(input,output,session,
       if(!all(map_lgl(sampleFiles,file.exists)))
         stop("All Sample Files must exist")
     }
+
     tableInputControls <- list(
       "pasted" = textAreaInput(ns("inputDataPasted"),label = "Paste",
                                placeholder = "placeholder",
@@ -43,17 +44,17 @@ tableInput <- function(input,output,session,
       "fileUpload" =  fileInput(ns('inputDataUpload'), 'Choose CSV File',
                                 accept=c('text/csv',
                                          'text/comma-separated-values,text/plain',
-                                         '.csv','.xls')),
+                                         '.csv','.xls', '.xlsx')),
       "sampleData" = selectInput(ns("inputDataSample"),"Seleccione Datos de Muestra",
                                  choices = sampleFiles)
     )
     tableInputControls[[input$tableInput]]
   })
-
   inputData <- reactive({
     inputType <- input$tableInput
     #readDataFromInputType(inputType)
     if(inputType == "pasted"){
+      if (is.null(input$inputDataPasted)) return()
       if(input$inputDataPasted == "")
         return()
       df <- read_tsv(input$inputDataPasted)
@@ -66,7 +67,8 @@ tableInput <- function(input,output,session,
       df <- rio::import(path)
     }
     if(inputType ==  "sampleData"){
-      file <- input$inputDataSample
+      if (is.null(input$inputDataSample)) return()
+      file <- as.character(input$inputDataSample)
       df <- read_csv(file)
     }
     return(df)

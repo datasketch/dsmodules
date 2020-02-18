@@ -3,7 +3,8 @@ library(tidyverse)
 library(dsmodules)
 library(hgchmagic)
 library(DT)
-
+library(ggmagic)
+library(shinyjs)
 ## Data upload module
 
 
@@ -16,7 +17,10 @@ ui <- fluidPage(
   downloadHtmlwidgetUI("download2", "cars or mtcars"),
   verbatimTextOutput("debug"),
   highchartOutput("img_hg"),
-  downloadImagesUI("downImage", "Descarga")
+  radioButtons("test_id", "libreria", c('gg', 'hgch')),
+  #downloadImagesUI("down_hgchmagic", "Descarga", c("html", "png", "jpeg", "pdf")),
+  plotOutput("img_gg"),
+  downloadImagesUI("pppp", "Descarga", c( "jpeg", "pdf"))
 )
 
 widget <- DT::datatable(iris)
@@ -42,8 +46,20 @@ server <- function(input,output,session){
   })
 
 
+  image_gg <- reactive({
+   print(gg_area_CatNum(sampleData("Cat-Num")))
+  })
 
- callModule(downloadImages, "downImage", graph = image_hg())
+
+  output$img_gg <- renderPlot({
+    image_gg()
+  })
+
+
+
+ #<callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter")
+ callModule(downloadImages, "pppp", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf"))
+
   inputDataName <- reactive(input$data)
 
   callModule(downloadHtmlwidget,"download", widget = widget)
