@@ -39,7 +39,7 @@ tableInput <- function(input,output,session,
 
     tableInputControls <- list(
       "pasted" = textAreaInput(ns("inputDataPasted"),label = "Paste",
-                               placeholder = "placeholder",
+                               placeholder = "Select your data and paste it here",
                                rows = 5),
       "fileUpload" =  fileInput(ns('inputDataUpload'), 'Choose CSV File',
                                 accept=c('text/csv',

@@ -18,9 +18,9 @@ ui <- fluidPage(
   verbatimTextOutput("debug"),
   highchartOutput("img_hg"),
   radioButtons("test_id", "libreria", c('gg', 'hgch')),
-  #downloadImagesUI("down_hgchmagic", "Descarga", c("html", "png", "jpeg", "pdf")),
-  plotOutput("img_gg"),
-  downloadImagesUI("pppp", "Descarga", c( "jpeg", "pdf"))
+  downloadImagesUI("down_hgchmagic", "Descarga",  formats = c("jpeg", "pdf")),
+  plotOutput("img_gg")#,
+  #downloadImagesUI("pppp", "Descarga", c( "jpeg", "pdf"))
 )
 
 widget <- DT::datatable(iris)
@@ -57,8 +57,8 @@ server <- function(input,output,session){
 
 
 
- #<callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter")
- callModule(downloadImages, "pppp", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf"))
+ callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf"))
+ #callModule(downloadImages, "pppp", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf"))
 
   inputDataName <- reactive(input$data)
 
