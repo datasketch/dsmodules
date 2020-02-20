@@ -49,6 +49,7 @@ server <- function(input,output,session){
   output$img_gg <- renderPlot({
     image_gg()
   })
+  observe({assign("e0", image_gg(), envir = globalenv())})
 
  callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf", "png"))
  callModule(downloadImages, "down_ggmagic", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf", "svg", "png"))
