@@ -54,7 +54,7 @@ downloadImages <- function(input, output, session, graph = NULL, lib = NULL, for
   ns <- session$ns
   img_format <- formats
 
-  map(img_format, function(z){
+  lapply(img_format, function(z){
 
     buttonId <- ns(paste0("DownloadImg", z))
     loadingEl <- sprintf(paste0("[data-for-btn=%s] .", ns("btn-loading-indicator")), buttonId)
