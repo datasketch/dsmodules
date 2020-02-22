@@ -30,14 +30,6 @@ downloadImagesUI <- function(id, text = "Download", formats = NULL, class = NULL
             img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
             HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")
             #)
-          ),
-          shinyjs::hidden(
-            div(class = "btn-err",
-                div(icon("exclamation-circle"),
-                    tags$b("Error: "),
-                    span(class = "btn-err-msg")
-                )
-            )
           )
         )
       )
@@ -93,7 +85,7 @@ downloadImages <- function(input, output, session, graph = NULL, lib = NULL, for
 #' @export
 saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 500, ...) {
   if (is.null(format)) {
-    format <- file_ext(filename) %||% "png"
+    format <- tools::file_ext(filename) %||% "png"
   }
   filename <- file_path_sans_ext(filename)
   tmp <- paste(tempdir(), 'html', sep ='.')
@@ -110,7 +102,7 @@ saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 
 #' @export
 saveStatic <- function(viz, filename, format = NULL, width = 10, height = 7, ...) {
   if (is.null(format)) {
-    format <- file_ext(filename) %||% "png"
+    format <- tools::file_ext(filename) %||% "png"
   }
   filename <- file_path_sans_ext(filename)
   tmp <- paste(tempdir(), 'svg', sep ='.')
@@ -121,7 +113,6 @@ saveStatic <- function(viz, filename, format = NULL, width = 10, height = 7, ...
   if (format == 'png') {
     png::writePNG(bitmap, paste0(filename, ".", format), dpi = 144) }
   if (format == 'jpeg') {
-    print("Ent")
     jpeg::writeJPEG(bitmap, paste0(filename, ".", format))}
   if (format == 'svg') {
     rsvg::rsvg_svg(tmp, paste0(filename, ".", format))}
