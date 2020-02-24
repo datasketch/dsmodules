@@ -5,9 +5,8 @@ library(hgchmagic)
 library(DT)
 library(ggmagic)
 library(shinyjs)
+
 ## Data upload module
-
-
 
 ui <- fluidPage(
   useShinyjs(),
@@ -18,9 +17,9 @@ ui <- fluidPage(
   verbatimTextOutput("debug"),
   highchartOutput("img_hg"),
   radioButtons("test_id", "libreria", c('gg', 'hgch')),
-  downloadImagesUI("down_hgchmagic", "Descarga",  formats = c("jpeg", "pdf")),
-  plotOutput("img_gg")#,
-  #downloadImagesUI("pppp", "Descarga", c( "jpeg", "pdf"))
+  downloadImagesUI("down_hgchmagic", "Descarga",  formats = c("jpeg", "pdf", "png")),
+  plotOutput("img_gg"),
+  downloadImagesUI("down_ggmagic", "Descarga",  formats = c("jpeg", "pdf", "svg", "png"))
 )
 
 widget <- DT::datatable(iris)
@@ -35,41 +34,37 @@ server <- function(input,output,session){
       return(DT::datatable(mtcars))
   })
 
-
   image_hg <- reactive({
      hgch_bar_CatNum(sampleData("Cat-Num"))
   })
-
 
   output$img_hg <- renderHighchart({
     image_hg()
   })
 
-
   image_gg <- reactive({
    print(gg_area_CatNum(sampleData("Cat-Num")))
   })
 
-
   output$img_gg <- renderPlot({
     image_gg()
   })
+  observe({assign("e0", image_gg(), envir = globalenv())})
 
+ callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf", "png"))
+ callModule(downloadImages, "down_ggmagic", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf", "svg", "png"))
 
+ inputDataName <- reactive(input$data)
 
- callModule(downloadImages, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf"))
- #callModule(downloadImages, "pppp", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf"))
+ callModule(downloadHtmlwidget,"download", widget = widget)
+ callModule(downloadHtmlwidget,"download2", widget = wdata, name = inputDataName)
 
-  inputDataName <- reactive(input$data)
+ callModule(downloadFile, "downloadFile", path = "htmlwidget.html", name = "myfile")
 
-  callModule(downloadHtmlwidget,"download", widget = widget)
-  callModule(downloadHtmlwidget,"download2", widget = wdata, name = inputDataName)
-
-  callModule(downloadFile, "downloadFile", path = "htmlwidget.html", name = "myfile")
-
-  output$debug <- renderPrint({
-    wdata()
-  })
+ output$debug <- renderPrint({
+   wdata()
+ })
 }
+
 shinyApp(ui,server)
 
