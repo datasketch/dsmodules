@@ -26,10 +26,9 @@ downloadImagesUI <- function(id, text = "Download", formats = NULL, class = NULL
           downloadButton(ns(paste0("DownloadImg", z)), paste0(text, " ",toupper(z)), class = class),
           span(
             class = "btn-loading-container",
-            #shinyjs::hidden(
             img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
             HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")
-            #)
+
           )
         )
       )
@@ -49,16 +48,10 @@ downloadImages <- function(input, output, session, graph = NULL, lib = NULL, for
   lapply(img_format, function(z){
 
     buttonId <- ns(paste0("DownloadImg", z))
-    loadingEl <- sprintf(paste0("[data-for-btn=%s] .", ns("btn-loading-indicator")), buttonId)
-    doneEl <- sprintf(paste0("[data-for-btn=%s] .", ns("btn-done-indicator")), buttonId)
-    errEl <- sprintf(paste0("[data-for-btn=%s] .",ns("btn-err")), buttonId)
 
     output[[paste0("DownloadImg", z)]] <- downloadHandler(
       filename = function() {
         session$sendCustomMessage('setButtonState', c('loading', buttonId))
-        shinyjs::disable(buttonId)
-        shinyjs::show(selector = loadingEl)
-        shinyjs::hide(selector = doneEl)
 
         if(is.reactive(name))
           name <- name()
@@ -74,9 +67,6 @@ downloadImages <- function(input, output, session, graph = NULL, lib = NULL, for
           return()
         }
         session$sendCustomMessage('setButtonState', c('done', buttonId))
-        shinyjs::enable(buttonId)
-        shinyjs::hide(selector = loadingEl)
-        shinyjs::show(selector = doneEl)
       }
     )
   })

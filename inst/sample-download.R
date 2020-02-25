@@ -4,12 +4,10 @@ library(dsmodules)
 library(hgchmagic)
 library(DT)
 library(ggmagic)
-library(shinyjs)
 
 ## Data upload module
 
 ui <- fluidPage(
-  useShinyjs(),
   selectizeInput("data","Data", c("cars","mtcars")),
   downloadHtmlwidgetUI("download", "Iris"),
   downloadFileUI("downloadFile", "Iris File"),
