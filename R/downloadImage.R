@@ -74,7 +74,9 @@ downloadImages <- function(input, output, session, graph = NULL, lib = NULL, for
 #' @export
 saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 500, ...) {
 
-  format <- tools::file_ext(filename) %||% "png"
+  if (is.null(format)) {
+    format <- tools::file_ext(filename) %||% "png"
+  }
   filename <- sub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
   tmp <- paste(tempdir(), 'html', sep ='.')
   htmltools::save_html(viz, tmp)
@@ -89,7 +91,9 @@ saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 
 
 #' @export
 saveStatic <- function(viz, filename, format = NULL, width = 10, height = 7, ...) {
-  format <-tools:: file_ext(filename) %||% "png"
+  if (is.null(format)) {
+    format <- tools::file_ext(filename) %||% "png"
+  }
   filename <- sub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
   tmp <- paste(tempdir(), 'svg', sep ='.')
   svglite::svglite(tmp, width = width, height = height)
