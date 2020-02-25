@@ -28,7 +28,6 @@ downloadImagesUI <- function(id, text = "Download", formats = NULL, class = NULL
             class = "btn-loading-container",
             img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
             HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")
-
           )
         )
       )

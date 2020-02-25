@@ -8,7 +8,6 @@ library(DT)
 
 
 ui <- fluidPage(
-  useShinyjs(),
   selectizeInput("data","Data", c("cars","mtcars")),
   actionButton("button","Regular Button"),
   actionBusyButtonUI("busyButtonReactive","Click me reactive"),
@@ -23,7 +22,7 @@ server <- function(input,output,session){
   outReactive <- callModule(actionBusyButton,"busyButtonReactive", inputDataName)
 
   out <- callModule(actionBusyButton,"busyButton", {
-    Sys.sleep(.5)
+    Sys.sleep(5)
     message("HELLO")
     paste("ran expression ", Sys.time())
   })

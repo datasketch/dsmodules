@@ -10,7 +10,6 @@ downloadFileUI <- function(id, text = "Download", class = NULL){
   )
 
   tagList(
-  div(
     shiny::tagList(
       shiny::singleton(
         shiny::tags$body(
@@ -28,7 +27,6 @@ downloadFileUI <- function(id, text = "Download", class = NULL){
         HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")
 
       )
-    )
   ))
 }
 
