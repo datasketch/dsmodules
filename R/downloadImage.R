@@ -77,7 +77,7 @@ saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 
   if (is.null(format)) {
     format <- tools::file_ext(filename) %||% "png"
   }
-  filename <- file_path_sans_ext(filename)
+  filename <- sub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
   tmp <- paste(tempdir(), 'html', sep ='.')
   htmltools::save_html(viz, tmp)
   tmpSave <- filename
@@ -94,7 +94,7 @@ saveStatic <- function(viz, filename, format = NULL, width = 10, height = 7, ...
   if (is.null(format)) {
     format <- tools::file_ext(filename) %||% "png"
   }
-  filename <- file_path_sans_ext(filename)
+  filename <- sub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
   tmp <- paste(tempdir(), 'svg', sep ='.')
   svglite::svglite(tmp, width = width, height = height)
   print(viz)
