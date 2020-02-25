@@ -1,25 +1,30 @@
 
 #' @export
 tableInputUI <- function(id,
-                         choices = c("pasted","fileUpload","sampleData"),
-                         selected = "pasted"
-){
+                         choices = c("pasted","fileUpload","sampleData", "googleSheets"),
+                         selected = "pasted", ...) {
   # UI
   ns <- NS(id)
   #choiceNames <-  choiceNames %||% choices
   #names(choices) <- choiceNames
+
+  #info_style <- ifelse(is.null(uiOutput(ns("tableInputInfo"))), "display:flex;", "display:none;")
+
   tagList(
     div(id=ns("tableInput"),class="tableInput",
         radioButtons(ns("tableInput"), "",
                      choices = choices, selected = selected),
         uiOutput(ns("tableInputControls"))
+    ),
+    div(class = "box-tableInputInfo", #style = info_style,
+        uiOutput(ns("tableInputInfo"))
     )
   )
 }
 
 #' @export
 tableInput <- function(input,output,session,
-                       sampleFiles = NULL){
+                       sampleFiles = NULL, infoList = NULL, ...){
 
   output$tableInputControls <- renderUI({
 
@@ -45,11 +50,20 @@ tableInput <- function(input,output,session,
                                 accept=c('text/csv',
                                          'text/comma-separated-values,text/plain',
                                          '.csv','.xls', '.xlsx')),
-      "sampleData" = selectInput(ns("inputDataSample"),"Seleccione Datos de Muestra",
-                                 choices = sampleFiles)
+      "sampleData" = selectInput(ns("inputDataSample"),"Select a sample data",
+                                 choices = sampleFiles),
+      "googleSheets" = textInput(ns("inputDataSheet"), label = "Data from Google Sheet", placeholder = "https://docs.google.com/spreadsheets/...")
     )
     tableInputControls[[input$tableInput]]
   })
+
+  output$tableInputInfo <- renderUI({
+    ns <- session$ns
+    tableInputInfo <- infoList[[input$tableInput]]
+    if (is.null(tableInputInfo)) return()
+    tableInputInfo
+  })
+
   inputData <- reactive({
     inputType <- input$tableInput
     #readDataFromInputType(inputType)
@@ -70,6 +84,18 @@ tableInput <- function(input,output,session,
       if (is.null(input$inputDataSample)) return()
       file <- as.character(input$inputDataSample)
       df <- read_csv(file)
+    }
+    if (inputType == "googleSheets") {
+      if (is.null(input$inputDataSheet)) return()
+      if (input$inputDataSheet == "") return()
+      googlesheets4::sheets_deauth()
+      options(
+        gargle_oauth_cache =  ".secrets",
+        gargle_oauth_email = "camila@randommonkey.io"
+      )
+      id_file <- gsub(".*\\/d\\/|\\/edit.*", '', input$inputDataSheet)
+      googlesheets4::sheets_get(id_file)
+      df <- googlesheets4::read_sheet(id_file)
     }
     return(df)
   })
