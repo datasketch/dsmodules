@@ -21,7 +21,7 @@ downloadImagesUI <- function(id, text = "Download", formats = NULL, class = NULL
     ),
     lapply(img_formats, function(z){
       tagList(
-        div(
+        div(style = "text-align: center;",
           `data-for-btn` = ns(paste0("DownloadImg", z)),
           downloadButton(ns(paste0("DownloadImg", z)), paste0(text, " ",toupper(z)), class = class),
           span(
