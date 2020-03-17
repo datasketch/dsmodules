@@ -28,8 +28,9 @@ imageInput <- function (input, output, session, sampleFiles = NULL) {
       #                        label = "Paste", placeholder = "placeholder", rows = 5),
       fileUpload = fileInput(ns("inputDataUpload"), "Choose image", accept = c("image/png", "image/jpeg")),
       sampleData = selectInput(ns("inputDataSample"), "Select sample image", choices = sampleFiles),
-      url = textInput(ns("inputURL"), "Image URL"),
-      dsLibrary = dsDataInputUI(ns("dsFileInput")))
+      url = textInput(ns("inputURL"), "Image URL")#,
+      # dsLibrary = dsDataInputUI(ns("dsFileInput"))
+      )
 
     if (is.null(input$imageInput)) {
       return()
