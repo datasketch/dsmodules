@@ -13,6 +13,10 @@ URL: http://github.com/datasketch/dsmodules
 Depends:
     R (>= 3.1.2)
 Imports:
+    htmltools,
+    openxlsx,
+    rsvg,
+    svglite,
     yaml
 Suggests:
     rlang,
