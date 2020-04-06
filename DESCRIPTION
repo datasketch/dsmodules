@@ -16,10 +16,13 @@ Imports:
     htmltools,
     openxlsx,
     rsvg,
+    png,
     svglite,
     rio,
     googlesheets4,
-    yaml
+    yaml,
+    webshot,
+    jpeg
 Suggests:
     rlang,
     testthat (>= 2.1.0)
