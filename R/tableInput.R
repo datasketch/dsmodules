@@ -88,11 +88,6 @@ tableInput <- function(input,output,session,
     if (inputType == "googleSheets") {
       if (is.null(input$inputDataSheet)) return()
       if (input$inputDataSheet == "") return()
-      googlesheets4::sheets_deauth()
-      options(
-        gargle_oauth_cache =  ".secrets",
-        gargle_oauth_email = "camila@randommonkey.io"
-      )
       id_file <- gsub(".*\\/d\\/|\\/edit.*", '', input$inputDataSheet)
       googlesheets4::sheets_get(id_file)
       df <- googlesheets4::read_sheet(id_file)

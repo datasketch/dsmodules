@@ -5,9 +5,9 @@ account: randommonkey
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 2066595
-bundleId: 2976256
+bundleId: 2976296
 url: https://randommonkey.shinyapps.io/test-googlesheet/
-when: 1586187165.72177
+when: 1586187628.77386
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: htmlwidget.html|sample-busyButton.R|sample-download.R|sample-imageInput.R|sample-showDebug.R|sample-tableInput-reactiveNames.R|aux/downloadGen.js
+ignoredFiles: htmlwidget.html|sample-busyButton.R|sample-download.R|sample-imageInput.R|sample-showDebug.R|sample-tableEdit.R|sample-tableInput-reactiveNames.R|aux/downloadGen.js
