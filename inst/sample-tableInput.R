@@ -7,9 +7,9 @@ library(dsmodules)
 
 
 ui <- fluidPage(
-  tableInputUI("dataIn", choices = list("Copiar & Pegar"="pasted",
-                                        "Cargar"="fileUpload",
-                                        "Muestra"="sampleData",
+  tableInputUI("dataIn", choices = list("Copiar & Pegar" = "pasted",
+                                        "Cargar" = "fileUpload",
+                                        "Muestra" = "sampleData",
                                         "Google" = "googleSheets"),
                selected = "pasted"),
   verbatimTextOutput("debug")
