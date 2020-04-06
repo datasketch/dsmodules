@@ -17,6 +17,8 @@ Imports:
     openxlsx,
     rsvg,
     svglite,
+    rio,
+    googlesheets4,
     yaml
 Suggests:
     rlang,
