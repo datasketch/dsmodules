@@ -41,9 +41,9 @@ downloadImage <- function(input, output, session, graph = NULL, lib = NULL, form
       },
       content = function(file) {
         if (lib == "highcharter") {
-          saveInteractive(viz = graph, filename = file, formats = z)
+          saveInteractive(viz = graph, filename = file, format = z)
         } else if (lib == "ggplot") {
-          saveStatic(viz = graph, filename = file, formats = z)
+          saveStatic(viz = graph, filename = file, format = z)
         } else {
           return()
         }

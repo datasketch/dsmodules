@@ -6,12 +6,14 @@ imageInputUI <- function (id,
   tagList(div(id = ns("imageInput"),
               class = "tableInput",
               radioButtons(ns("imageInput"), "", choices = choices, selected = selected),
-              uiOutput(ns("imageInputControls"))))
+              uiOutput(ns("imageInputControls"))),
+          div(class = "box-tableInputInfo", #style = info_style,
+              uiOutput(ns("imageInputInfo"))))
 }
 
 
 #' @export
-imageInput <- function (input, output, session, sampleFiles = NULL) {
+imageInput <- function (input, output, session, sampleFiles = NULL, infoList = NULL) {
   output$imageInputControls <- renderUI({
     ns <- session$ns
 
@@ -20,7 +22,7 @@ imageInput <- function (input, output, session, sampleFiles = NULL) {
 
     if (!is.null(input$imageInput) && input$imageInput == "sampleData") {
       if (!all(map_lgl(sampleFiles, file.exists)))
-        stop("All Sample Files must exist")
+        stop("All sample files must exist")
     }
 
     imageInputControls <- list(
@@ -47,6 +49,13 @@ imageInput <- function (input, output, session, sampleFiles = NULL) {
       data <- jsonlite::fromJSON(URLdecode(json_str))
     }
     data
+  })
+
+  output$imageInputInfo <- renderUI({
+    ns <- session$ns
+    imageInputInfo <- infoList[[input$imageInput]]
+    if (is.null(imageInputInfo)) return()
+    imageInputInfo
   })
 
   inputData <- reactive({
