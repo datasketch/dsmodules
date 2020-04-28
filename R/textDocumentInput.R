@@ -1,0 +1,112 @@
+#' @export
+textDocumentInputUI <- function(id,
+                                choices = c("pasted", "fileUpload", "sampleData", "googleSheet", "url", "dsLibrary"),
+                                selected = "pasted") {
+  ns <- NS(id)
+  tagList(div(id = ns("textDocumentInput"),
+              class = "tableInput",
+              radioButtons(ns("textDocumentInput"), "", choices = choices, selected = selected),
+              uiOutput(ns("textDocumentInputControls"))),
+          div(class = "box-tableInputInfo", #style = info_style,
+              uiOutput(ns("textDocumentInputInfo"))))
+}
+
+
+#' @export
+textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoList = NULL) {
+  output$textDocumentInputControls <- renderUI({
+    ns <- session$ns
+
+    if (is.reactive(sampleFiles))
+      sampleFiles <- sampleFiles()
+
+    if (!is.null(input$textDocumentInput) && input$textDocumentInput == "sampleData") {
+      if (!all(map_lgl(sampleFiles, file.exists)))
+        stop("All sample files must exist")
+    }
+
+    textDocumentInputControls <- list(pasted = textAreaInput(ns("inputDataPasted"), label = "Paste", placeholder = "placeholder", rows = 5),
+                                      fileUpload = fileInput(ns("inputDataUpload"), "Choose text, pdf file", accept = c("text/plain", ".txt", ".docx", ".pdf")),
+                                      sampleData = selectInput(ns("inputDataSample"), "Select sample data", choices = sampleFiles),
+                                      url = textInput(ns("inputURL"), "Page URL"),
+                                      googleSheet = list(textInput(ns("inputDataGoogleSheet"), "GoogleSheet URL"), numericInput(ns("inputDataGoogleSheetSheet"), "Sheet", 1))#,
+                                      # dsLibrary = dsDataInputUI(ns("dsFileInput"))
+                                      )
+
+    if (is.null(input$textDocumentInput)) {
+      return()
+    } else {
+      textDocumentInputControls[[input$textDocumentInput]]
+    }
+  })
+
+  queryData <- reactive({
+    query <- parseQueryString(session$clientData$url_search)
+    json_str <- query[["json_data"]]
+    data <- NULL
+    if (!is.null(json_str)) {
+      data <- jsonlite::fromJSON(URLdecode(json_str))
+    }
+    data
+  })
+
+  output$textDocumentInputInfo <- renderUI({
+    ns <- session$ns
+    textDocumentInputInfo <- infoList[[input$textDocumentInput]]
+    if (is.null(textDocumentInputInfo)) return()
+    textDocumentInputInfo
+  })
+
+  inputData <- reactive({
+    if (is.null(input$textDocumentInput)) {
+      warning("inputType must be one of pasted, fileUpload, sampleData, url, googlesheet, dsLibrary")
+      return()
+    }
+
+    inputType <- input$textDocumentInput
+    queryData <- queryData()
+    if (!is.null(queryData)) {
+      return(queryData)
+    }
+
+    if (inputType == "pasted") {
+      if (is.null(input$inputDataPasted))
+        return()
+      if (input$inputDataPasted == "")
+        return()
+      tx <- input$inputDataPasted
+    } else if (inputType == "fileUpload") {
+      if (is.null(input$inputDataUpload))
+        return()
+      old_path <- input$inputDataUpload$datapath
+      path <- file.path(tempdir(), input$inputDataUpload$name)
+      file.copy(old_path, path)
+      tx <- rio::import(path)
+      # falta leer pdfs, words
+    } else if (inputType == "sampleData") {
+      file <- input$inputDataSample
+      tx <- readLines(file) %>%
+        paste(collapse = "<br/>")
+    } else if (inputType == "url") {
+      url <- input$inputURL
+      tx <- xml2::read_html(url) %>%
+        xml2::xml_find_all("//p") %>%
+        paste(collapse = "<br/>")
+    } else if (inputType == "googleSheet") {
+      if (is.null(input$inputDataGoogleSheet))
+        return()
+      if (input$inputDataGoogleSheet == "")
+        return()
+      # url <- input$inputDataGoogleSheet
+      # ws <- input$inputDataGoogleSheetSheet
+      # s <- gs_url(url)
+      # tabs <- gs_ws_ls(s)
+      # df <- gs_read_csv(s, ws = ws)
+    } else if (inputType == "dsLibrary") { # ADAPTAR PARA IMÁGENES
+      # tx <- callModule(dsDataInput, "dsFileInput")
+      # tx <- df()
+    }
+    return(tx)
+  })
+  inputData
+}

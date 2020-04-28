@@ -34,7 +34,7 @@ downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL){
 }
 
 #' @export
-downloadHtmlwidget <- function(input,output,session, widget = NULL, name = "widget"){
+downloadHtmlwidget <- function(input,output,session, widget = NULL, name = "widget") {
 
   ns <- session$ns
 
@@ -46,7 +46,7 @@ downloadHtmlwidget <- function(input,output,session, widget = NULL, name = "widg
 
       if(is.reactive(name))
         name <- name()
-      paste0(name,"-",gsub(" ","_",substr(as.POSIXct(Sys.time()),1,19)), ".html")
+      paste0(name, "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".html")
     },
     content = function(file) {
       if(is.reactive(widget))
