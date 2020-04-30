@@ -8,12 +8,12 @@ downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL){
 
   shiny::tagList(shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script( src =  "downloadInfo/downloadGen.js")))),
                             shiny::div(`data-for-btn` = ns("downloadHtmlwidget"),
-                                       shiny::downloadButton(ns("downloadHtmlwidget"), text, class = class),
+                                       shiny::downloadButton(ns("downloadHtmlwidget"), text, class = class, style = "width: 200px; display: inline-block;"),
                                        #button,
                                        shiny::span(
                                          class = "btn-loading-container",
                                          #shinyjs::hidden(
-                                         shiny::img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
+                                         shiny::img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
                                          shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>")))))
 }
 

@@ -13,7 +13,7 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL)
       lapply(tbl_formats, function(z) {
         shiny::tagList(shiny::div(style = "text-align: center;",
                     `data-for-btn` = ns(paste0("DownloadTbl", z)),
-                    shiny::downloadButton(ns(paste0("DownloadTbl", z)), paste0(text, " ", toupper(z)), class = class, style = "width: 200px;"),
+                    shiny::downloadButton(ns(paste0("DownloadTbl", z)), paste0(text, " ", toupper(z)), class = class, style = "width: 200px; display: inline-block;"),
                     shiny::span(class = "btn-loading-container",
                                 shiny::img(src = loadingGif, class = "btn-loading-indicator", style = "display: none;"),
                                 shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none;'> </i>"))))
