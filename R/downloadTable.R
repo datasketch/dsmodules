@@ -57,6 +57,11 @@ saveTable <- function(tbl, filename, format = NULL, ...) {
     format <- tools::file_ext(filename) %||% "csv"
   }
   tmp <- paste(tempdir(), "csv", sep ='.')
+  c0 <- c()
+  lapply(1:nrow(tbl), function (i) {
+    c0[i] <<- all(is.na(tbl[i, ]))
+  })
+  tbl <- tbl[!c0, ]
   write.csv(tbl, tmp)
   tmpSave <- filename
   filename <- gsub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
