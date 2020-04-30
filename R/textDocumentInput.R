@@ -81,7 +81,9 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
       old_path <- input$inputDataUpload$datapath
       path <- file.path(tempdir(), input$inputDataUpload$name)
       file.copy(old_path, path)
-      tx <- rio::import(path)
+      print(path)
+      tx <- readtext::readtext(path)$text
+      # tx <- rio::import(path)
       # falta leer pdfs, words
     } else if (inputType == "sampleData") {
       file <- input$inputDataSample
@@ -91,6 +93,7 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
       url <- input$inputURL
       tx <- xml2::read_html(url) %>%
         xml2::xml_find_all("//p") %>%
+        xml2::xml_text() %>%
         paste(collapse = "<br/>")
     } else if (inputType == "googleSheet") {
       if (is.null(input$inputDataGoogleSheet))
