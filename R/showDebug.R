@@ -2,7 +2,7 @@
 #' @export
 showDebugUI <- function(id){
   # UI
-  ns <- NS(id)
+  ns <- shiny::NS(id)
   jsCode <- "
   shinyjs.hideDebug = function(params){
   console.log('hiding debug')
@@ -12,7 +12,7 @@ showDebugUI <- function(id){
   });
   }
   "
-  tagList(
+  shiny::tagList(
     extendShinyjs(text = jsCode)
   )
 }
@@ -20,7 +20,7 @@ showDebugUI <- function(id){
 #' @export
 showDebug <- function(input,output,session, hosts = "127.0.0.1"){
   # Hide debug
-  observe({
+  shiny::observe({
     message("Current host ", session$clientData$url_hostname)
     message("Showing debug in ", hosts)
     if(!session$clientData$url_hostname %in% hosts){

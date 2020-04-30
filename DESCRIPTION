@@ -13,16 +13,20 @@ URL: http://github.com/datasketch/dsmodules
 Depends:
     R (>= 3.1.2)
 Imports:
+    shiny,
     htmltools,
     openxlsx,
     rsvg,
     png,
+    jpeg,
+    purrr,
+    dplyr,
+    xml2,
     svglite,
-    rio,
+    readtext,
     googlesheets4,
     yaml,
-    webshot,
-    jpeg
+    webshot
 Suggests:
     rlang,
     testthat (>= 2.1.0)

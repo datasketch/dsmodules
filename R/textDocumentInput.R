@@ -2,22 +2,24 @@
 textDocumentInputUI <- function(id,
                                 choices = c("pasted", "fileUpload", "sampleData", "googleSheet", "url", "dsLibrary"),
                                 selected = "pasted") {
-  ns <- NS(id)
-  tagList(div(id = ns("textDocumentInput"),
-              class = "tableInput",
-              radioButtons(ns("textDocumentInput"), "", choices = choices, selected = selected),
-              uiOutput(ns("textDocumentInputControls"))),
-          div(class = "box-tableInputInfo", #style = info_style,
-              uiOutput(ns("textDocumentInputInfo"))))
+
+  ns <- shiny::NS(id)
+  shiny::tagList(shiny::div(id = ns("textDocumentInput"),
+                            class = "tableInput",
+                            shiny::radioButtons(ns("textDocumentInput"), "", choices = choices, selected = selected),
+                            shiny::uiOutput(ns("textDocumentInputControls"))),
+                 shiny::div(class = "box-tableInputInfo", #style = info_style,
+                            shiny::uiOutput(ns("textDocumentInputInfo"))))
 }
 
 
 #' @export
 textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoList = NULL) {
-  output$textDocumentInputControls <- renderUI({
+
+  output$textDocumentInputControls <- shiny::renderUI({
     ns <- session$ns
 
-    if (is.reactive(sampleFiles))
+    if (shiny::is.reactive(sampleFiles))
       sampleFiles <- sampleFiles()
 
     if (!is.null(input$textDocumentInput) && input$textDocumentInput == "sampleData") {
@@ -25,13 +27,13 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
         stop("All sample files must exist")
     }
 
-    textDocumentInputControls <- list(pasted = textAreaInput(ns("inputDataPasted"), label = "Paste", placeholder = "placeholder", rows = 5),
-                                      fileUpload = fileInput(ns("inputDataUpload"), "Choose text, pdf file", accept = c("text/plain", ".txt", ".docx", ".pdf")),
-                                      sampleData = selectInput(ns("inputDataSample"), "Select sample data", choices = sampleFiles),
-                                      url = textInput(ns("inputURL"), "Page URL"),
-                                      googleSheet = list(textInput(ns("inputDataGoogleSheet"), "GoogleSheet URL"), numericInput(ns("inputDataGoogleSheetSheet"), "Sheet", 1))#,
+    textDocumentInputControls <- list(pasted = shiny::textAreaInput(ns("inputDataPasted"), label = "Paste", placeholder = "placeholder", rows = 5),
+                                      fileUpload = shiny::fileInput(ns("inputDataUpload"), "Choose text, pdf file", accept = c("text/plain", ".txt", ".docx", ".pdf")),
+                                      sampleData = shiny::selectInput(ns("inputDataSample"), "Select sample data", choices = sampleFiles),
+                                      url = shiny::textInput(ns("inputURL"), "Page URL"),
+                                      googleSheet = list(shiny::textInput(ns("inputDataGoogleSheet"), "GoogleSheet URL"), shiny::numericInput(ns("inputDataGoogleSheetSheet"), "Sheet", 1))#,
                                       # dsLibrary = dsDataInputUI(ns("dsFileInput"))
-                                      )
+    )
 
     if (is.null(input$textDocumentInput)) {
       return()
@@ -57,7 +59,7 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
     textDocumentInputInfo
   })
 
-  inputData <- reactive({
+  inputData <- shiny::reactive({
     if (is.null(input$textDocumentInput)) {
       warning("inputType must be one of pasted, fileUpload, sampleData, url, googlesheet, dsLibrary")
       return()
@@ -83,8 +85,6 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
       file.copy(old_path, path)
       print(path)
       tx <- readtext::readtext(path)$text
-      # tx <- rio::import(path)
-      # falta leer pdfs, words
     } else if (inputType == "sampleData") {
       file <- input$inputDataSample
       tx <- readLines(file) %>%

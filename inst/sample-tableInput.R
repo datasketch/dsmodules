@@ -12,7 +12,8 @@ ui <- fluidPage(
                                         "Muestra" = "sampleData",
                                         "Google" = "googleSheets"),
                selected = "pasted"),
-  verbatimTextOutput("debug")
+  verbatimTextOutput("debug"),
+  downloadTableUI("download_data_button", "Descarga", formats = c("csv", "xlsx", "json"))
 )
 
 server <- function(input,output,session){
@@ -22,7 +23,11 @@ server <- function(input,output,session){
   output$debug <- renderPrint({
     inputData()
   })
+
+  callModule(downloadTable, "download_data_button", table = reactive(inputData()), formats = c("csv", "xlsx", "json"))
+
 }
+
 shinyApp(ui,server)
 
 

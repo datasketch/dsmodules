@@ -15,19 +15,19 @@
 # }
 
 #' @export
-tableEditUI <- function(id){
-  ns <- NS(id)
-  tagList(
-    div(id = ns("tableEdit"), class = "tableEdit",
-        column(3, class = "tableEditCol",
-               uiOutput(ns("dataControls0")),
-               uiOutput(ns("dataControls1"))
-        ),
-        column(9, class = "tableEditCol",
-               rHandsontableOutput(ns("dataInputPreview"))
-        )
-    )
-  )
+tableEditUI <- function(id) {
+
+  ns <- shiny::NS(id)
+  shiny::tagList(shiny::div(id = ns("tableEdit"),
+                            class = "tableEdit",
+                            column(3,
+                                   class = "tableEditCol",
+                                   shiny::uiOutput(ns("dataControls0")),
+                                   shiny::uiOutput(ns("dataControls1"))),
+                            column(9,
+                                   class = "tableEditCol",
+                                   rhandsontable::rHandsontableOutput(ns("dataInputPreview")))))
+
 }
 
 
@@ -48,29 +48,27 @@ tableEdit <- function(input, output, session,
                                         "Lugar" = "Gnm", "Código lugar" = "Gcd", "Imágen" = "Img")) {
 
   ns <- session$ns
-  output$dataControls0 <- renderUI({
+  output$dataControls0 <- shiny::renderUI({
     if (is.null(inputData())) return()
     d <- inputData()
 
-    colSelect <- selectizeInput(ns("selectedCols"), selectColsLabel,
-                                choices = names(d),
-                                selected = names(d),
-                                multiple = TRUE,
-                                options = list(plugins = list("drag_drop", "remove_button")))
+    colSelect <- shiny::selectizeInput(ns("selectedCols"), selectColsLabel,
+                                       choices = names(d),
+                                       selected = names(d),
+                                       multiple = TRUE,
+                                       options = list(plugins = list("drag_drop", "remove_button")))
     if (!addColSelect) colSelect <- NULL
-    tagList(
-      colSelect
-    )
+    shiny::tagList(colSelect)
   })
-  output$dataControls1 <- renderUI({
+  output$dataControls1 <- shiny::renderUI({
     d <- inputData()
     cleaners <- list(
-      checkboxInput(ns("dataCleaners"), cleanersLabel, value = input$dataCleaners),
-      conditionalPanel(paste0("input[['", ns("dataCleaners"), "']]"))
+      shiny::checkboxInput(ns("dataCleaners"), cleanersLabel, value = input$dataCleaners),
+      shiny::conditionalPanel(paste0("input[['", ns("dataCleaners"), "']]"))
     )
     rowFilters <- list(
-      checkboxInput(ns("dataAddFilters"), filterRowsLabel, value = input$dataAddFilters),
-      conditionalPanel(paste0("input[['", ns("dataAddFilters"), "']]"),
+      shiny::checkboxInput(ns("dataAddFilters"), filterRowsLabel, value = input$dataAddFilters),
+      shiny::conditionalPanel(paste0("input[['", ns("dataAddFilters"), "']]"),
                        p("Here goes the filters"))
     )
     if (permanentCtypes) {
@@ -82,39 +80,39 @@ tableEdit <- function(input, output, session,
       )
     } else {
       ctypes <- list(
-        checkboxInput(ns("dataAddColTypes"), ctypesLabel, value = input$dataAddColTypes),
-        conditionalPanel(paste0("input[['", ns("dataAddColTypes"), "']]"),
-                         map(as.list(input$selectedCols),
-                             ~selectInput(paste0("ctp-", .x), label = .x, choices = ctypesOptions)))
+        shiny::checkboxInput(ns("dataAddColTypes"), ctypesLabel, value = input$dataAddColTypes),
+        shiny::conditionalPanel(paste0("input[['", ns("dataAddColTypes"), "']]"),
+                                purrr::map(as.list(input$selectedCols),
+                                           ~selectInput(paste0("ctp-", .x), label = .x, choices = ctypesOptions)))
       )
     }
     if (!addRowFilters) rowFilters <- NULL
     if (!addCtypes) ctypes <- NULL
     if (!addCleaners) cleaners <- NULL
-    tagList(
+    shiny::tagList(
       cleaners,
       rowFilters,
       ctypes
     )
   })
-  output$dataInputPreview <- renderRHandsontable({
+  output$dataInputPreview <- rhandsontable::renderRHandsontable({
     d <- inputData()
     selectedCols <- input$selectedCols
     #d <- d %>% select_(.dots = selectedCols)
     d <- d[selectedCols]
     if(is.null(inputData()))
       return()
-    h <- rhandsontable(d, useTypes = FALSE, readOnly = FALSE,
+    h <- rhandsontable::rhandsontable(d, useTypes = FALSE, readOnly = FALSE,
                        width = "100%",height = 500) %>%
-      hot_table(stretchH = "none") %>%
-      hot_cols(manualColumnMove = TRUE)
+      rhandsontable::hot_table(stretchH = "none") %>%
+      rhandsontable::hot_cols(manualColumnMove = TRUE)
     h
   })
 
   data <- reactive({
     if(is.null(input$dataInputPreview))
       return()
-    as_tibble(hot_to_r(input$dataInputPreview))
+    dplyr::as_tibble(hot_to_r(input$dataInputPreview))
   })
   data
 }
