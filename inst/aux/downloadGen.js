@@ -8,6 +8,7 @@ Shiny.addCustomMessageHandler('setButtonState', function(message) {
   console.log(element);
   if (state === 'loading') { showLoadState(element) }
   else if (state === 'done') { showDoneState(element) }
+  else if (state === 'none') { showNoState(element) }
 });
 
 function showLoadState(el) {
@@ -18,4 +19,9 @@ function showLoadState(el) {
 function showDoneState(el) {
   el.parentNode.querySelector(loaderClass).style.display = 'none';
   el.parentNode.querySelector(checkmarkClass).style.display = 'inline-flex';
+}
+
+function showNoState(el) {
+  el.parentNode.querySelector(loaderClass).style.display = 'none';
+  el.parentNode.querySelector(checkmarkClass).style.display = 'none';
 }

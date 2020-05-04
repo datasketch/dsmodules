@@ -2,22 +2,24 @@
 imageInputUI <- function (id,
                           choices = c("fileUpload", "sampleData", "url", "dsLibrary"),
                           selected = "fileUpload") {
-  ns <- NS(id)
-  tagList(div(id = ns("imageInput"),
+
+  ns <- shiny::NS(id)
+  shiny::tagList(shiny::div(id = ns("imageInput"),
               class = "tableInput",
-              radioButtons(ns("imageInput"), "", choices = choices, selected = selected),
-              uiOutput(ns("imageInputControls"))),
-          div(class = "box-tableInputInfo", #style = info_style,
-              uiOutput(ns("imageInputInfo"))))
+              shiny::radioButtons(ns("imageInput"), "", choices = choices, selected = selected),
+              shiny::uiOutput(ns("imageInputControls"))),
+              shiny::div(class = "box-tableInputInfo", #style = info_style,
+                         shiny::uiOutput(ns("imageInputInfo"))))
 }
 
 
 #' @export
 imageInput <- function (input, output, session, sampleFiles = NULL, infoList = NULL) {
-  output$imageInputControls <- renderUI({
+
+  output$imageInputControls <- shiny::renderUI({
     ns <- session$ns
 
-    if (is.reactive(sampleFiles))
+    if (shiny::is.reactive(sampleFiles))
       sampleFiles <- sampleFiles()
 
     if (!is.null(input$imageInput) && input$imageInput == "sampleData") {
@@ -28,9 +30,9 @@ imageInput <- function (input, output, session, sampleFiles = NULL, infoList = N
     imageInputControls <- list(
       # pasted = textAreaInput(ns("inputDataPasted"),
       #                        label = "Paste", placeholder = "placeholder", rows = 5),
-      fileUpload = fileInput(ns("inputDataUpload"), "Choose image", accept = c("image/png", "image/jpeg")),
-      sampleData = selectInput(ns("inputDataSample"), "Select sample image", choices = sampleFiles),
-      url = textInput(ns("inputURL"), "Image URL")#,
+      fileUpload = shiny::fileInput(ns("inputDataUpload"), "Choose image", accept = c("image/png", "image/jpeg")),
+      sampleData = shiny::selectInput(ns("inputDataSample"), "Select sample image", choices = sampleFiles),
+      url = shiny::textInput(ns("inputURL"), "Image URL")#,
       # dsLibrary = dsDataInputUI(ns("dsFileInput"))
       )
 
@@ -42,7 +44,7 @@ imageInput <- function (input, output, session, sampleFiles = NULL, infoList = N
   })
 
   queryData <- reactive({
-    query <- parseQueryString(session$clientData$url_search)
+    query <- shiny::parseQueryString(session$clientData$url_search)
     json_str <- query[["json_data"]]
     data <- NULL
     if (!is.null(json_str)) {
@@ -58,7 +60,7 @@ imageInput <- function (input, output, session, sampleFiles = NULL, infoList = N
     imageInputInfo
   })
 
-  inputData <- reactive({
+  inputData <- shiny::reactive({
     if (is.null(input$imageInput)) {
       warning("inputType must be one of fileUpload, sampleData, url, dsLibrary")
       return()

@@ -4,29 +4,26 @@ tableInputUI <- function(id,
                          choices = c("pasted","fileUpload","sampleData", "googleSheets"),
                          selected = "pasted", ...) {
   # UI
-  ns <- NS(id)
+  ns <- shiny::NS(id)
   #choiceNames <-  choiceNames %||% choices
   #names(choices) <- choiceNames
 
   #info_style <- ifelse(is.null(uiOutput(ns("tableInputInfo"))), "display:flex;", "display:none;")
 
-  tagList(
-    div(id=ns("tableInput"),class="tableInput",
-        radioButtons(ns("tableInput"), "",
-                     choices = choices, selected = selected),
-        uiOutput(ns("tableInputControls"))
-    ),
-    div(class = "box-tableInputInfo", #style = info_style,
-        uiOutput(ns("tableInputInfo"))
-    )
-  )
+  shiny::tagList(shiny::div(id = ns("tableInput"),class="tableInput",
+                            shiny::radioButtons(ns("tableInput"), "",
+                                                choices = choices, selected = selected),
+                            shiny::uiOutput(ns("tableInputControls"))),
+                 shiny::div(class = "box-tableInputInfo", #style = info_style,
+                            shiny::uiOutput(ns("tableInputInfo"))))
+
 }
 
 #' @export
-tableInput <- function(input,output,session,
+tableInput <- function(input, output, session,
                        sampleFiles = NULL, infoList = NULL, ...){
 
-  output$tableInputControls <- renderUI({
+  output$tableInputControls <- shiny::renderUI({
 
     # str(session)
     # if(!exists(session))
@@ -34,7 +31,7 @@ tableInput <- function(input,output,session,
 
     ns <- session$ns
 
-    if(is.reactive(sampleFiles))
+    if (shiny::is.reactive(sampleFiles))
       sampleFiles <- sampleFiles()
 
     if(input$tableInput == "sampleData"){
@@ -57,14 +54,14 @@ tableInput <- function(input,output,session,
     tableInputControls[[input$tableInput]]
   })
 
-  output$tableInputInfo <- renderUI({
+  output$tableInputInfo <- shiny::renderUI({
     ns <- session$ns
     tableInputInfo <- infoList[[input$tableInput]]
     if (is.null(tableInputInfo)) return()
     tableInputInfo
   })
 
-  inputData <- reactive({
+  inputData <- shiny::reactive({
     inputType <- input$tableInput
     #readDataFromInputType(inputType)
     if(inputType == "pasted"){
@@ -83,7 +80,7 @@ tableInput <- function(input,output,session,
     if(inputType ==  "sampleData"){
       if (is.null(input$inputDataSample)) return()
       file <- as.character(input$inputDataSample)
-      df <- read_csv(file)
+      df <- readr::read_csv(file)
     }
     if (inputType == "googleSheets") {
       if (is.null(input$inputDataSheet)) return()

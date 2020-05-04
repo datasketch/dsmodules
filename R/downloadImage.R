@@ -7,17 +7,17 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL)
   img_formats <- formats
   if (is.null(formats)) img_formats <- "png"
 
-  addResourcePath(prefix = "downloadInfo", directoryPath = system.file("aux/", package = "dsmodules"))
+  shiny::addResourcePath(prefix = "downloadInfo", directoryPath = system.file("aux/", package = "dsmodules"))
 
-  div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src =  "downloadInfo/downloadGen.js")))),
-      lapply(img_formats, function(z) {
-        tagList(div(style = "text-align:center;",
-                    `data-for-btn` = ns(paste0("DownloadImg", z)),
-                    downloadButton(ns(paste0("DownloadImg", z)), paste0(text, " ",toupper(z)), class = class, style = "width:200px;"),
-                    span(class = "btn-loading-container",
-                         img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
-                         HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
-      }))
+  shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src =  "downloadInfo/downloadGen.js")))),
+             lapply(img_formats, function(z) {
+               shiny::tagList(shiny::div(style = "text-align:center;",
+                                         `data-for-btn` = ns(paste0("DownloadImg", z)),
+                                         shiny::downloadButton(ns(paste0("DownloadImg", z)), paste0(text, " ", toupper(z)), class = class, style = "width: 200px; display: inline-block;"),
+                                         shiny::span(class = "btn-loading-container",
+                                                     shiny::img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
+                                                     shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
+             }))
 
 }
 
@@ -32,10 +32,10 @@ downloadImage <- function(input, output, session, graph = NULL, lib = NULL, form
   lapply(img_format, function(z) {
     buttonId <- ns(paste0("DownloadImg", z))
 
-    output[[paste0("DownloadImg", z)]] <- downloadHandler(
+    output[[paste0("DownloadImg", z)]] <- shiny::downloadHandler(
       filename = function() {
         session$sendCustomMessage('setButtonState', c('loading', buttonId))
-        if(is.reactive(name))
+        if (shiny::is.reactive(name))
           name <- name()
         paste0(name, "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
       },
