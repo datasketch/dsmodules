@@ -40,6 +40,8 @@ downloadImage <- function(input, output, session, graph = NULL, lib = NULL, form
         paste0(name, "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
       },
       content = function(file) {
+        if (shiny::is.reactive(graph))
+          graph <- graph()
         if (lib == "highcharter") {
           saveInteractive(viz = graph, filename = file, format = z)
         } else if (lib == "ggplot") {
