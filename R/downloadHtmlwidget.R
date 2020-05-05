@@ -7,7 +7,8 @@ downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL){
   shiny::addResourcePath(prefix = 'downloadInfo', directoryPath = system.file("aux/", package = "dsmodules"))
 
   shiny::tagList(shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script( src =  "downloadInfo/downloadGen.js")))),
-                            shiny::div(`data-for-btn` = ns("downloadHtmlwidget"),
+                            shiny::div(style = "text-align:center;",
+                                       `data-for-btn` = ns("downloadHtmlwidget"),
                                        shiny::downloadButton(ns("downloadHtmlwidget"), text, class = class, style = "width: 200px; display: inline-block;"),
                                        #button,
                                        shiny::span(

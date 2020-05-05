@@ -52,7 +52,7 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
     data
   })
 
-  output$textDocumentInputInfo <- renderUI({
+  output$textDocumentInputInfo <- shiny::renderUI({
     ns <- session$ns
     textDocumentInputInfo <- infoList[[input$textDocumentInput]]
     if (is.null(textDocumentInputInfo)) return()
@@ -83,13 +83,18 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
       old_path <- input$inputDataUpload$datapath
       path <- file.path(tempdir(), input$inputDataUpload$name)
       file.copy(old_path, path)
-      print(path)
       tx <- readtext::readtext(path)$text
     } else if (inputType == "sampleData") {
+      if (is.null(input$inputDataSample))
+        return()
       file <- input$inputDataSample
       tx <- readLines(file) %>%
         paste(collapse = "<br/>")
     } else if (inputType == "url") {
+      if (is.null(input$inputURL))
+        return()
+      if (input$inputURL == "")
+        return()
       url <- input$inputURL
       tx <- xml2::read_html(url) %>%
         xml2::xml_find_all("//p") %>%
