@@ -1,12 +1,13 @@
 #' @export
 textDocumentInputUI <- function(id,
                                 choices = c("pasted", "fileUpload", "sampleData", "googleSheet", "url", "dsLibrary"),
+                                choicesInline = FALSE,
                                 selected = "pasted") {
 
   ns <- shiny::NS(id)
   shiny::tagList(shiny::div(id = ns("textDocumentInput"),
                             class = "tableInput",
-                            shiny::radioButtons(ns("textDocumentInput"), "", choices = choices, selected = selected),
+                            shiny::radioButtons(ns("textDocumentInput"), "", choices = choices, selected = selected, inline = choicesInline),
                             shiny::uiOutput(ns("textDocumentInputControls"))),
                  shiny::div(class = "box-tableInputInfo", #style = info_style,
                             shiny::uiOutput(ns("textDocumentInputInfo"))))
@@ -14,7 +15,13 @@ textDocumentInputUI <- function(id,
 
 
 #' @export
-textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoList = NULL) {
+textDocumentInput <- function(input, output, session,
+                              infoList = NULL,
+                              pasteLabel = "Paste", pasteValue = "", pastePlaceholder = "Select your text and paste it here", pasteRows = 5,
+                              uploadLabel = "Choose text or pdf file", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
+                              sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
+                              urlLabel = "Page URL", urlValue = "", urlPlaceholder = NULL,
+                              googleDocLabel = "Google document URL", googleDocValue = "", googleDocPlaceholder = "https://docs.google.com/spreadsheets/...") {
 
   output$textDocumentInputControls <- shiny::renderUI({
     ns <- session$ns
@@ -27,11 +34,12 @@ textDocumentInput <- function(input, output, session, sampleFiles = NULL, infoLi
         stop("All sample files must exist")
     }
 
-    textDocumentInputControls <- list(pasted = shiny::textAreaInput(ns("inputDataPasted"), label = "Paste", placeholder = "placeholder", rows = 5),
-                                      fileUpload = shiny::fileInput(ns("inputDataUpload"), "Choose text, pdf file", accept = c("text/plain", ".txt", ".docx", ".pdf")),
-                                      sampleData = shiny::selectInput(ns("inputDataSample"), "Select sample data", choices = sampleFiles),
-                                      url = shiny::textInput(ns("inputURL"), "Page URL"),
-                                      googleSheet = list(shiny::textInput(ns("inputDataGoogleSheet"), "GoogleSheet URL"), shiny::numericInput(ns("inputDataGoogleSheetSheet"), "Sheet", 1))#,
+    textDocumentInputControls <- list(pasted = shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, placeholder = pastePlaceholder, rows = pasteRows),
+                                      fileUpload = shiny::fileInput(ns("inputDataUpload"), uploadLabel, buttonLabel = uploadButtonLabel, placeholder = uploadPlaceholder,
+                                                                    accept = c("text/plain", ".txt", ".docx", ".pdf")),
+                                      sampleData = shiny::selectInput(ns("inputDataSample"), sampleLabel, choices = sampleFiles, selected = sampleSelected),
+                                      url = shiny::textInput(ns("inputURL"), urlLabel, value = urlValue, placeholder = urlPlaceholder),
+                                      googleSheet = shiny::textInput(ns("inputDataGoogleDoc"), googleDocLabel, value = googleDocValue, placeholder = googleDocPlaceholder)#,
                                       # dsLibrary = dsDataInputUI(ns("dsFileInput"))
     )
 

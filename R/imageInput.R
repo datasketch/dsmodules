@@ -1,12 +1,13 @@
 #' @export
 imageInputUI <- function (id,
                           choices = c("fileUpload", "sampleData", "url", "dsLibrary"),
+                          choicesInline = FALSE,
                           selected = "fileUpload") {
 
   ns <- shiny::NS(id)
   shiny::tagList(shiny::div(id = ns("imageInput"),
               class = "tableInput",
-              shiny::radioButtons(ns("imageInput"), "", choices = choices, selected = selected),
+              shiny::radioButtons(ns("imageInput"), "", choices = choices, selected = selected, inline = choicesInline),
               shiny::uiOutput(ns("imageInputControls"))),
               shiny::div(class = "box-tableInputInfo", #style = info_style,
                          shiny::uiOutput(ns("imageInputInfo"))))
@@ -14,7 +15,12 @@ imageInputUI <- function (id,
 
 
 #' @export
-imageInput <- function (input, output, session, sampleFiles = NULL, infoList = NULL) {
+imageInput <- function (input, output, session,
+                        infoList = NULL,
+                        uploadLabel = "Choose image", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
+                        sampleLabel = "Select sample image", sampleFiles = NULL, sampleSelected = NULL,
+                        urlLabel = "Image URL", urlValue = "", urlPlaceholder = NULL) {
+
 
   output$imageInputControls <- shiny::renderUI({
     ns <- session$ns
@@ -30,9 +36,10 @@ imageInput <- function (input, output, session, sampleFiles = NULL, infoList = N
     imageInputControls <- list(
       # pasted = textAreaInput(ns("inputDataPasted"),
       #                        label = "Paste", placeholder = "placeholder", rows = 5),
-      fileUpload = shiny::fileInput(ns("inputDataUpload"), "Choose image", accept = c("image/png", "image/jpeg")),
-      sampleData = shiny::selectInput(ns("inputDataSample"), "Select sample image", choices = sampleFiles),
-      url = shiny::textInput(ns("inputURL"), "Image URL")#,
+      fileUpload = shiny::fileInput(ns("inputDataUpload"), uploadLabel, buttonLabel = uploadButtonLabel, placeholder = uploadPlaceholder,
+                                    accept = c("image/png", "image/jpeg")),
+      sampleData = shiny::selectInput(ns("inputDataSample"), sampleLabel, choices = sampleFiles, selected = sampleSelected),
+      url = shiny::textInput(ns("inputURL"), urlLabel, value = urlValue, placeholder = urlPlaceholder)#,
       # dsLibrary = dsDataInputUI(ns("dsFileInput"))
       )
 
