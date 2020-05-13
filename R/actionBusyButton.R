@@ -1,5 +1,5 @@
 #' @export
-actionBusyButtonUI <- function(id, text = "Go", class = NULL) {
+actionBusyButtonUI <- function(id, text = "Go", icon = NULL, class = NULL) {
 
   # indicators taken from https://github.com/daattali/advanced-shiny/tree/master/busy-indicator
   ns <- shiny::NS(id)
@@ -7,7 +7,7 @@ actionBusyButtonUI <- function(id, text = "Go", class = NULL) {
 
   shiny::tagList(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src =  "downloadInfo/downloadGen.js")))),
                  shiny::div(`data-for-btn` = ns("actionBusyButton"),
-                            shiny::actionButton(ns("actionBusyButton"), text, class = class),
+                            shiny::actionButton(ns("actionBusyButton"), text, icon = icon, class = class),
                             #button,
                             shiny::span(class = "btn-loading-container",
                                         shiny::img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),

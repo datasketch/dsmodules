@@ -1,7 +1,8 @@
 
 #' @export
 tableInputUI <- function(id,
-                         choices = c("pasted","fileUpload","sampleData", "googleSheets"),
+                         choices = c("pasted", "fileUpload", "sampleData", "googleSheets"),
+                         choicesInline = FALSE,
                          selected = "pasted", ...) {
   # UI
   ns <- shiny::NS(id)
@@ -12,7 +13,7 @@ tableInputUI <- function(id,
 
   shiny::tagList(shiny::div(id = ns("tableInput"),class="tableInput",
                             shiny::radioButtons(ns("tableInput"), "",
-                                                choices = choices, selected = selected),
+                                                choices = choices, selected = selected, inline = choicesInline),
                             shiny::uiOutput(ns("tableInputControls"))),
                  shiny::div(class = "box-tableInputInfo", #style = info_style,
                             shiny::uiOutput(ns("tableInputInfo"))))
@@ -21,7 +22,13 @@ tableInputUI <- function(id,
 
 #' @export
 tableInput <- function(input, output, session,
-                       sampleFiles = NULL, infoList = NULL, ...){
+                       infoList = NULL,
+                       pasteLabel = "Paste", pasteValue = "", pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
+                       uploadLabel = "Choose CSV File", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
+                       sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
+                       googleSheetLabel = "Data from Google Sheet", googleSheetValue = "", googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
+                       googleSheetPageLabel = "Sheet",
+                       ...) {
 
   output$tableInputControls <- shiny::renderUI({
 
@@ -39,17 +46,12 @@ tableInput <- function(input, output, session,
         stop("All Sample Files must exist")
     }
 
-    tableInputControls <- list(
-      "pasted" = textAreaInput(ns("inputDataPasted"),label = "Paste",
-                               placeholder = "Select your data and paste it here",
-                               rows = 5),
-      "fileUpload" =  fileInput(ns('inputDataUpload'), 'Choose CSV File',
-                                accept=c('text/csv',
-                                         'text/comma-separated-values,text/plain',
-                                         '.csv','.xls', '.xlsx')),
-      "sampleData" = selectInput(ns("inputDataSample"),"Select a sample data",
-                                 choices = sampleFiles),
-      "googleSheets" = textInput(ns("inputDataSheet"), label = "Data from Google Sheet", placeholder = "https://docs.google.com/spreadsheets/...")
+    tableInputControls <- list(pasted = textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue, placeholder = pastePlaceholder, rows = pasteRows),
+                               fileUpload =  fileInput(ns("inputDataUpload"), uploadLabel, buttonLabel = uploadButtonLabel, placeholder = uploadPlaceholder,
+                                                         accept = c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")),
+                               sampleData = selectInput(ns("inputDataSample"), sampleLabel, choices = sampleFiles, selected = sampleSelected),
+                               googleSheets = list(shiny::textInput(ns("inputDataSheet"), label = googleSheetLabel, value = googleSheetValue, placeholder = googleSheetPlaceholder),
+                                                   shiny::numericInput(ns("inputDataGoogleSheetSheet"), googleSheetPageLabel, 1))
     )
     tableInputControls[[input$tableInput]]
   })
