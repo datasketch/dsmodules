@@ -33,7 +33,7 @@ server <- function(input,output,session){
   })
 
   image_hg <- reactive({
-     hgch_bar_CatNum(sampleData("Cat-Num"))
+     hgch_bar_CatNum(sample_data("Cat-Num"))
   })
 
   output$img_hg <- renderHighchart({
@@ -41,7 +41,7 @@ server <- function(input,output,session){
   })
 
   image_gg <- reactive({
-   print(gg_area_CatNum(sampleData("Cat-Num")))
+   print(gg_area_CatNum(sample_data("Cat-Num")))
   })
 
   output$img_gg <- renderPlot({
