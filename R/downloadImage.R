@@ -7,7 +7,7 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL)
   img_formats <- formats
   if (is.null(formats)) img_formats <- "png"
 
-  shiny::addResourcePath(prefix = "downloadInfo", directoryPath = system.file("aux/", package = "dsmodules"))
+  shiny::addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
   shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src =  "downloadInfo/downloadGen.js")))),
              lapply(img_formats, function(z) {

@@ -7,7 +7,7 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL)
   tbl_formats <- formats
   if (is.null(formats)) tbl_formats <- "csv"
 
-  addResourcePath(prefix = "downloadInfo", directoryPath = system.file("aux/", package = "dsmodules"))
+  addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
   div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js")))),
       lapply(tbl_formats, function(z) {
