@@ -9,6 +9,8 @@ library(ggmagic)
 
 ui <- fluidPage(
   selectizeInput("data","Data", c("cars","mtcars")),
+  textAreaInput("text", "Text", rows = 4),
+  downloadTextUI("download_text", "Download", c("txt", "docx", "html")),
   downloadHtmlwidgetUI("download", "Iris"),
   downloadFileUI("downloadFile", "Iris File"),
   downloadHtmlwidgetUI("download2", "cars or mtcars"),
@@ -53,6 +55,11 @@ server <- function(input,output,session){
 
  inputDataName <- reactive(input$data)
 
+ # callModule(downloadText,"download_text", text = reactive(input$text), formats = c("txt", "docx", "html"))
+ observe({
+
+ callModule(downloadText,"download_text", text = input$text, formats = c("txt", "docx", "html"))
+ })
  callModule(downloadHtmlwidget,"download", widget = widget)
  callModule(downloadHtmlwidget,"download2", widget = wdata, name = inputDataName)
 
