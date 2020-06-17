@@ -26,6 +26,9 @@ Imports:
     readtext,
     googlesheets4,
     yaml,
+    pander,
+    knitr,
+    rio,
     webshot
 Suggests:
     rlang,
