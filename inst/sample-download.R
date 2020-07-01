@@ -4,16 +4,16 @@ library(dsmodules)
 library(hgchmagic)
 library(DT)
 library(ggmagic)
+library(shinyinvoer)
 
-## Data upload module
 
 ui <- fluidPage(
   selectizeInput("data","Data", c("cars","mtcars")),
   textAreaInput("text", "Text", rows = 4),
   downloadTextUI("download_text", "Download", c("txt", "docx", "html")),
-  downloadHtmlwidgetUI("download", "Iris"),
+  downloadHtmlwidgetUI("download", text = "Iris"),
   downloadFileUI("downloadFile", "Iris File"),
-  downloadHtmlwidgetUI("download2", "cars or mtcars"),
+  downloadHtmlwidgetUI("download1", "cars or mtcars", display = "dropdown"),
   verbatimTextOutput("debug"),
   highchartOutput("img_hg"),
   radioButtons("test_id", "libreria", c('gg', 'hgch')),
@@ -43,11 +43,11 @@ server <- function(input,output,session){
   })
 
   image_gg <- reactive({
-   print(gg_area_CatNum(sample_data("Cat-Num")))
+   # print(gg_area_CatNum(sample_data("Cat-Num")))
   })
 
   output$img_gg <- renderPlot({
-    image_gg()
+    # image_gg()
   })
 
  callModule(downloadImage, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf", "png"))
@@ -61,7 +61,7 @@ server <- function(input,output,session){
  callModule(downloadText,"download_text", text = input$text, formats = c("txt", "docx", "html"))
  })
  callModule(downloadHtmlwidget,"download", widget = widget)
- callModule(downloadHtmlwidget,"download2", widget = wdata, name = inputDataName)
+ callModule(downloadHtmlwidget,"download1", widget = widget)
 
  callModule(downloadFile, "downloadFile", path = "htmlwidget.html", name = "myfile")
 
