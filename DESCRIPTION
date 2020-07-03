@@ -14,6 +14,7 @@ Depends:
     R (>= 3.1.2)
 Imports:
     shiny,
+    shinyinvoer,
     htmltools,
     openxlsx,
     rsvg,
@@ -26,6 +27,9 @@ Imports:
     readtext,
     googlesheets4,
     yaml,
+    pander,
+    knitr,
+    rio,
     webshot
 Suggests:
     rlang,
