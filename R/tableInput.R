@@ -42,7 +42,7 @@ tableInput <- function(input, output, session,
       sampleFiles <- sampleFiles()
 
     if(input$tableInput == "sampleData"){
-      if(!all(map_lgl(sampleFiles,file.exists)))
+      if (!all(unlist(lapply(sampleFiles, file.exists))))
         stop("All Sample Files must exist")
     }
 
