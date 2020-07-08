@@ -29,7 +29,7 @@ imageInput <- function (input, output, session,
       sampleFiles <- sampleFiles()
 
     if (!is.null(input$imageInput) && input$imageInput == "sampleData") {
-      if (!all(map_lgl(sampleFiles, file.exists)))
+      if (!all(unlist(lapply(sampleFiles, file.exists))))
         stop("All sample files must exist")
     }
 

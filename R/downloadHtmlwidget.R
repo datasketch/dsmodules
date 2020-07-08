@@ -1,5 +1,5 @@
 #' @export
-downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL, label = "Download", display = c("buttons", "dropdown")) {
+downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL, label = "Download", display = c("buttons", "dropdown"), dropdownWidth = 150) {
 
   # indicators taken from https://github.com/daattali/advanced-shiny/tree/master/busy-indicator
   ns <- NS(id)
@@ -10,7 +10,7 @@ downloadHtmlwidgetUI <- function(id, text = "Download", class = NULL, label = "D
   if (display == "dropdown") {
     ch <- ns("downloadHtmlwidget")
     names(ch) <- text
-    dropdownActionInput("dropdown", label, choices = ch, downloadable = TRUE)
+    dropdownActionInput("dropdown", label, choices = ch, downloadable = TRUE, width = dropdownWidth)
   } else {
     shiny::tagList(shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script( src =  "downloadInfo/downloadGen.js")))),
                               shiny::div(style = "text-align:center;",

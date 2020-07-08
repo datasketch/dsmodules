@@ -16,6 +16,7 @@ Imports:
     shiny,
     shinyinvoer,
     htmltools,
+    htmlwidgets,
     openxlsx,
     rsvg,
     svglite,
