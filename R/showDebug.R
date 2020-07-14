@@ -1,30 +1,11 @@
-
 #' @export
-showDebugUI <- function(id){
-  # UI
-  ns <- shiny::NS(id)
-  jsCode <- "
-  shinyjs.hideDebug = function(params){
-  console.log('hiding debug')
-  $( '<style>.shiny-output-error{ visibility: hidden;} .shiny-output-error:before { visibility: hidden; }</style>').appendTo( 'head' )
-  $(document).ready(function(){
-  $(\"[id*='debug']\").css('display','none');
-  });
-  }
-  "
-  shiny::tagList(
-    extendShinyjs(text = jsCode)
-  )
-}
-
-#' @export
-showDebug <- function(input,output,session, hosts = "127.0.0.1"){
-  # Hide debug
-  shiny::observe({
-    message("Current host ", session$clientData$url_hostname)
-    message("Showing debug in ", hosts)
-    if(!session$clientData$url_hostname %in% hosts){
-      js$hideDebug()
-    }
-  })
+showDebug <- function (hosts = "127.0.0.1") {
+  hosts <- jsonlite::toJSON(hosts, auto_unbox = TRUE)
+  jsCode <- paste0("$(document).ready(function(event, hosts = '", hosts, "') {
+                      if (!hosts.includes(window.location.hostname)) {
+                        $('<style>.shiny-output-error, .shiny-output-error:before {visibility: hidden !important;}</style>').appendTo('head');
+                        $(\"[id*='debug']\").css('display', 'none');
+                      }
+                   })")
+  tags$head(tags$script(HTML(jsCode)))
 }
