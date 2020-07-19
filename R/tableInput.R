@@ -41,14 +41,14 @@ tableInput <- function(input, output, session,
     if (shiny::is.reactive(sampleFiles))
       sampleFiles <- sampleFiles()
 
-    if(input$tableInput == "sampleData"){
-      if (!all(unlist(lapply(sampleFiles, file.exists))))
-        stop("All Sample Files must exist")
-    }
+    # if(input$tableInput == "sampleData"){
+    #   if (!all(unlist(lapply(sampleFiles, file.exists))))
+    #     stop("All Sample Files must exist")
+    # }
 
     tableInputControls <- list(pasted = textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue, placeholder = pastePlaceholder, rows = pasteRows),
                                fileUpload =  fileInput(ns("inputDataUpload"), uploadLabel, buttonLabel = uploadButtonLabel, placeholder = uploadPlaceholder,
-                                                         accept = c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")),
+                                                       accept = c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")),
                                sampleData = selectInput(ns("inputDataSample"), sampleLabel, choices = sampleFiles, selected = sampleSelected),
                                googleSheets = list(shiny::textInput(ns("inputDataSheet"), label = googleSheetLabel, value = googleSheetValue, placeholder = googleSheetPlaceholder),
                                                    shiny::numericInput(ns("inputDataGoogleSheetSheet"), googleSheetPageLabel, 1))
@@ -81,8 +81,14 @@ tableInput <- function(input, output, session,
     }
     if(inputType ==  "sampleData"){
       if (is.null(input$inputDataSample)) return()
-      file <- as.character(input$inputDataSample)
-      df <- readr::read_csv(file)
+
+      if (!(file.exists(input$inputDataSample))) {
+        df <- lfltmagic::fakeData(input$inputDataSample)
+      } else {
+        file <- as.character(input$inputDataSample)
+        df <- readr::read_csv(file)
+      }
+      df
     }
     if (inputType == "googleSheets") {
       if (is.null(input$inputDataSheet)) return()

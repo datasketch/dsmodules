@@ -1,7 +1,7 @@
 library(shiny)
 library(tidyverse)
 library(dsmodules)
-
+library(shinyinvoer)
 ## Data upload module
 
 
@@ -17,11 +17,12 @@ ui <- fluidPage(
 )
 
 server <- function(input,output,session){
+
   inputData <- callModule(tableInput, "dataIn",
                           sampleFile =
-                            list("File1"="data_sample/sample1.csv"))
+                            list("File1"="data_sample/sample1.csv", "File2" =  "col_departments"))
   output$debug <- renderPrint({
-    inputData()
+    print(inputData())
   })
 
   callModule(downloadTable, "download_data_button", table = reactive(inputData()), formats = c("csv", "xlsx", "json"))
