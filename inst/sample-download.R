@@ -1,89 +1,64 @@
 library(shiny)
-library(tidyverse)
 library(dsmodules)
-library(hgchmagic)
-library(DT)
-library(ggmagic)
 library(shinyinvoer)
+library(hgchmagic)
+library(ggmagic)
 
 
 ui <- fluidPage(
-  selectizeInput("data","Data", c("cars","mtcars")),
-  textAreaInput("text", "Text", rows = 4),
-  downloadTextUI("download_text", "Download", c("txt", "docx", "html")),
-  downloadHtmlwidgetUI("download", text = "Iris"),
-  downloadFileUI("downloadFile", "Iris File"),
-  downloadHtmlwidgetUI("download_drop", label = "Descargar html", display = "dropdown"),
-  downloadTableUI("download_table_drop", label = "Descargar tabla", formats = c("csv", "xlsx", "json"), display = "dropdown"),
-  downloadImageUI("download_ggmagic_drop", label = "Descargar ggplot",  formats = c("jpeg", "pdf", "svg", "png"), display = "dropdown"),
-  downloadImageUI("download_hgchmagic_drop", label = "Descargar highcharts",  formats = c("jpeg", "pdf", "png"), display = "dropdown"),
-  downloadTextUI("download_text_drop", label = "Descargar texto", formats = c("txt", "docx", "html"), display = "dropdown"),
-  downloadTableUI("download_table", label = "Descargar tabla", formats = c("csv", "xlsx", "json")),
-  verbatimTextOutput("debug"),
-  highchartOutput("img_hg"),
-  radioButtons("test_id", "libreria", c('gg', 'hgch')),
-  downloadImageUI("down_hgchmagic", "Descarga",  formats = c("jpeg", "pdf", "png")),
-  plotOutput("img_gg"),
-  downloadImageUI("down_ggmagic", "Descarga",  formats = c("jpeg", "pdf", "svg", "png"))#,
+  h3("Text"),
+  textAreaInput("text", "Text", rows = 5),
+  downloadTextUI("dropdown_text", dropdownLabel = "Dropdown", formats = c("txt", "docx", "html"), display = "dropdown"),
+  downloadTextUI("download_text", "Download", c("txt", "docx", "html", "link")),
+  br(),
+  h3("Tables"),
+  tableOutput("table"),
+  downloadTableUI("dropdown_table", dropdownLabel = "Dropdown", formats = c("csv", "xlsx", "json", "link"), display = "dropdown"),
+  downloadTableUI("download_table", "Download", c("csv", "xlsx", "json", "link")),
+  br(),
+  h3("Images"),
+  br(),
+  h3("Interactive"),
+  highchartOutput("highchart"),
+  downloadImageUI("dropdown_highchart", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "link"), display = "dropdown"),
+  downloadImageUI("download_highchart", "Download", c("jpeg", "pdf", "png", "link")),
+  br(),
+  h3("Static"),
+  plotOutput("ggplot"),
+  downloadImageUI("dropdown_ggplot", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "link"), display = "dropdown"),
+  downloadImageUI("download_ggplot", "Download", c("jpeg", "pdf", "png", "link")),
+  br(),
+  h3("HTML"),
+  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", formats = c("html", "link"), display = "dropdown"),
+  downloadHtmlwidgetUI("download_html", "Download", c("html", "link"))
+
 )
 
-widget <- DT::datatable(iris)
-htmlwidgets::saveWidget(widget, "htmlwidget.html")
+server <- function(input, output, session) {
+  hg <- hgch_bar_Cat(sample_data("Cat"))
+  gg <- ggplot(data.frame(a = c("w", "r"), b = 2:3), aes(x = a, y = b, fill = a)) + geom_bar(stat = "identity")
 
-server <- function(input,output,session){
+  output$table <- renderTable(data.frame(a = 1:3, b = "f"))
+  output$highchart <- renderHighchart(hg)
+  output$ggplot <- renderPlot(gg)
 
-  wdata <- reactive({
-    if(input$data == "cars")
-      return(DT::datatable(cars))
-    else
-      return(DT::datatable(mtcars))
+  callModule(downloadText, "download_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"))
+  callModule(downloadText, "dropdown_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"))
+  callModule(downloadTable, "download_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"))
+  callModule(downloadTable, "dropdown_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"))
+  callModule(downloadImage, "download_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "link"))
+  callModule(downloadImage, "dropdown_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "link"))
+  callModule(downloadImage, "download_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"))
+  callModule(downloadImage, "dropdown_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"))
+  callModule(downloadHtmlwidget, "download_html", widget = hg, formats = c("html", "link"))
+  callModule(downloadHtmlwidget, "dropdown_html", widget = hg, formats = c("html", "link"))
+
+
+  observeEvent(input$`f-save`, {
+    print("ee")
   })
 
-  image_hg <- reactive({
-     hgch_bar_CatNum(sample_data("Cat-Num"))
-  })
-
-  output$img_hg <- renderHighchart({
-    image_hg()
-  })
-
-  image_gg <- reactive({
-    df <- data.frame(
-      gp = factor(rep(letters[1:3], each = 10)),
-      y = rnorm(30)
-    )
-    ggplot(df, aes(gp, y)) +
-      geom_point()
-   # print(gg_area_CatNum(sample_data("Cat-Num")))
-  })
-
-  output$img_gg <- renderPlot({
-    # image_gg()
-  })
-
- callModule(downloadImage, "down_hgchmagic", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf", "png"))
- callModule(downloadImage, "down_ggmagic", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf", "svg", "png"))
- callModule(downloadImage, "download_hgchmagic_drop", graph = image_hg(), lib = "highcharter", formats = c("jpeg", "pdf", "png"))
- callModule(downloadImage, "download_ggmagic_drop", graph = image_gg(), lib = "ggplot", formats = c("jpeg", "pdf", "svg", "png"))
-
- inputDataName <- reactive(input$data)
-
- callModule(downloadTable, "download_table", table = cars, formats = c("csv", "xlsx", "json"))
- callModule(downloadTable, "download_table_drop", table = cars, formats = c("csv", "xlsx", "json"))
-
-
- # callModule(downloadText,"download_text", text = reactive(input$text), formats = c("txt", "docx", "html"))
- callModule(downloadText,"download_text", text = input$text, formats = c("txt", "docx", "html"))
- callModule(downloadText,"download_text_drop", text = input$text, formats = c("txt", "docx", "html"))
- callModule(downloadHtmlwidget,"download", widget = widget)
- callModule(downloadHtmlwidget,"download_drop", widget = widget)
-
- callModule(downloadFile, "downloadFile", path = "htmlwidget.html", name = "myfile")
-
- output$debug <- renderPrint({
-   wdata()
- })
 }
 
-shinyApp(ui,server)
 
+shinyApp(ui, server)
