@@ -32,7 +32,7 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL,
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
   if (display == "dropdown") {
-    div(modal(id = "md-dropdown_image-DownloadImglink", title = modalTitle, modal_body),
+    div(modal(id = paste0("md-", ns("DownloadImglink")), title = modalTitle, modal_body),
         dropdownActionInput(ns("dropdown"), dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth))
   } else {
     shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js")))),
@@ -46,7 +46,7 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL,
                  d <- ifelse(choices_type[z] %in% c("button", "modalShinypanels"), "actionButton", "downloadButton")
                  shiny::tagList(shiny::div(style = "text-align:center;",
                                            `data-for-btn` = formats_id[z],
-                                           do.call(d, list(formats_id[z], formats_lb[z], class = class, style = "width: 200px; display: inline-block;")),
+                                           do.call(d, list(formats_id[z], formats_lb[z], class = class, style = "width: 200px; display: inline-block;",`data-modal` = d_modal)),
                                            shiny::span(class = "btn-loading-container",
                                                        shiny::img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
                                                        shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
