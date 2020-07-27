@@ -1,13 +1,21 @@
 library(shiny)
+library(shinypanels)
 library(dsmodules)
 
-ui <- fluidPage(getLinkUI("link"),
-                uiOutput("iframe_preview"))
+ui <- panelsPage(panel(title = "Test",
+                       body = div(getLinkUI("link"),
+                                  icon(""),
+                                  uiOutput("iframe_preview"))))
 
 server <- function(input, output, session) {
 
-  # callModule(getLink, "link")
-  getLinkServer("link")
+  # observeEvent(input$`link-save`, {
+  # r <- input$`link-name`
+  # observe({
+# print(input$`link-name`)
+
+  getLinkServer("link", FUN = paste0, "https://es.wikipedia.org/wiki/", input$`link-name`)
+  # })
 
   output$iframe_preview <- renderUI({
     HTML(input$`link-iframe`)
