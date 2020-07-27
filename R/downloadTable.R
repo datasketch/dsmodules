@@ -32,16 +32,16 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL,
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
   if (display == "dropdown") {
-    div(modal(id = "md-dropdown_text-DownloadTbllink", title = modalTitle, modal_body),
+    div(modal(id = "md-dropdown_table-DownloadTbllink", title = modalTitle, modal_body),
         dropdownActionInput(ns("dropdown"), dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth))
   } else {
     div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js")))),
-        modal(id = "md-button_text-DownloadTbllink", title = modalTitle, modal_body),
+        modal(id = "md-button_table-DownloadTbllink", title = modalTitle, modal_body),
         lapply(seq_along(choices_type), function(z) {
           d_modal <- ""
           if (choices_type[z] == "modalShinypanels") {
             class <- paste0(class, " modal-trigger")
-            d_modal <- "md-button_text-DownloadTxtlink"
+            d_modal <- "md-button_table-DownloadTbllink"
           }
           d <- ifelse(choices_type[z] %in% c("button", "modalShinypanels"), "actionButton", "downloadButton")
           shiny::tagList(shiny::div(style = "text-align: center;",
