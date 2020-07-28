@@ -70,14 +70,15 @@ tableInput <- function(input, output, session,
       if (is.null(input$inputDataPasted)) return()
       if(input$inputDataPasted == "")
         return()
-      df <- read_tsv(input$inputDataPasted)
+      df <- readr::read_tsv(input$inputDataPasted)
     }
     if(inputType ==  "fileUpload"){
       if(is.null(input$inputDataUpload)) return()
       old_path <- input$inputDataUpload$datapath
       path <- file.path(tempdir(),input$inputDataUpload$name)
-      file.copy(old_path,path)
-      df <- rio::import(path)
+      file.copy(old_path, path)
+      df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
+                     error = function(e) rio::import(path))
     }
     if(inputType ==  "sampleData"){
       if (is.null(input$inputDataSample)) return()
