@@ -31,8 +31,10 @@ ui <- panelsPage(panel(title = "Examples",
                                   downloadImageUI("download_ggplot", "Download", c("jpeg", "pdf", "png", "link")),
                                   br(),
                                   h3("HTML"),
-                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", formats = c("html", "link"), display = "dropdown"),
-                                  downloadHtmlwidgetUI("download_html", "Download", c("html", "link"))
+                                  downloadHtmlwidgetUI("download_data_button", dropdownLabel = "lb", text = paste("dw", "HTML"), formats = c("link", "html"),
+                                                       display = "dropdown", dropdownWidth = 170, getLinkLabel = "gl", modalTitle = "gl"),
+                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", formats = c("html", "link"), display = "dropdown", text = "FASDFSA"),
+                                  downloadHtmlwidgetUI("download_html", dropdownLabel = "Download", c("html", "link"), text = "FASDFSA")
                        ))
 )
 
@@ -45,15 +47,20 @@ server <- function(input, output, session) {
   output$highchart <- renderHighchart(hg)
   output$ggplot <- renderPlot(gg)
 
-  callModule(downloadText, "download_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"), modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadText, "download_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"),
+             modalFunction = paste, modalFunctionArgs = c("printing...", "this"))
   callModule(downloadText, "dropdown_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"))
-  callModule(downloadTable, "download_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"), modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadTable, "download_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"),
+             modalFunction = print, modalFunctionArgs = "printing...")
   callModule(downloadTable, "dropdown_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"))
-  callModule(downloadImage, "download_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html", "link"), modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadImage, "download_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html", "link"),
+             modalFunction = print, modalFunctionArgs = "printing...")
   callModule(downloadImage, "dropdown_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html", "link"))
-  callModule(downloadImage, "download_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"), modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadImage, "download_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"),
+             modalFunction = print, modalFunctionArgs = "printing...")
   callModule(downloadImage, "dropdown_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"))
-  callModule(downloadHtmlwidget, "download_html", widget = hg, formats = c("html", "link"), modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadHtmlwidget, "download_html", widget = hg, formats = c("html", "link"),
+             modalFunction = print, modalFunctionArgs = "printing...")
   callModule(downloadHtmlwidget, "dropdown_html", widget = hg, formats = c("html", "link"))
 
 }

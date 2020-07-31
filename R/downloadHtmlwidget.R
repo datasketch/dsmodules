@@ -9,7 +9,7 @@ downloadHtmlwidgetUI <- function(id, text = "Download", formats = NULL, class = 
   if (is.null(formats)) formats <- "html"
 
   formats_id <- ns(paste0("DownloadWidget", formats))
-  formats_lb <- text
+  formats_lb <- paste0(text, " ", toupper(formats))
   names(formats_id) <- formats_lb
   choices_type <- rep("download", length(formats_id))
   w0 <- which(formats %in% "link")
@@ -43,12 +43,13 @@ downloadHtmlwidgetUI <- function(id, text = "Download", formats = NULL, class = 
                    class <- paste0(class, " modal-trigger")
                    d_modal <- "md-button_html-DownloadWidgetlink"
                  }
+                 print("FDA")
                  d <- ifelse(choices_type[z] %in% c("button", "modalShinypanels"), "actionButton", "downloadButton")
                  shiny::tagList(shiny::div(style = "text-align:center;",
                                            `data-for-btn` = formats_id[z],
                                            do.call(d, list(formats_id[z], formats_lb[z], class = class, style = "width: 200px; display: inline-block;", `data-modal` = d_modal)),
                                            shiny::span(class = "btn-loading-container",
-                                                       shiny::img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
+                                                       shiny::img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
                                                        shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
                }))
   }
