@@ -48,7 +48,7 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL,
                                            `data-for-btn` = formats_id[z],
                                            do.call(d, list(formats_id[z], formats_lb[z], class = class, style = "width: 200px; display: inline-block;",`data-modal` = d_modal)),
                                            shiny::span(class = "btn-loading-container",
-                                                       shiny::img(src = loadingGif, class = "btn-loading-indicator", style="display: none"),
+                                                       shiny::img(src = loadingGif, class = "btn-loading-indicator", style = "display: none"),
                                                        shiny::HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
                }))
   }

@@ -47,13 +47,13 @@ getLinkServer <- function(id, FUN, ...) {
       # }
       # })
       vl$url <- do.call(FUN, args)
+      session$sendCustomMessage("setButtonState", c("done", ns("save")))
     })
 
     observe({
       if (!is.null(vl$url)) {
         updateTextInput(session = session, inputId = "url", value = vl$url)
         updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", vl$url, "'></iframe>"))
-        session$sendCustomMessage("setButtonState", c("done", ns("save")))
       } else {
 
       }
