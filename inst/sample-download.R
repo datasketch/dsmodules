@@ -10,12 +10,21 @@ ui <- panelsPage(panel(title = "Examples",
                        body = div(h3("Text"),
                                   textAreaInput("text", "Text", rows = 5),
                                   downloadTextUI("dropdown_texto", dropdownLabel = "Dropdown", formats = c("txt", "docx", "html", "link"), display = "dropdown",
-                                                 modalTitle = "R...", modalBody = selectInput("f", "First", 1:3)),
-                                  downloadTextUI("download_text", "Download", c("txt", "docx", "html", "link")),
+                                                 modalTitle = "R...", modalBody = list(textInput("slug0", "Slug")),
+                                                 nameLabel = "NAME LABEL...",
+                                                 saveButtonLabel = "SAVE BUTTON LABEL...",
+                                                 linkLabel = "LINK LABEL...",
+                                                 iframeLabel = "IFRAME LABEL..."),
+                                  downloadTextUI("download_textoo", "Download", c("txt", "docx", "html", "link")),
                                   br(),
                                   h3("Tables"),
                                   tableOutput("table"),
-                                  downloadTableUI("dropdown_table", dropdownLabel = "Dropdown", formats = c("csv", "xlsx", "json", "link"), display = "dropdown"),
+                                  downloadTableUI("dropdown_table", dropdownLabel = "Dropdown", formats = c("csv", "xlsx", "json", "link"), display = "dropdown",
+                                                  modalBody = list(textInput("slug1", "Slug")),
+                                                  nameLabel = "NAME LABEL...",
+                                                  saveButtonLabel = "SAVE BUTTON LABEL...",
+                                                  linkLabel = "LINK LABEL...",
+                                                  iframeLabel = "IFRAME LABEL..."),
                                   downloadTableUI("download_table", "Download", c("csv", "xlsx", "json", "link")),
                                   br(),
                                   h3("Images"),
@@ -23,18 +32,31 @@ ui <- panelsPage(panel(title = "Examples",
                                   h3("Interactive"),
                                   highchartOutput("highchart"),
                                   downloadImageUI("dropdown_highchart", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "html", "link"), display = "dropdown"),
-                                  downloadImageUI("download_highchart", "Download", c("jpeg", "pdf", "png", "html", "link")),
+                                  downloadImageUI("download_highchart", "Download", c("jpeg", "pdf", "png", "html", "link"),
+                                                  modalBody = list(textInput("slug2", "Slug")),
+                                                  nameLabel = "NAME LABEL...",
+                                                  saveButtonLabel = "SAVE BUTTON LABEL...",
+                                                  linkLabel = "LINK LABEL...",
+                                                  iframeLabel = "IFRAME LABEL..."),
                                   br(),
                                   h3("Static"),
                                   plotOutput("ggplot"),
-                                  downloadImageUI("dropdown_ggplot", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "link"), display = "dropdown"),
+                                  downloadImageUI("dropdown_ggplot", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "link"), display = "dropdown",
+                                                  modalBody = list(textInput("slug", "Slug")),
+                                                  nameLabel = "NAME LABEL...",
+                                                  saveButtonLabel = "SAVE BUTTON LABEL...",
+                                                  linkLabel = "LINK LABEL...",
+                                                  iframeLabel = "IFRAME LABEL..."),
                                   downloadImageUI("download_ggplot", "Download", c("jpeg", "pdf", "png", "link")),
                                   br(),
                                   h3("HTML"),
-                                  downloadHtmlwidgetUI("download_data_button", dropdownLabel = "lb", text = paste("dw", "HTML"), formats = c("link", "html"),
-                                                       display = "dropdown", dropdownWidth = 170, getLinkLabel = "gl", modalTitle = "gl"),
-                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", formats = c("html", "link"), display = "dropdown", text = "FASDFSA"),
-                                  downloadHtmlwidgetUI("download_html", dropdownLabel = "Download", c("html", "link"), text = "FASDFSA")
+                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", formats = c("html", "link"), display = "dropdown"),
+                                  downloadHtmlwidgetUI("download_html", dropdownLabel = "Download", formats = c("html", "link"),
+                                                       modalBody = list(textInput("slug3", "Slug")),
+                                                       nameLabel = "NAME LABEL...",
+                                                       saveButtonLabel = "SAVE BUTTON LABEL...",
+                                                       linkLabel = "LINK LABEL...",
+                                                       iframeLabel = "IFRAME LABEL...")
                        ))
 )
 
@@ -47,21 +69,21 @@ server <- function(input, output, session) {
   output$highchart <- renderHighchart(hg)
   output$ggplot <- renderPlot(gg)
 
-  callModule(downloadText, "download_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"),
-             modalFunction = paste, modalFunctionArgs = c("printing...", "this"))
-  callModule(downloadText, "dropdown_text", text = reactive(input$text), formats = c("txt", "docx", "html", "link"))
-  callModule(downloadTable, "download_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"),
-             modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadText, "download_textoo", text = reactive(input$text), name = "text", formats = c("txt", "docx", "html", "link"),
+             modalFunction = paste, "printing...")#, "this")
+  callModule(downloadText, "dropdown_texto", text = reactive(input$text), formats = c("txt", "docx", "html", "link"))
+  callModule(downloadTable, "download_table", table = data.frame(a = 1:3, b = "f"), name = "table", formats = c("csv", "xlsx", "json", "link"),
+             modalFunction = print, "printing...")
   callModule(downloadTable, "dropdown_table", table = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json", "link"))
-  callModule(downloadImage, "download_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html", "link"),
-             modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadImage, "download_highchart", graph = hg, lib = "highcharter", name = "plot", formats = c("jpeg", "pdf", "png", "html", "link"),
+             modalFunction = print, "printing...")
   callModule(downloadImage, "dropdown_highchart", graph = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html", "link"))
-  callModule(downloadImage, "download_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"),
-             modalFunction = print, modalFunctionArgs = "printing...")
+  callModule(downloadImage, "download_ggplot", graph = gg, lib = "ggplot", name = "plot", formats = c("jpeg", "pdf", "png", "link"),
+             modalFunction = paste, "printing", "this")
   callModule(downloadImage, "dropdown_ggplot", graph = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png", "link"))
-  callModule(downloadHtmlwidget, "download_html", widget = hg, formats = c("html", "link"),
-             modalFunction = print, modalFunctionArgs = "printing...")
-  callModule(downloadHtmlwidget, "dropdown_html", widget = hg, formats = c("html", "link"))
+  callModule(downloadHtmlwidget, "download_html", widget = hg, formats = c("html", "link"))
+  callModule(downloadHtmlwidget, "dropdown_html", widget = hg, formats = c("html", "link"), name = "widget",
+             modalFunction = paste0, "printing...", "this")
 
 }
 

@@ -15,13 +15,9 @@ getLinkUI <- function(id, infoInputs = list(), nameLabel = "Name", saveButtonLab
 
     div(style = "display: flex; justify-content: center; padding: 2rem 4rem;",
       div(style = "display: flex; flex-direction: column; justify-content: space-between; width: 450px;",
+          div(style = "display: flex; flex-direction: column; justify-content: flex-start;",
           textInput(ns("name"), nameLabel),
-          tagList(infoInputs),
-          # textInput(ns("slug"), "Slug"),
-          # textInput("description", "Description"),
-          # selectInput(ns("license"), "License", choices = c("CC0", "CC-BY")),
-          # selectizeInput(ns("tags"), "Tags", choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
-          # selectizeInput(ns("category"), "Category", choices = list("No category" = "no-category")),
+          tagList(infoInputs)),
           bt),
       div(style = "background-color: #ddd; margin: 0rem 6rem; width: 2px;"),
       div(style = "width: 340px;",
@@ -40,13 +36,6 @@ getLinkServer <- function(id, FUN, ...) {
       session$sendCustomMessage("setButtonState", c("none", ns("save")))
       session$sendCustomMessage("setButtonState", c("loading", ns("save")))
       args <- list(...)
-      # args <- lapply(args, function(w) {
-      # if (is.reactive(w)) {
-      # w()
-      # } else {
-      # w
-      # }
-      # })
       vl$url <- do.call(FUN, args)
       session$sendCustomMessage("setButtonState", c("done", ns("save")))
     })
