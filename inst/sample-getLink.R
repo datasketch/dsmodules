@@ -17,7 +17,7 @@ ui <- panelsPage(panel(title = "Test",
 
 server <- function(input, output, session) {
 
-  getLinkServer("link", FUN = paste0, "https://es.wikipedia.org/wiki/", input$`link-name`)
+  getLinkServer("link", FUN = paste0, "https://en.wikipedia.org/wiki/", input$`link-name`)
 
   output$iframe_preview <- renderUI({
     HTML(input$`link-iframe`)
