@@ -27,7 +27,7 @@ tableInput <- function(input, output, session,
                        uploadLabel = "Choose CSV File", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
                        sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
                        googleSheetLabel = "Data from Google Sheet", googleSheetValue = "", googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
-                       googleSheetPageLabel = "Sheet", aditional_info = NULL,
+                       googleSheetPageLabel = "Sheet", additional_info = NULL,
                        ...) {
 
   output$tableInputControls <- shiny::renderUI({
@@ -84,7 +84,7 @@ tableInput <- function(input, output, session,
       if (is.null(input$inputDataSample)) return()
 
       if (!(file.exists(input$inputDataSample))) {
-        l <- aditional_info
+        l <- additional_info
         df <- l[[input$inputDataSample]]
       } else {
         file <- as.character(input$inputDataSample)
