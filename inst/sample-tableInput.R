@@ -21,8 +21,9 @@ server <- function(input,output,session){
 
   inputData <- callModule(tableInput, "dataIn",
                           sampleFiles =
-                            list("File1"="data_sample/sample1.csv", "File2" = "ab"  ),
-                          additional_info = list(ab = data.frame(num = c(1,2,4), cd = c("a", "b", "c"))))
+                            list("File1"="data_sample/sample1.csv", "File2" = "ab", "File3" = "cosa"  ),
+                          additional_info = list(ab = data.frame(num = c(1,2,4), cd = c("a", "b", "c")),
+                                                 cosa = "hola"))
 
   output$debug <- renderPrint({
     print(inputData())
