@@ -12,20 +12,23 @@ ui <- fluidPage(
                                         "Muestra" = "sampleData",
                                         "Google" = "googleSheets"),
                selected = "pasted"),
-  verbatimTextOutput("debug"),
-  downloadTableUI("download_data_button", "Descarga", formats = c("csv", "xlsx", "json"))
+  verbatimTextOutput("debug")#,
+  #downloadTableUI("download_data_button", "Descarga", formats = c("csv", "xlsx", "json"))
 )
 
 server <- function(input,output,session){
 
+
   inputData <- callModule(tableInput, "dataIn",
-                          sampleFile =
-                            list("File1"="data_sample/sample1.csv", "File2" =  "col_departments"))
+                          sampleFiles =
+                            list("File1"="data_sample/sample1.csv", "File2" = "ab"  ),
+                          aditional_info = list(ab = data.frame(num = c(1,2,4), cd = c("a", "b", "c"))))
+
   output$debug <- renderPrint({
     print(inputData())
   })
 
-  callModule(downloadTable, "download_data_button", table = reactive(inputData()), formats = c("csv", "xlsx", "json"))
+  #callModule(downloadTable, "download_data_button", table = reactive(inputData()), formats = c("csv", "xlsx", "json"))
 
 }
 
