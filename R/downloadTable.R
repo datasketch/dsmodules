@@ -61,7 +61,7 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL,
 
 
 #'@export
-downloadTable <- function(input, output, session, table = NULL, formats, name = "table", modalFunction = NULL, ...) {
+downloadTable <- function(input, output, session, table = NULL, name = "table", modalFunction = NULL, ...) {
 
   ns <- session$ns
   tbl_formats <- formats

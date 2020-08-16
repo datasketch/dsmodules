@@ -24,119 +24,116 @@ tableInputUI <- function(id, label,
 }
 
 #' @export
-tableInput <- function(input, output, session,
-                       infoList = NULL,
-                       pasteLabel = "Paste", pasteValue = "",
-                       pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
-                       uploadLabel = "Choose CSV File", uploadButtonLabel = "Browse...",
-                       uploadPlaceholder = "No file selected",
-                       sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
-                       googleSheetLabel = "Data from Google Sheet", googleSheetValue = "",
-                       googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
-                       googleSheetPageLabel = "Sheet",
-                       ...) {
+tableInputServer <- function(id, infoList = NULL,
+                             pasteLabel = "Paste", pasteValue = "",
+                             pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
+                             uploadLabel = "Choose CSV File", uploadButtonLabel = "Browse...",
+                             uploadPlaceholder = "No file selected",
+                             sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
+                             googleSheetLabel = "Data from Google Sheet", googleSheetValue = "",
+                             googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
+                             googleSheetPageLabel = "Sheet",
+                             ...){
 
-  output$tableInputControls <- shiny::renderUI({
+  moduleServer(
+    id,
+    function(input, output, session) {
 
-    # str(session)
-    # if(!exists(session))
-    #   stop("No session defined in server.")
+      output$tableInputControls <- shiny::renderUI({
 
-    ns <- session$ns
+        # str(session)
+        # if(!exists(session))
+        #   stop("No session defined in server.")
 
-    if (shiny::is.reactive(sampleFiles))
-      sampleFiles <- sampleFiles()
+        ns <- session$ns
 
-    # if(input$tableInput == "sampleData"){
-    #   if (!all(unlist(lapply(sampleFiles, file.exists))))
-    #     stop("All Sample Files must exist")
-    # }
+        if (shiny::is.reactive(sampleFiles))
+          sampleFiles <- sampleFiles()
 
-    accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
+        # if(input$tableInput == "sampleData"){
+        #   if (!all(unlist(lapply(sampleFiles, file.exists))))
+        #     stop("All Sample Files must exist")
+        # }
 
-    sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
-      if(all(unlist(lapply(sampleFiles, class)) == "character")){
-        sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
-                                       choices = sampleFiles, selected = sampleSelected)
-      } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
-        sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
-                                       choices = names(sampleFiles), selected = sampleSelected)
-      } else{
-        stop("All sample data must be either file paths or data.frames")
-      }
-      sampleData_html
+        accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
+
+        sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
+          if(all(unlist(lapply(sampleFiles, class)) == "character")){
+            sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
+                                           choices = sampleFiles, selected = sampleSelected)
+          } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+            sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
+                                           choices = names(sampleFiles), selected = sampleSelected)
+          } else{
+            stop("All sample data must be either file paths or data.frames")
+          }
+          sampleData_html
+        }
+
+
+        tableInputControls <- list(
+          pasted = textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
+                                 placeholder = pastePlaceholder, rows = pasteRows),
+          fileUpload =  fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
+                                  placeholder = uploadPlaceholder, accept = accept_formats),
+          sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
+          googleSheets = list(textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
+                                        placeholder = googleSheetPlaceholder),
+                              numericInput(ns("inputDataGoogleSheetSheet"),
+                                           googleSheetPageLabel, 1))
+        )
+        tableInputControls[[input$tableInput]]
+      })
+
+      output$tableInputInfo <- shiny::renderUI({
+        ns <- session$ns
+        tableInputInfo <- infoList[[input$tableInput]]
+        if (is.null(tableInputInfo)) return()
+        tableInputInfo
+      })
+
+      inputData <- shiny::reactive({
+        inputType <- input$tableInput
+        if(inputType == "pasted"){
+          if (is.null(input$inputDataPasted)) return()
+          if(input$inputDataPasted == "")
+            return()
+          df <- readr::read_tsv(input$inputDataPasted)
+        }
+        if(inputType ==  "fileUpload"){
+          if(is.null(input$inputDataUpload)) return()
+          old_path <- input$inputDataUpload$datapath
+          path <- file.path(tempdir(),input$inputDataUpload$name)
+          file.copy(old_path, path)
+          df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
+                         error = function(e) rio::import(path))
+        }
+        if(inputType ==  "sampleData"){
+          if (is.null(input$inputDataSample)) return()
+
+          if(all(unlist(lapply(sampleFiles, class)) == "character")){
+            file <- as.character(input$inputDataSample)
+            df <- readr::read_csv(file)
+          }else if(all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+            df <- sampleFiles[[input$inputDataSample]]
+          }else{
+            stop("All sample data must be either file paths or data.frames")
+          }
+          df
+        }
+        if (inputType == "googleSheets") {
+          if (is.null(input$inputDataSheet)) return()
+          if (input$inputDataSheet == "") return()
+          library(googlesheets4)
+          googlesheets4::sheets_deauth()
+          id_file <- gsub(".*\\/d\\/|\\/edit.*", '', input$inputDataSheet)
+          googlesheets4::sheets_get(id_file)
+          df <- googlesheets4::read_sheet(id_file)
+        }
+        return(df)
+      })
+      inputData
     }
-
-
-    tableInputControls <- list(
-      pasted = textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
-                             placeholder = pastePlaceholder, rows = pasteRows),
-      fileUpload =  fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
-                              placeholder = uploadPlaceholder, accept = accept_formats),
-      sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
-      googleSheets = list(textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
-                                    placeholder = googleSheetPlaceholder),
-                          numericInput(ns("inputDataGoogleSheetSheet"),
-                                       googleSheetPageLabel, 1))
-    )
-    tableInputControls[[input$tableInput]]
-  })
-
-  output$tableInputInfo <- shiny::renderUI({
-    ns <- session$ns
-    tableInputInfo <- infoList[[input$tableInput]]
-    if (is.null(tableInputInfo)) return()
-    tableInputInfo
-  })
-
-  inputData <- shiny::reactive({
-    inputType <- input$tableInput
-    if(inputType == "pasted"){
-      if (is.null(input$inputDataPasted)) return()
-      if(input$inputDataPasted == "")
-        return()
-      df <- readr::read_tsv(input$inputDataPasted)
-    }
-    if(inputType ==  "fileUpload"){
-      if(is.null(input$inputDataUpload)) return()
-      old_path <- input$inputDataUpload$datapath
-      path <- file.path(tempdir(),input$inputDataUpload$name)
-      file.copy(old_path, path)
-      df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
-                     error = function(e) rio::import(path))
-    }
-    if(inputType ==  "sampleData"){
-      if (is.null(input$inputDataSample)) return()
-
-      if(all(unlist(lapply(sampleFiles, class)) == "character")){
-        file <- as.character(input$inputDataSample)
-        df <- readr::read_csv(file)
-      }else if(all(unlist(lapply(sampleFiles, class)) == "data.frame")){
-        df <- sampleFiles[[input$inputDataSample]]
-      }else{
-        stop("All sample data must be either file paths or data.frames")
-      }
-      # if (!(file.exists(input$inputDataSample))) {
-      #   l <- additional_info
-      #   df <- l[[input$inputDataSample]]
-      # } else {
-      #   file <- as.character(input$inputDataSample)
-      #   df <- readr::read_csv(file)
-      # }
-      df
-    }
-    if (inputType == "googleSheets") {
-      if (is.null(input$inputDataSheet)) return()
-      if (input$inputDataSheet == "") return()
-      library(googlesheets4)
-      googlesheets4::sheets_deauth()
-      id_file <- gsub(".*\\/d\\/|\\/edit.*", '', input$inputDataSheet)
-      googlesheets4::sheets_get(id_file)
-      df <- googlesheets4::read_sheet(id_file)
-    }
-    return(df)
-  })
-
-  inputData
+  )
 }
 
