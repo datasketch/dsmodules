@@ -7,29 +7,36 @@ library(shinyinvoer)
 
 
 ui <- fluidPage(
-  tableInputUI("dataIn", choices = list("Copiar & Pegar" = "pasted",
+  tableInputUI("dataIn", "Input Data 1", choices = list("Muestra" = "sampleData",
+                                        "Copiar & Pegar" = "pasted",
                                         "Cargar" = "fileUpload",
-                                        "Muestra" = "sampleData",
                                         "Google" = "googleSheets"),
-               selected = "pasted"),
-  verbatimTextOutput("debug")#,
-  #downloadTableUI("download_data_button", "Descarga", formats = c("csv", "xlsx", "json"))
+               selected = "sampleData"),
+  tableInputUI("dataIn2", "Input Data 2", choices = list("Muestra" = "sampleData",
+                                         "Copiar & Pegar" = "pasted",
+                                         "Cargar" = "fileUpload",
+                                         "Google" = "googleSheets"),
+               selected = "sampleData"),
+  verbatimTextOutput("debug")
 )
 
 server <- function(input,output,session){
 
 
   inputData <- callModule(tableInput, "dataIn",
-                          sampleFiles =
-                            list("File1"="data_sample/sample1.csv", "File2" = "ab", "File3" = "cosa"  ),
-                          additional_info = list(ab = data.frame(num = c(1,2,4), cd = c("a", "b", "c")),
-                                                 cosa = "hola"))
+                          sampleFiles = list( File1 = "data_sample/sample1.csv",
+                                              File2 = "data_sample/sample2.csv" ),
+                          sampleSelected = "File1"
+                          )
+
+  inputData2 <- callModule(tableInput, "dataIn2",
+                           sampleFiles = list( Cars = cars,
+                                               Mtcars = mtcars))
 
   output$debug <- renderPrint({
-    print(inputData())
+    list(inputData(),
+    inputData2())
   })
-
-  #callModule(downloadTable, "download_data_button", table = reactive(inputData()), formats = c("csv", "xlsx", "json"))
 
 }
 
