@@ -22,20 +22,18 @@ ui <- fluidPage(
 
 server <- function(input,output,session){
 
-
   inputData <- tableInputServer("dataIn",
                                 sampleFiles = list( File1 = "data_sample/sample1.csv",
                                                     File2 = "data_sample/sample2.csv" ),
-                                sampleSelected = "File1"
-  )
+                                sampleSelected = "File1")
 
   inputData2 <- tableInputServer("dataIn2",
-                                 sampleFiles = list( Cars = cars,
+                                 sampleFiles = list(Cars = cars,
                                                      Mtcars = mtcars))
 
   output$debug <- renderPrint({
-    list(inputData(),
-         inputData2())
+    l <- list(inputData(), inputData2())
+    l
   })
 
 }

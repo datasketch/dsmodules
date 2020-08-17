@@ -64,6 +64,7 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL,
 downloadTable <- function(input, output, session, table = NULL, name = "table", modalFunction = NULL, ...) {
 
   ns <- session$ns
+  formats <- c("csv", "xlsx", "json", "link")
   tbl_formats <- formats
 
   lapply(tbl_formats, function(z) {
@@ -77,13 +78,12 @@ downloadTable <- function(input, output, session, table = NULL, name = "table", 
       output[[paste0("DownloadTbl", z)]] <- shiny::downloadHandler(
         filename = function() {
           session$sendCustomMessage("setButtonState", c("loading", buttonId))
-          if (shiny::is.reactive(name))
-            name <- name()
-          paste0(name, "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
+          name <- eval_reactives(name)
+          paste0(name, "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
         },
         content = function(file) {
-          if (shiny::is.reactive(table))
-            table <- table()
+          table <- eval_reactives(table)
+          str(table)
           saveTable(table, filename = file, format = z)
           session$sendCustomMessage("setButtonState", c("done", buttonId))
         }

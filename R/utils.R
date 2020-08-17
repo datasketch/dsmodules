@@ -21,14 +21,11 @@ is.reactive <- function(obj){
 
 eval_reactives <- function(...){
   args <- list(...)
-  message("in eval reactives, arg:")
-  str(args)
   l <- lapply(seq_along(args), function(i) {
     if (shiny::is.reactive(args[[i]]))
       return(do.call(args[[i]], list()))
     args[[i]]
   })
-  message(length(l))
   if(length(l) == 1) return(l[[1]])
   l
 }
