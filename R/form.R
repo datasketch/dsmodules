@@ -6,7 +6,7 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
   bt <- div(shiny::singleton(
     shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js"))),
     style = "text-align: center; display: flex; align-items: baseline;",
-    actionButton(ns("form_button"), button_label, style = "margin-left: 0; margin-right: 0;"),
+    actionButton(ns("form_button"), button_label, style = "margin: 10px 0;"),
     span(class = "btn-loading-container",
          img(style = "display: none; margin-left: 18px;",
              class = "btn-loading-indicator",
@@ -17,9 +17,10 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
 
   input_ns <- lapply(input_list, updateInputNS, ns)
 
-  tagList(
-    shiny:::shinyInputLabel("inputId", label = label),
-    div(style = "display: flex; justify-content: center;  margin-bottom: 20px",
+  div(class = "formUI",
+    tags$label(label, class = "control-label-formUI",
+               style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
+    div(style = "display: flex; justify-content: center;  margin: 20px 0;",
         div(style = "display: flex; flex-direction: column; justify-content: space-between; width: 450px;",
             div(style = "display: flex; flex-direction: column; justify-content: flex-start;",
                 tagList(input_ns)),
