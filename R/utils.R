@@ -45,3 +45,15 @@ file_ext <- function (x) {
   sub(".*([.*])", "\\1", basename(x))
 }
 
+
+from_formats_to_module <- function(formats) {
+  d0 <- data.frame(download_module = c("downloadHtmlwidget", "downloadImage", "downloadTable", "downloadText"),
+                   formats = c("html", "png, jpeg, svg, pdf", "csv, xlsx, json", "txt, docx, html"))
+                   # stringsAsFactors = FALSE)
+  l0 <- unlist(lapply(formats, function(s) {
+    d0$download_module[grep(s, d0$formats)]
+  }))
+  t0 <- as.data.frame(table(l0), stringsAsFactors = FALSE)
+  t0$l0[which.max(t0$Freq)]
+}
+
