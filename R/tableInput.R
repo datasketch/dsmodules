@@ -29,7 +29,8 @@ tableInputServer <- function(id, infoList = NULL,
                              pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
                              uploadLabel = "Choose CSV File", uploadButtonLabel = "Browse...",
                              uploadPlaceholder = "No file selected",
-                             sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
+                             sampleLabel = "Select a sample data",
+                             sampleFiles = NULL, sampleSelected = NULL,
                              googleSheetLabel = "Data from Google Sheet", googleSheetValue = "",
                              googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
                              googleSheetPageLabel = "Sheet",
@@ -45,8 +46,8 @@ tableInputServer <- function(id, infoList = NULL,
 
       ns <- session$ns
 
-      if (shiny::is.reactive(sampleFiles))
-        sampleFiles <- sampleFiles()
+      # if (shiny::is.reactive(sampleFiles))
+      #   sampleFiles <- sampleFiles()
 
       # if(input$tableInput == "sampleData"){
       #   if (!all(unlist(lapply(sampleFiles, file.exists))))
@@ -56,13 +57,23 @@ tableInputServer <- function(id, infoList = NULL,
       accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
 
       sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
+        sampleData_html <- NULL
+
+        # message("sampleFiles")
+        # str(sampleFiles)
+        sampleFiles <- eval_reactives(sampleFiles)
+        # str(sampleFiles)
+
         if(all(unlist(lapply(sampleFiles, class)) == "character")){
           sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
                                          choices = sampleFiles, selected = sampleSelected)
         } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+          if(is.null(names(sampleFiles)))
+            stop("sampleFiles list must be named")
           sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
                                          choices = names(sampleFiles), selected = sampleSelected)
-        } else{
+        }
+        else{
           stop("All sample data must be either file paths or data.frames")
         }
         sampleData_html
@@ -108,14 +119,25 @@ tableInputServer <- function(id, infoList = NULL,
       }
       if(inputType ==  "sampleData"){
         if (is.null(input$inputDataSample)) return()
+        inputDataSample <- input$inputDataSample
+        # message("in server")
+        # str(sampleFiles)
+        sampleFiles <- eval_reactives(sampleFiles)
+        # str(sampleFiles)
+        # message("in server end")
+
+        # str(unlist(lapply(sampleFiles, class)))
+
+        df <- NULL
 
         if(all(unlist(lapply(sampleFiles, class)) == "character")){
-          file <- as.character(input$inputDataSample)
+          file <- as.character(inputDataSample)
           df <- readr::read_csv(file)
         }else if(all(unlist(lapply(sampleFiles, class)) == "data.frame")){
-          df <- sampleFiles[[input$inputDataSample]]
-        }else{
-          stop("All sample data must be either file paths or data.frames")
+          df <- sampleFiles[[inputDataSample]]
+        }
+        else{
+          stop("Error reading sampleFile all sample data must be either file paths or data.frames")
         }
         df
       }

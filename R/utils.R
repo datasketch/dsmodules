@@ -27,6 +27,7 @@ eval_reactives <- function(...){
     args[[i]]
   })
   if(length(l) == 1) return(l[[1]])
+  names(l) <- names(args)
   l
 }
 
