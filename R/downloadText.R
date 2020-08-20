@@ -125,13 +125,11 @@ downloadTextServer <- function(id, element = NULL, formats, file_prefix = "text"
       output[[paste0("DownloadTxt", z)]] <- shiny::downloadHandler(
         filename = function() {
           session$sendCustomMessage("setButtonState", c("loading", buttonId))
-          if (shiny::is.reactive(file_prefix))
-            file_prefix <- file_prefix()
-          paste0(file_prefix, "-", gsub(" ", "_", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
+          file_prefix <- eval_reactives(file_prefix)
+          paste0(file_prefix, "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
         },
         content = function(file) {
-          if (shiny::is.reactive(element))
-            elemteny <- element()
+          element <- eval_reactives(element)
           t0 <- element
           if (z != "txt") {
             c0 <- lapply(element, function(w) {
