@@ -49,11 +49,10 @@ downloadDsServer <- function(id, element = NULL, formats, modalFunction = NULL, 
 
     observe({
       urls <- urls()
-      # if (!is.null(urls)) {
-      updateTextInput(session = session, inputId = "url", value = urls)
-      updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", urls, "'></iframe>"))
-      # }
+      updateTextInput(session = session, inputId = "url", value = urls$link)
+      updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", urls$permalink, "'></iframe>"))
     })
+
     dwn_mdl <- from_formats_to_module(formats)
     do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats))
   })
