@@ -5,6 +5,7 @@ library(shinypanels)
 library(dspins)
 library(homodatum)
 
+
 user_name <- "brandon"
 
 
@@ -45,6 +46,7 @@ server <- function(input, output, session) {
     data.frame(a = 1:3, b = input$select)
   })
 
+  # env file needed for get link to work
   downloadDsServer(id = "download_0", element = reactive(element_0()), formats = c("csv", "xlsx", "json"),
                    modalFunction = dspin_urls, fringe(element_0()), user_name)
 
