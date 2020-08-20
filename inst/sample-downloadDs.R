@@ -2,6 +2,10 @@ library(shiny)
 library(dsmodules)
 library(shinyinvoer)
 library(shinypanels)
+library(dspins)
+library(homodatum)
+
+user_name <- "brandon"
 
 
 ui <- panelsPage(panel(title = "Examples",
@@ -9,6 +13,7 @@ ui <- panelsPage(panel(title = "Examples",
                                   h4("Renderedboth from server and from ui"),
                                   br(),
                                   br(),
+                                  selectInput("select", "Select letter", letters[3:6]),
                                   uiOutput("download_server"),
                                   br(),
                                   br(),
@@ -36,7 +41,12 @@ server <- function(input, output, session) {
   downloadDsServer(id = "download_ui", element = "Test \n one \n and one", formats = c("txt", "docx", "html"),
                    modalFunction = print, "Testing...")
 
-  downloadDsServer(id = "download_0", element = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json"))
+  element_0 <- reactive({
+    data.frame(a = 1:3, b = input$select)
+  })
+
+  downloadDsServer(id = "download_0", element = reactive(element_0()), formats = c("csv", "xlsx", "json"),
+                   modalFunction = dspin_urls, fringe(element_0()), user_name)
 
 }
 
