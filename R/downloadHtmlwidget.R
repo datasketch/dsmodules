@@ -53,6 +53,7 @@ downloadHtmlwidget <- function(id, element = NULL, formats, file_prefix = "widge
           session$sendCustomMessage('setButtonState', c('done', buttonId))
         })
     }
+    )
   })
 
 }

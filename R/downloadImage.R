@@ -59,9 +59,8 @@ downloadImageServer <- function(id, element = NULL, lib = NULL, formats,  file_p
             return()
           }
           session$sendCustomMessage('setButtonState', c('done', buttonId))
-        }
-      )
-    }
+        })
+    })
   })
 
 }
