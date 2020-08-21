@@ -33,7 +33,7 @@ downloadHtmlwidgetUI <- function(id, text = "Download", formats = NULL, class = 
 }
 
 #' @export
-downloadHtmlwidget <- function(id, element = NULL, formats, file_prefix = "widget") {
+downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = "widget") {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
