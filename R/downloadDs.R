@@ -1,5 +1,4 @@
 #' @export
-
 downloadDsUI <- function(id, text = "Download",
                          formats = NULL, class = NULL, display = c("buttons", "dropdown"),
                          dropdownLabel = "Download", dropdownWidth = 150, getLinkLabel = "Get link",
@@ -48,13 +47,19 @@ downloadDsServer <- function(id, element = NULL, formats, modalFunction = NULL, 
     urls <- formServer("modal_form", FUN = modalFunction, ...)
 
     observe({
-      urls <- urls()
+      urls <- as.list(urls())
       updateTextInput(session = session, inputId = "url", value = urls$link)
       updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", urls$permalink, "'></iframe>"))
     })
 
+    element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
-    do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats))
+    lb <- ""
+    if (dwn_mdl == "downloadImage") {
+      lb <- ifelse("ggplot" %in% class(element), "ggplot", "highcharter")
+      names(lb) <- "lib"
+    }
+    do.call(paste0(dwn_mdl, "Server"), c(list(id = id, element = element, formats = formats), lb))
   })
 
 }

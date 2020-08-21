@@ -43,12 +43,17 @@ server <- function(input, output, session) {
                    modalFunction = print, "Testing...")
 
   element_0 <- reactive({
-    data.frame(a = 1:3, b = input$select)
+    fringe(data.frame(a = 1:3, b = input$select))
   })
 
+  dspin_urls_ <- function(element_ = NULL, user_name = NULL, org_name = NULL, overwrite = FALSE, ...) {
+    element <- dsmodules:::eval_reactives(element_)
+    dspin_urls(element = element_, user_name = user_name, org_name = org_name, overwrite = overwrite, ...)
+  }
+
   # env file needed for get link to work
-  downloadDsServer(id = "download_0", element = reactive(element_0()), formats = c("csv", "xlsx", "json"),
-                   modalFunction = dspin_urls, fringe(element_0()), user_name)
+  downloadDsServer(id = "download_0", element = reactive(element_0()$data), formats = c("csv", "xlsx", "json"),
+                   modalFunction = dspin_urls_, reactive(element_0()), user_name)
 
 }
 
