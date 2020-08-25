@@ -11,7 +11,7 @@ user_name <- "brandon"
 
 ui <- panelsPage(panel(title = "Examples",
                        body = div(h3("Ds download module"),
-                                  h4("Renderedboth from server and from ui"),
+                                  h4("Rendered both from server and from ui"),
                                   br(),
                                   br(),
                                   selectInput("select", "Select letter", letters[3:6]),
@@ -22,6 +22,7 @@ ui <- panelsPage(panel(title = "Examples",
                                                dropdownLabel = "Download",
                                                display = "dropdown",
                                                formats = c("txt", "docx", "html"),
+                                               modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                                                modalBody = list(textInput("slug", "Slug"),
                                                                 textInput("description", "Description"),
                                                                 selectInput("license", "License", choices = c("CC0", "CC-BY")),
@@ -34,6 +35,7 @@ server <- function(input, output, session) {
 
   output$download_server <- renderUI({
     downloadDsUI("download_0",
+                 modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
                  formats = c("csv", "xlsx", "json"))
 
@@ -46,14 +48,23 @@ server <- function(input, output, session) {
     fringe(data.frame(a = 1:3, b = input$select))
   })
 
-  dspin_urls_ <- function(element_ = NULL, user_name = NULL, org_name = NULL, overwrite = FALSE, ...) {
-    element <- dsmodules:::eval_reactives(element_)
-    dspin_urls(element = element_, user_name = user_name, org_name = org_name, overwrite = overwrite, ...)
+  # dspin_urls_ <- function(element_ = NULL, user_name = NULL, org_name = NULL, overwrite = FALSE, ...) {
+  #   element <- dsmodules:::eval_reactives(element_)
+  #   dspin_urls(element = element_, user_name = user_name, org_name = org_name, overwrite = overwrite, ...)
+  # }
+
+  dspin_urls_ <- function() {
+    list("share" = list("png" = list("link" = "LINK", "permalink" = "PERMALINK png", iframe = "IFRAME png"),
+                        "html" = list("link" = "LINK", "permalink" = "PERMALINK html", iframe = "IFRAME html")))
   }
 
   # env file needed for get link to work
-  downloadDsServer(id = "download_0", element = reactive(element_0()$data), formats = c("csv", "xlsx", "json"),
-                   modalFunction = dspin_urls_, reactive(element_0()), user_name)
+  observe({
+    # downloadDsServer(id = "download_0", element = reactive(element_0()$data), formats = c("csv", "xlsx", "json"),
+    #                  modalFunction = dspin_urls_, reactive(element_0()), user_name)
+    downloadDsServer(id = "download_0", element = reactive(element_0()$data), formats = c("csv", "xlsx", "json"),
+                     modalFunction = dspin_urls_)
+  })
 
 }
 
