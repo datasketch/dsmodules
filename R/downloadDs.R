@@ -82,24 +82,9 @@ downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, m
     ns <- session$ns
     urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
-    output$link <- renderUI({urls()$share[[1]]$link})
-    output$permalink <- renderUI({urls()$share[[input$`tab-formats`]]$permalink})
-    output$iframe <- renderUI({urls()$share[[input$`tab-formats`]]$embed})
-
-    # observe({
-    #   urls <- as.list(urls())
-    #   # req(input$`tab-choices`)
-    #   # ch <- names(urls$share)
-    #   # names(ch) <- toupper(ch)
-    #   # updateRadioButtons(session, inputId = "tab-choices", choices = ch)
-    #   updateTextInput(session = session, inputId = "link", value = urls$share[[1]]$link)
-    #   updateTextInput(session = session, inputId = "permalink", value = urls$share[[input$`tab-choices`]]$permalink)
-    #   updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", urls$share[[input$`tab-choices`]]$iframe, "'></iframe>"))
-    # })
-    #
-    # observe({
-    # })
-
+    output$link <- renderUI({as.list(urls())$share[[1]]$link})
+    output$permalink <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$permalink})
+    output$iframe <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$embed})
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
