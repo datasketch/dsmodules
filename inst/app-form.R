@@ -38,11 +38,18 @@ server <- function(input, output, session) {
     HTML(paste0(h2(text),
            paste(names(form_inputs), form_inputs, sep = "=", collapse = "<br>")
            ))
-    sum(2 + 3)
+    # uncomment for error
+    # errorCondition("There is and error")
   }
 
-  result <- formServer("my_form", #errorMessage = "There have been an error. Try again later.",
-                       FUN = do_something_with_form_values, text = "Form values: ")
+  # if errorCondition in do_something_with_form_values uncommented:
+  # - to show error message let errorMessage be NULL
+  # - to show defined error message pass it through errorMessage argument
+  result <- formServer("my_form",
+                       errorMessage = NULL,
+                       # errorMessage = "THIS message",
+                       FUN = do_something_with_form_values,
+                       text = "Form values: ")
 
   output$debug <- renderPrint({
     result()
