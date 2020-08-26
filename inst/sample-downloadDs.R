@@ -53,7 +53,7 @@ server <- function(input, output, session) {
   #   dspin_urls(element = element_, user_name = user_name, org_name = org_name, overwrite = overwrite, ...)
   # }
 
-  dspin_urls_ <- function() {
+  dspin_urls_ <- function(a) {
     list("share" = list("png" = list("link" = "LINK", "permalink" = "PERMALINK png", iframe = "IFRAME png"),
                         "html" = list("link" = "LINK", "permalink" = "PERMALINK html", iframe = "IFRAME html")))
   }

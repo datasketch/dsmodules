@@ -38,20 +38,20 @@ downloadDsUI <- function(id, text = "Download",
   tab_styles <- gsub("tab_id_here", ns("tab-formats"), tab_styles)
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
-                       div(style = "display: flex; flex-direction: column; justify-content: space-between; width: 450px;",
+                       div(style = "margin: -20px 0;",
                            formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody)),
                        div(style = "background-color: #ddd; margin: 0rem 6rem; width: 2px;"),
                        div(style = "width: 340px;",
                            div(class = "form-group",
                                tags$label(class = "control-label", modalLinkLabel),
-                               uiOutput(ns("link"), class = "form-control", style = "min-height: 27px;")),
+                               uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
                            radioButtons(ns("tab-formats"), "", modalFormatChoices),
                            div(class = "form-group",
                                tags$label(class = "control-label", modalPermalinkLabel),
-                               uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px;")),
+                               uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
                            div(class = "form-group",
                                tags$label(class = "control-label", modalIframeLabel),
-                               uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px;"))))
+                               uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
   md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content)
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
@@ -76,30 +76,15 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, element = NULL, formats, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, modalFunction = NULL, ...) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    urls <- formServer("modal_form", FUN = modalFunction, ...)
+    urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
-    output$link <- renderUI({urls()$share[[1]]$link})
-    output$permalink <- renderUI({urls()$share[[input$`tab-formats`]]$permalink})
-    output$iframe <- renderUI({urls()$share[[input$`tab-formats`]]$embed})
-
-    # observe({
-    #   urls <- as.list(urls())
-    #   # req(input$`tab-choices`)
-    #   # ch <- names(urls$share)
-    #   # names(ch) <- toupper(ch)
-    #   # updateRadioButtons(session, inputId = "tab-choices", choices = ch)
-    #   updateTextInput(session = session, inputId = "link", value = urls$share[[1]]$link)
-    #   updateTextInput(session = session, inputId = "permalink", value = urls$share[[input$`tab-choices`]]$permalink)
-    #   updateTextAreaInput(session = session, inputId = "iframe", value = paste0("<iframe src='", urls$share[[input$`tab-choices`]]$iframe, "'></iframe>"))
-    # })
-    #
-    # observe({
-    # })
-
+    output$link <- renderUI({as.list(urls())$share[[1]]$link})
+    output$permalink <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$permalink})
+    output$iframe <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$embed})
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)

@@ -11,7 +11,9 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
          img(style = "display: none; margin-left: 18px;",
              class = "btn-loading-indicator",
              src = loadingGif()),
-         HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>")
+         HTML("<i class = 'btn-done-indicator fa fa-check' style = 'display: none; margin-left: 18px;'> </i>"),
+         HTML("<i class = 'btn-error-indicator fa fa-exclamation' style = 'display: none; margin-left: 18px;'> </i>"),
+         uiOutput(ns("error_message"), inline = TRUE)
     )
   )
 
@@ -32,7 +34,7 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
 }
 
 #' @export
-formServer <- function(id, FUN, ...) {
+formServer <- function(id, errorMessage = NULL, FUN, ...) {
   moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
@@ -51,9 +53,18 @@ formServer <- function(id, FUN, ...) {
       more_args <- list(...)
       form_input_list <- form_input_list()
       args <- c(form_input_list, more_args)
-      fun_result <- do.call(FUN, args)
-      session$sendCustomMessage("setButtonState", c("done", ns("form_button")))
-      fun_result
+      fun_result <- tryCatch(do.call(FUN, args), error = function(e) e)
+      if ("error" %in% class(fun_result)) {
+        session$sendCustomMessage("setButtonState", c("error", ns("form_button")))
+        if (!is.null(errorMessage)) {
+          output$error_message <- renderUI({errorMessage})
+        } else {
+          output$error_message <- renderUI({as.character(fun_result)})
+        }
+      } else {
+        session$sendCustomMessage("setButtonState", c("done", ns("form_button")))
+        fun_result
+      }
     })
 
     save_result
