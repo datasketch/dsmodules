@@ -76,11 +76,11 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, element = NULL, formats, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, modalFunction = NULL, ...) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    urls <- formServer("modal_form", FUN = modalFunction, ...)
+    urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
     output$link <- renderUI({urls()$share[[1]]$link})
     output$permalink <- renderUI({urls()$share[[input$`tab-formats`]]$permalink})

@@ -38,9 +38,11 @@ server <- function(input, output, session) {
     HTML(paste0(h2(text),
            paste(names(form_inputs), form_inputs, sep = "=", collapse = "<br>")
            ))
+    sum(2 + 3)
   }
 
-  result <- formServer("my_form", FUN = do_something_with_form_values, text = "Form values: ")
+  result <- formServer("my_form", #errorMessage = "There have been an error. Try again later.",
+                       FUN = do_something_with_form_values, text = "Form values: ")
 
   output$debug <- renderPrint({
     result()
