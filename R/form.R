@@ -53,11 +53,7 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
       more_args <- list(...)
       form_input_list <- form_input_list()
       args <- c(form_input_list, more_args)
-      assign("a0", args, envir = globalenv())
-      assign("f0", FUN, envir = globalenv())
       fun_result <- tryCatch(do.call(FUN, args), error = function(e) e)
-      print("fun_resultdssaf")
-      print(fun_result)
       if ("error" %in% class(fun_result)) {
         session$sendCustomMessage("setButtonState", c("error", ns("form_button")))
         if (!is.null(errorMessage)) {
