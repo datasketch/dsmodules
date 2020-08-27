@@ -12,7 +12,10 @@ downloadDsUI <- function(id, text = "Download",
   ns <- NS(id)
   dwn_mdl <- from_formats_to_module(formats)
 
-  tab_styles <- "#tab_id_here {
+  tab_styles <- ".recalculating {
+                 opacity: 1;
+                 }
+                 #tab_id_here {
                  margin-bottom: 27px;
                  margin-top: 22px;
                  }
