@@ -48,6 +48,7 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
     })
 
     save_result <- eventReactive(input$form_button, {
+      output$error_message <- renderUI({""})
       session$sendCustomMessage("setButtonState", c("none", ns("form_button")))
       session$sendCustomMessage("setButtonState", c("loading", ns("form_button")))
       more_args <- list(...)
