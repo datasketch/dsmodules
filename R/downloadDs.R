@@ -90,7 +90,7 @@ downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, m
     dwn_mdl <- from_formats_to_module(formats)
     lb <- ""
     if (dwn_mdl == "downloadImage") {
-      lb <- ifelse("ggplot" %in% class(element), "ggplot", "highcharter")
+      lb <- ifelse(grepl("ggplot|ggmagic", paste0(element, collapse = "")), "ggplot", "highcharter")
       names(lb) <- "lib"
     }
     do.call(paste0(dwn_mdl, "Server"), c(list(id = id, element = element, formats = formats), lb))
