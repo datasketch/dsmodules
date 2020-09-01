@@ -18,7 +18,7 @@ textDocumentInputUI <- function(id,
 textDocumentInput <- function(input, output, session,
                               infoList = NULL,
                               pasteLabel = "Paste", pasteValue = "", pastePlaceholder = "Select your text and paste it here", pasteRows = 5,
-                              uploadLabel = "Choose text or pdf file", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
+                              uploadLabel = "Choose DOC/TXT/PDF file", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
                               sampleLabel = "Select a sample data", sampleFiles = NULL, sampleSelected = NULL,
                               urlLabel = "Page URL", urlValue = "", urlPlaceholder = NULL,
                               googleDocLabel = "Google document URL", googleDocValue = "", googleDocPlaceholder = "https://docs.google.com/spreadsheets/...") {

@@ -17,7 +17,7 @@ imageInputUI <- function (id,
 #' @export
 imageInput <- function (input, output, session,
                         infoList = NULL,
-                        uploadLabel = "Choose image", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
+                        uploadLabel = "Choose JPEG/PNG file", uploadButtonLabel = "Browse...", uploadPlaceholder = "No file selected",
                         sampleLabel = "Select sample image", sampleFiles = NULL, sampleSelected = NULL,
                         urlLabel = "Image URL", urlValue = "", urlPlaceholder = NULL) {
 
