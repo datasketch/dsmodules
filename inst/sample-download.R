@@ -31,8 +31,8 @@ ui <- panelsPage(panel(title = "Examples",
                                   br(),
                                   h3("HTML"),
                                   reactableOutput("reactable"),
-                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", display = "dropdown"),
-                                  downloadHtmlwidgetUI("download_html", dropdownLabel = "Download")
+                                  downloadHtmlwidgetUI("dropdown_html", dropdownLabel = "Dropdown", display = "dropdown", formats = "html"),
+                                  downloadHtmlwidgetUI("download_html", dropdownLabel = "Download", formats = "html")
                        ))
 )
 
@@ -55,8 +55,8 @@ server <- function(input, output, session) {
   downloadImageServer("dropdown_highchart", element = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"))
   downloadImageServer("download_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"), file_prefix = "plot")
   downloadImageServer("dropdown_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"))
-  downloadHtmlwidgetServer("download_html", element = rc)
-  downloadHtmlwidgetServer("dropdown_html", element = rc, file_prefix = "widget")
+  downloadHtmlwidgetServer("download_html", element = rc, formats = "html")
+  downloadHtmlwidgetServer("dropdown_html", element = rc, formats = "html", file_prefix = "widget")
 
 }
 
