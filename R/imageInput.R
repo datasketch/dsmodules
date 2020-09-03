@@ -82,9 +82,7 @@ imageInput <- function (input, output, session,
     if (inputType == "fileUpload") {
       if (is.null(input$inputDataUpload))
         return()
-      old_path <- input$inputDataUpload$datapath
-      path <- file.path(tempdir(), input$inputDataUpload$name)
-      file.copy(old_path, path)
+      path <- input$inputDataUpload$datapath
       df <- list(src = path)
     } else if (inputType == "sampleData") {
       file <- input$inputDataSample
