@@ -88,9 +88,7 @@ textDocumentInput <- function(input, output, session,
     } else if (inputType == "fileUpload") {
       if (is.null(input$inputDataUpload))
         return()
-      old_path <- input$inputDataUpload$datapath
-      path <- file.path(tempdir(), input$inputDataUpload$name)
-      file.copy(old_path, path)
+      path <- input$inputDataUpload$datapath
       tx <- readtext::readtext(path)$text
     } else if (inputType == "sampleData") {
       if (is.null(input$inputDataSample))

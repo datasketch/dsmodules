@@ -111,9 +111,7 @@ tableInputServer <- function(id, infoList = NULL,
       }
       if(inputType ==  "fileUpload"){
         if(is.null(input$inputDataUpload)) return()
-        old_path <- input$inputDataUpload$datapath
-        path <- file.path(tempdir(),input$inputDataUpload$name)
-        file.copy(old_path, path)
+        path <- input$inputDataUpload$datapath
         df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
                        error = function(e) rio::import(path))
       }
