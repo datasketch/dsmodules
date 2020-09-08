@@ -22,13 +22,14 @@ ui <- panelsPage(panel(title = "Examples",
                                                dropdownLabel = "Download",
                                                display = "dropdown",
                                                formats = c("txt", "docx", "html"),
+                                               modalWholeWindow = FALSE,
                                                modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                                                modalBody = list(textInput("slug", "Slug"),
                                                                 textInput("description", "Description"),
                                                                 selectInput("license", "License", choices = c("CC0", "CC-BY")),
                                                                 selectizeInput("tags", "Tags", choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
-                                                                selectizeInput("category", "Category", choices = list("No category" = "no-category"))))
-                       ))
+                                                                selectizeInput("category", "Category", choices = list("No category" = "no-category")))))),
+                 panel(title = "E")
 )
 
 server <- function(input, output, session) {

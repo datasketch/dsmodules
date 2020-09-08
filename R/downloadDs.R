@@ -2,7 +2,7 @@
 downloadDsUI <- function(id, text = "Download",
                          formats = NULL, class = NULL, display = c("buttons", "dropdown"),
                          dropdownLabel = "Download", dropdownWidth = 150, getLinkLabel = "Get link",
-                         modalTitle = "Get link", modalBody = NULL,
+                         modalWholeWindow = TRUE, modalTitle = "Get link", modalBody = NULL,
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
@@ -55,7 +55,7 @@ downloadDsUI <- function(id, text = "Download",
                            div(class = "form-group",
                                tags$label(class = "control-label", modalIframeLabel),
                                uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
-  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content)
+  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content, whole_window = modalWholeWindow)
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
   if (display == "dropdown") {
@@ -68,7 +68,7 @@ downloadDsUI <- function(id, text = "Download",
   } else {
     link <- tagList(div(style = "text-align:center;",
                         `data-for-btn` = ns("get_link"),
-                        actionButton(ns("get_link"), getLinkLabel, class = paste0(class, " modal-trigger"), style = "width: 200px; display: inline-block;",`data-modal` = paste0("md-", ns("get_link"))),
+                        actionButton(ns("get_link"), getLinkLabel, class = paste0(class, " modal-trigger"), style = "width: 200px; display: inline-block;", `data-modal` = paste0("md-", ns("get_link"))),
                         span(class = "btn-loading-container",
                              img(src = loadingGif(), class = "btn-loading-indicator", style = "display: none"),
                              HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
