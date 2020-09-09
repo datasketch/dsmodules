@@ -2,7 +2,7 @@
 downloadDsUI <- function(id, text = "Download",
                          formats = NULL, class = NULL, display = c("buttons", "dropdown"),
                          dropdownLabel = "Download", dropdownWidth = 150, getLinkLabel = "Get link",
-                         modalWholeWindow = TRUE, modalTitle = "Get link", modalBody = NULL,
+                         modalFullscreen = TRUE, modalTitle = "Get link", modalBody = NULL,
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
@@ -55,7 +55,7 @@ downloadDsUI <- function(id, text = "Download",
                            div(class = "form-group",
                                tags$label(class = "control-label", modalIframeLabel),
                                uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
-  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content, whole_window = modalWholeWindow)
+  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content, fullscreen = modalFullscreen)
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
   if (display == "dropdown") {
@@ -74,7 +74,7 @@ downloadDsUI <- function(id, text = "Download",
                              HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
     download_module$children <- c(link, download_module$children)
   }
-  tagList(md, download_module)
+  tagList(singleton(md), download_module)
 
 }
 
