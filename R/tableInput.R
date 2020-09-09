@@ -102,6 +102,7 @@ tableInputServer <- function(id, infoList = NULL,
     })
 
     inputData <- shiny::reactive({
+      req(input$tableInput)
       inputType <- input$tableInput
       if(inputType == "pasted"){
         if (is.null(input$inputDataPasted)) return()

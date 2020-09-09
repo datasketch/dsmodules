@@ -68,6 +68,7 @@ textDocumentInput <- function(input, output, session,
   })
 
   inputData <- shiny::reactive({
+    req(input$textDocumentInput)
     if (is.null(input$textDocumentInput)) {
       warning("inputType must be one of pasted, fileUpload, sampleData, url, googlesheet, dsLibrary")
       return()

@@ -68,6 +68,7 @@ imageInput <- function (input, output, session,
   })
 
   inputData <- shiny::reactive({
+    req(input$imageInput)
     if (is.null(input$imageInput)) {
       warning("inputType must be one of fileUpload, sampleData, url, dsLibrary")
       return()
