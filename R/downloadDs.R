@@ -37,8 +37,16 @@ downloadDsUI <- function(id, text = "Download",
                  }
                  #tab_id_here input[type='radio'] {
                  display: none;
-                 }"
+                 }
+                 "
   tab_styles <- gsub("tab_id_here", ns("tab-formats"), tab_styles)
+  # provisonal
+  if (modalFullscreen) {
+    tab_styles <- paste0(tab_styles, ".panel-header {
+                         position: inherit;
+                         z-index: inherit;
+                         }")
+  }
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
                        div(style = "margin: -20px 0;",
@@ -55,7 +63,7 @@ downloadDsUI <- function(id, text = "Download",
                            div(class = "form-group",
                                tags$label(class = "control-label", modalIframeLabel),
                                uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
-  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content, fullscreen = modalFullscreen)
+  md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
   if (display == "dropdown") {
@@ -74,7 +82,8 @@ downloadDsUI <- function(id, text = "Download",
                              HTML("<i class = 'btn-done-indicator fa fa-check' style='display: none'> </i>"))))
     download_module$children <- c(link, download_module$children)
   }
-  tagList(singleton(md), download_module)
+  tagList(md, download_module)
+  # tagList(singleton(md), download_module)
 
 }
 
