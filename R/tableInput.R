@@ -149,6 +149,7 @@ tableInputServer <- function(id, infoList = NULL,
         googlesheets4::sheets_get(id_file)
         df <- googlesheets4::read_sheet(id_file)
       }
+      df <- discard_all_na_cols(df)
       return(df)
     })
     inputData

@@ -37,6 +37,9 @@ loadingGif <- function(){
 }
 
 
+
+
+
 #' @export
 getUrlParameters <- function(session = session) {
   parseQueryString(session$clientData$url_search)
@@ -58,3 +61,6 @@ from_formats_to_module <- function(formats) {
   t0$l0[which.max(t0$Freq)]
 }
 
+discard_all_na_cols <- function(d){
+  Filter(function(x) !all(is.na(x)), d)
+}
