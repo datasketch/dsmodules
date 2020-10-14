@@ -113,8 +113,13 @@ tableInputServer <- function(id, infoList = NULL,
       if(inputType ==  "fileUpload"){
         if(is.null(input$inputDataUpload)) return()
         path <- input$inputDataUpload$datapath
-        df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
-                       error = function(e) rio::import(path))
+
+        if (grepl(".csv", path)) {
+          df <- readr::read_csv(path)
+        } else {
+          df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
+                         error = function(e) rio::import(path))
+        }
       }
       if(inputType ==  "sampleData"){
         if (is.null(input$inputDataSample)) return()
