@@ -1,13 +1,29 @@
 #' @export
 downloadDsUI <- function(id, text = "Download",
-                         formats = NULL, class = NULL, display = c("buttons", "dropdown"),
-                         dropdownLabel = "Download", dropdownWidth = 150, getLinkLabel = "Get link",
-                         modalFullscreen = TRUE, modalTitle = "Get link", modalBody = NULL,
+                         formats = NULL,
+                         class = NULL,
+                         display = c("buttons", "dropdown"),
+                         dropdownLabel = "Download",
+                         dropdownWidth = 150,
+                         getLinkLabel = "Save / Publish",
+                         modalFullscreen = TRUE,
+                         modalTitle = "Save / Publish",
+                         modalBody = NULL,
+                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category"),
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
                          modalPermalinkLabel = "Permalink",
-                         modalIframeLabel = "Copy to embed", ...) {
+                         modalIframeLabel = "Copy to embed",
+                         nameLabel = "Name",
+                         descriptionLabel = "Description",
+                         sourceLabel = "Source",
+                         sourceTitleLabel = "Title",
+                         sourcePathLabel = "URL",
+                         licenseLabel = "License",
+                         tagsLabel = "Tags",
+                         categoryLabel = "Category",
+                         ...) {
 
   ns <- NS(id)
   dwn_mdl <- from_formats_to_module(formats)
@@ -47,6 +63,20 @@ downloadDsUI <- function(id, text = "Download",
                          z-index: inherit;
                          }")
   }
+
+  # if(is.null(modalBody)){
+  #
+  #   modalBody <- modalBody_saveFile(include_inputs = modalBodyInputs,
+  #                                   nameLabel = nameLabel,
+  #                                   descriptionLabel = descriptionLabel,
+  #                                   sourceLabel = sourceLabel,
+  #                                   sourceTitleLabel = sourceTitleLabel,
+  #                                   sourcePathLabel = sourcePathLabel,
+  #                                   licenseLabel = licenseLabel,
+  #                                   tagsLabel = tagsLabel,
+  #                                   categoryLabel = categoryLabel)
+  # }
+
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
                        div(style = "margin: -20px 0;",
