@@ -6,7 +6,7 @@ library(dspins)
 library(homodatum)
 
 
-user_name <- "brandon"
+user_name <- "test"
 
 
 ui <- panelsPage(panel(title = "Examples",
@@ -41,6 +41,8 @@ server <- function(input, output, session) {
     downloadDsUI("download_0",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
+                 # modalBody = list(textInput("name", "Name"),
+                 #                  selectInput("license", "License", choices = c("CC0", "CC-BY"))),
                  modalBodyInputs = c("name", "description", "sources"),
                  formats = c("csv", "xlsx", "json"))
 
@@ -56,7 +58,7 @@ server <- function(input, output, session) {
   })
 
   element_0 <- reactive({
-    fringe(data.frame(a = 1:3, b = input$select))
+    data.frame(a = 1:3, b = input$select)
   })
 
 
@@ -82,8 +84,16 @@ server <- function(input, output, session) {
   downloadDsServer(id = "download_ui", element = "Test \n one \n and one", formats = c("txt", "docx", "html"),
                    modalFunction = print, "Testing...")
 
-  downloadDsServer(id = "download_0", element = "Test \n one \n and one", formats = c("txt", "docx", "html"),
-                   modalFunction = print, "Testing...")
+  # use default modal function to save as pin
+  observe({
+    req(element_0())
+    # req(input$`tab-formats`)
+    downloadDsServer(id = "download_0",
+                     element = reactive(element_0()),
+                     formats = c("txt", "docx", "html"),
+                     elementType = "fringe",
+                     user_name = user_name)
+  })
 
 }
 

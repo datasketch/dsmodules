@@ -15,3 +15,4 @@ vignettes/*.pdf
 .Rproj.user
 .DS_Store
 .secrets
+.env
