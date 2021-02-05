@@ -64,18 +64,18 @@ downloadDsUI <- function(id, text = "Download",
                          }")
   }
 
-  # if(is.null(modalBody)){
-  #
-  #   modalBody <- modalBody_saveFile(include_inputs = modalBodyInputs,
-  #                                   nameLabel = nameLabel,
-  #                                   descriptionLabel = descriptionLabel,
-  #                                   sourceLabel = sourceLabel,
-  #                                   sourceTitleLabel = sourceTitleLabel,
-  #                                   sourcePathLabel = sourcePathLabel,
-  #                                   licenseLabel = licenseLabel,
-  #                                   tagsLabel = tagsLabel,
-  #                                   categoryLabel = categoryLabel)
-  # }
+  if(is.null(modalBody)){
+
+    modalBody <- modalBody_saveFile(include_inputs = modalBodyInputs,
+                                    nameLabel = nameLabel,
+                                    descriptionLabel = descriptionLabel,
+                                    sourceLabel = sourceLabel,
+                                    sourceTitleLabel = sourceTitleLabel,
+                                    sourcePathLabel = sourcePathLabel,
+                                    licenseLabel = licenseLabel,
+                                    tagsLabel = tagsLabel,
+                                    categoryLabel = categoryLabel)
+  }
 
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
