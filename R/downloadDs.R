@@ -66,7 +66,8 @@ downloadDsUI <- function(id, text = "Download",
 
   if(is.null(modalBody)){
 
-    modalBody <- modalBody_saveFile(include_inputs = modalBodyInputs,
+    modalBody <- modalBody_saveFile(id = id,
+                                    include_inputs = modalBodyInputs,
                                     nameLabel = nameLabel,
                                     descriptionLabel = descriptionLabel,
                                     sourceLabel = sourceLabel,
@@ -119,10 +120,23 @@ downloadDsUI <- function(id, text = "Download",
 
 #' @export
 downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, modalFunction = NULL, ...) {
-
+  args <- list(...)
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-    urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
+
+    if(is.null(modalFunction) & !is.null(args$user_name)){
+
+      modalFunction <- modalFunction_saveFile
+      urls <- formServer("modal_form",
+                         errorMessage = errorMessage,
+                         FUN = modalFunction,
+                         element = element,
+                         session = session,
+                         ...)
+
+    } else {
+      urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
+    }
 
     output$link <- renderUI({as.list(urls())$share[[1]]$link})
     output$permalink <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$permalink})
