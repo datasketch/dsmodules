@@ -25,11 +25,10 @@ modalBody_saveFile <- function(id,
   input_options[filter_by]
 }
 
-modalFunction_saveFile <- function(element,
-                                   session,
-                                   ...) {
+modalFunction_saveFile <- function(...) {
 
   args_orig <- list(...)
+  element <- args_orig$element
   user_name <- args_orig$user_name
   elementType <- args_orig$elementType
 
@@ -51,15 +50,13 @@ modalFunction_saveFile <- function(element,
 
   if (is.null(name)) {
     name <- paste0("saved", "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)))
-    updateTextInput(session, "download_0-modal_form-download_0-name", value = name)
   }
-
-  if(grepl('^saved',name)) stop("did not work")
 
   element_params <- list(element,
                          name = name,
                          description = args$description,
-                         sources = args$sources,
+                         sources = list(title = args$source_title,
+                                        path = args$source_path),
                          license = args$license,
                          tags = args$tags,
                          category = args$category)

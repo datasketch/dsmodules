@@ -4,6 +4,7 @@ library(shinyinvoer)
 library(shinypanels)
 library(dspins)
 library(homodatum)
+library(hgchmagic)
 
 
 user_name <- "test"
@@ -15,18 +16,20 @@ ui <- panelsPage(panel(title = "Examples",
                                   br(),
                                   br(),
                                   selectInput("select", "Select letter", letters[3:6]),
-                                  uiOutput("download_server"),
-                                  br(),
+                                  h5("Rendered from server, default modalBodyInputs and default modalFunction"),
                                   uiOutput("download_server_default_modal_form"),
                                   br(),
-                                  # rendered from UI
+                                  h5("Rendered from server, subset of modalBodyInputs and default modalFunction"),
+                                  uiOutput("download_server"),
+                                  br(),
+                                  h5("Rendered from UI, customised modalBody, customised modalFunction"),
                                   downloadDsUI("download_ui",
                                                dropdownLabel = "Download",
                                                display = "dropdown",
-                                               formats = c("txt", "docx", "html"),
+                                               formats = c("csv", "xlsx", "json"),
                                                modalFullscreen = FALSE,
                                                modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
-                                               modalBody = list(textInput("slug", "Slug"),
+                                               modalBody = list(textInput("name", "Name"),
                                                                 selectInput("license", "License", choices = c("CC0", "CC-BY")),
                                                                 selectizeInput("tags", "Tags", choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
                                                                 selectizeInput("category", "Category", choices = list("No category" = "no-category"))))
@@ -36,13 +39,30 @@ ui <- panelsPage(panel(title = "Examples",
 
 server <- function(input, output, session) {
 
+  element_fringe <- reactive({
+    data.frame(a = 1:3, b = input$select)
+  })
+
+  element_dsviz <- reactive({
+    hgchmagic::hgch_bar_Cat(data.frame(a = c("b", "c")))
+  })
+
+  # function to be passed to modalFunction (alternative to using default modalFunction)
+  dspin_urls_ <- function(x, user_name, ...) {
+    x <- eval_reactives(x)
+    f <- fringe(x)
+    dspins_user_board_connect(user_name)
+    Sys.setlocale(locale = "en_US.UTF-8")
+    dspin_urls(element = f, user_name = user_name)
+  }
+
+
   # rendered from server with customised modalBodyInputs
   output$download_server <- renderUI({
     downloadDsUI("download_0",
+                 display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
-                 # modalBody = list(textInput("name", "Name"),
-                 #                  selectInput("license", "License", choices = c("CC0", "CC-BY"))),
                  modalBodyInputs = c("name", "description", "sources"),
                  formats = c("csv", "xlsx", "json"))
 
@@ -51,45 +71,38 @@ server <- function(input, output, session) {
   # rendered from server with default modalBodyInputs: modalBodyInputs = c("name", "description", "sources", "license", "tags", "category")
   output$download_server_default_modal_form <- renderUI({
     downloadDsUI("download_save_pins",
+                 display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
-                 formats = c("csv", "xlsx", "json"))
+                 formats = c("html", "jpeg", "pdf", "png"))
 
   })
 
-  element_0 <- reactive({
-    data.frame(a = 1:3, b = input$select)
-  })
 
-
-  dspin_urls_ <- function(x, user_name, ...) {
-    x <- eval_reactives(x)
-    f <- fringe(x)
-    dspins_user_board_connect(user_name)
-    Sys.setlocale(locale = "en_US.UTF-8")
-    pins <- dspin_urls(element = f, user_name = user_name)
-  }
-
-  # env file needed for get link to work
   observe({
-    req(element_0())
-    downloadDsServer(id = "download_save_pins",
-                     element = reactive(element_0()),
+    req(element_fringe())
+    downloadDsServer(id = "download_ui",
+                     element = reactive(element_fringe()),
                      formats = c("csv", "xlsx", "json"),
                      errorMessage = "some error message",
-                     modalFunction = dspin_urls_, reactive(element_0()),
+                     modalFunction = dspin_urls_, reactive(element_fringe()),
                      user_name = user_name)
   })
 
-  downloadDsServer(id = "download_ui", element = "Test \n one \n and one", formats = c("txt", "docx", "html"),
-                   modalFunction = print, "Testing...")
+  observe({
+  req(element_dsviz())
+  downloadDsServer(id = "download_save_pins",
+                   element = reactive(element_dsviz()),
+                   formats = c("html", "jpeg", "pdf", "png"),
+                   elementType = "dsviz",
+                   user_name = user_name)
+  })
 
   # use default modal function to save as pin
   observe({
-    req(element_0())
-    # req(input$`tab-formats`)
+    req(element_fringe())
     downloadDsServer(id = "download_0",
-                     element = reactive(element_0()),
+                     element = reactive(element_fringe()),
                      formats = c("txt", "docx", "html"),
                      elementType = "fringe",
                      user_name = user_name)
