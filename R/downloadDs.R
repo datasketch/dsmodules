@@ -1,13 +1,29 @@
 #' @export
 downloadDsUI <- function(id, text = "Download",
-                         formats = NULL, class = NULL, display = c("buttons", "dropdown"),
-                         dropdownLabel = "Download", dropdownWidth = 150, getLinkLabel = "Get link",
-                         modalFullscreen = TRUE, modalTitle = "Get link", modalBody = NULL,
+                         formats = NULL,
+                         class = NULL,
+                         display = "dropdown",#c("buttons", "dropdown"),
+                         dropdownLabel = "Download",
+                         dropdownWidth = 150,
+                         getLinkLabel = "Save / Publish",
+                         modalFullscreen = TRUE,
+                         modalTitle = "Save / Publish",
+                         modalBody = NULL,
+                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category"),
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
                          modalPermalinkLabel = "Permalink",
-                         modalIframeLabel = "Copy to embed", ...) {
+                         modalIframeLabel = "Copy to embed",
+                         nameLabel = "Name",
+                         descriptionLabel = "Description",
+                         sourceLabel = "Source",
+                         sourceTitleLabel = "Title",
+                         sourcePathLabel = "URL",
+                         licenseLabel = "License",
+                         tagsLabel = "Tags",
+                         categoryLabel = "Category",
+                         ...) {
 
   ns <- NS(id)
   dwn_mdl <- from_formats_to_module(formats)
@@ -47,6 +63,21 @@ downloadDsUI <- function(id, text = "Download",
                          z-index: inherit;
                          }")
   }
+
+  if(is.null(modalBody)){
+
+    modalBody <- modalBody_saveFile(id = id,
+                                    include_inputs = modalBodyInputs,
+                                    nameLabel = nameLabel,
+                                    descriptionLabel = descriptionLabel,
+                                    sourceLabel = sourceLabel,
+                                    sourceTitleLabel = sourceTitleLabel,
+                                    sourcePathLabel = sourcePathLabel,
+                                    licenseLabel = licenseLabel,
+                                    tagsLabel = tagsLabel,
+                                    categoryLabel = categoryLabel)
+  }
+
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
                        div(style = "margin: -20px 0;",
@@ -66,6 +97,8 @@ downloadDsUI <- function(id, text = "Download",
   md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
+
+
   if (display == "dropdown") {
     link <- paste0("\\[{\"id\":\"",
                    ns("get_link"),
@@ -88,15 +121,47 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, element = NULL, formats, errorMessage = NULL, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = NULL, ...) {
+
+  args <- list(...)
+  element <- args$element
+  if(is.null(element)) stop("Need an 'element' to save.")
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
+
+    # use default modalFunction to save file with dspin_urls if no modalFunction is specified
+    if(is.null(modalFunction) & !is.null(args$user_name)){
+      modalFunction <- modalFunction_saveFile
+    }
+
     urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
-    output$link <- renderUI({as.list(urls())$share[[1]]$link})
-    output$permalink <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$permalink})
-    output$iframe <- renderUI({as.list(urls())$share[[input$`tab-formats`]]$embed})
+    # update name field when name was not entered
+    if(!is.null(input$`modal_form-name`)){
+      name_field <- "modal_form-name"
+    } else {
+      name_field <- paste0("modal_form-",id,"-name")
+    }
+
+    input_name <- input[[name_field]]
+
+    if(!is.null(input_name)){
+      if(!nzchar(input_name) & !is.null(urls())){
+        updateTextInput(session, name_field,
+                        value = sub('.*\\/', '', urls()$link))
+      }
+    }
+
+    # populate link, permalink and iframe fields after saving
+      output$link <- renderUI({"link"
+        if(!is.null(urls())) urls()$link})
+
+      output$permalink <- renderUI({"permalink"
+        if(!is.null(urls())) urls()$permalink})
+
+      output$iframe <- renderUI({"iframe"
+        if(!is.null(urls())) urls()$iframe_embed})
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)

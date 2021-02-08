@@ -86,6 +86,15 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
 
 
 updateInputNS <- function(x, ns){
+
+
+  if("shiny.tag.list" %in% class(x)){
+    # chipsInput
+    if(x[[2]]$attribs$class == "shinyinvoer-chips-input"){
+      x[[2]]$attribs$id <- ns(x[[2]]$attribs$id)
+      return(x)
+    }
+  }
   # textInput
   if(x$children[[2]]$name == "input"){
     x$children[[2]]$attribs$id <- ns(x$children[[2]]$attribs$id )
