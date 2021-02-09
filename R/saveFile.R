@@ -38,6 +38,8 @@ modalFunction_saveFile <- function(...) {
   args_orig <- list(...)
   element <- args_orig$element
   user_name <- args_orig$user_name
+  org_name <- args_orig$org_name
+
   elementType <- args_orig$elementType
 
   if(!elementType %in% c("dsviz", "fringe", "drop")) stop("Element must be of type 'fringe', 'dsviz', or 'drop'.")
@@ -72,7 +74,6 @@ modalFunction_saveFile <- function(...) {
   # run dsviz(), fringe(), or drop()
   el <- do.call(elementType, element_params)
 
-  dspins_user_board_connect(folder = user_name, bucket_id = "user")
-  Sys.setlocale(locale = "en_US.UTF-8")
-  pins <- dspin_urls(element = el, user_name = user_name)
+  # save pin (if org_name is not NULL, saved in org_name, otherwise in user_name)
+  pins <- dspin_urls(element = el, user_name = user_name, org_name = org_name)
 }
