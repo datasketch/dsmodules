@@ -7,8 +7,8 @@ library(homodatum)
 library(hgchmagic)
 
 
-user_name <- "test"
-org_name <- "brandon"
+user_name <- "brandon"
+org_name <- "test"
 
 
 ui <- panelsPage(panel(title = "Examples",
@@ -34,7 +34,7 @@ ui <- panelsPage(panel(title = "Examples",
                                                                 selectInput("license", "License", choices = c("CC0", "CC-BY")),
                                                                 selectizeInput("tags", "Tags", choices = list("No tag" = "no-tag"), multiple = TRUE, options = list(plugins= list('remove_button', 'drag_drop'))),
                                                                 selectizeInput("category", "Category", choices = list("No category" = "no-category"))))
-                                  )),
+                       )),
                  panel(title = "E")
 )
 
@@ -93,22 +93,22 @@ server <- function(input, output, session) {
   })
 
   observe({
-  req(element_dsviz())
-  downloadDsServer(id = "download_save_pins",
-                   element = reactive(element_dsviz()),
-                   formats = c("html", "jpeg", "pdf", "png"),
-                   elementType = "dsviz",
-                   user_name = user_name,
-                   org_name = org_name)
+    req(element_fringe())
+    downloadDsServer(id = "download_save_pins",
+                     element = reactive(element_fringe()),
+                     formats = c("html", "jpeg", "pdf", "png"),
+                     elementType = "fringe",
+                     user_name = user_name,
+                     org_name = org_name)
   })
 
   # use default modal function to save as pin
   observe({
-    req(element_fringe())
+    req(element_dsviz())
     downloadDsServer(id = "download_0",
-                     element = reactive(element_fringe()),
+                     element = reactive(element_dsviz()),
                      formats = c("txt", "docx", "html"),
-                     elementType = "fringe",
+                     elementType = "dsviz",
                      user_name = user_name)
   })
 

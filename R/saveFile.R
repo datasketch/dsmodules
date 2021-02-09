@@ -62,13 +62,20 @@ modalFunction_saveFile <- function(...) {
     name <- paste0("saved", "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)))
   }
 
+  tags <- args$tags
+  if(!is.null(tags)){
+    if(length(tags) == 1){
+      tags <- list(tags)
+    }
+  }
+
   element_params <- list(element,
                          name = name,
                          description = args$description,
-                         sources = list(title = args$source_title,
-                                        path = args$source_path),
+                         sources = list(list(title = args$source_title,
+                                             path = args$source_path)),
                          license = args$license,
-                         tags = args$tags,
+                         tags = tags,
                          category = args$category)
 
   # run dsviz(), fringe(), or drop()
