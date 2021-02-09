@@ -8,6 +8,7 @@ library(hgchmagic)
 
 
 user_name <- "test"
+org_name <- "brandon"
 
 
 ui <- panelsPage(panel(title = "Examples",
@@ -97,7 +98,8 @@ server <- function(input, output, session) {
                    element = reactive(element_dsviz()),
                    formats = c("html", "jpeg", "pdf", "png"),
                    elementType = "dsviz",
-                   user_name = user_name)
+                   user_name = user_name,
+                   org_name = org_name)
   })
 
   # use default modal function to save as pin

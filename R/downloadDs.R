@@ -139,7 +139,7 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
     ns <- session$ns
 
     # use default modalFunction to save file with dspin_urls if no modalFunction is specified
-    if(is.null(modalFunction) & !is.null(args$user_name)){
+    if(is.null(modalFunction)){
       modalFunction <- modalFunction_saveFile
     }
 
