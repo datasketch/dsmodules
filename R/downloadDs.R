@@ -22,7 +22,10 @@ downloadDsUI <- function(id, text = "Download",
                          sourcePathLabel = "URL",
                          licenseLabel = "License",
                          tagsLabel = "Tags",
+                         tagsPlaceholderLabel = "Type tag(s) and press enter after each one",
                          categoryLabel = "Category",
+                         categoryChoicesLabels = c("No category"),
+                         categoryChoicesIDs = c("no-category"),
                          ...) {
 
   ns <- NS(id)
@@ -75,7 +78,10 @@ downloadDsUI <- function(id, text = "Download",
                                     sourcePathLabel = sourcePathLabel,
                                     licenseLabel = licenseLabel,
                                     tagsLabel = tagsLabel,
-                                    categoryLabel = categoryLabel)
+                                    tagsPlaceholderLabel = tagsPlaceholderLabel,
+                                    categoryLabel = categoryLabel,
+                                    categoryChoicesLabels = categoryChoicesLabels,
+                                    categoryChoicesIDs = categoryChoicesIDs)
   }
 
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
@@ -94,7 +100,9 @@ downloadDsUI <- function(id, text = "Download",
                            div(class = "form-group",
                                tags$label(class = "control-label", modalIframeLabel),
                                uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
+
   md <- modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
+
   download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
 

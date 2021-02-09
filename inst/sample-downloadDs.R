@@ -63,7 +63,9 @@ server <- function(input, output, session) {
                  display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
-                 modalBodyInputs = c("name", "description", "sources"),
+                 modalBodyInputs = c("name", "description", "sources", "category"),
+                 categoryChoicesIDs = c("category1", "no-category", "category2"),
+                 categoryChoicesLabels = c("Cat 1", "No category", "Cat 2"),
                  formats = c("csv", "xlsx", "json"))
 
   })
