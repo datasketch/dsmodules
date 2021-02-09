@@ -7,20 +7,28 @@ modalBody_saveFile <- function(id,
                                sourcePathLabel = "URL",
                                licenseLabel = "License",
                                tagsLabel = "Tags",
-                               categoryLabel = "Category"){
+                               tagsPlaceholderLabel = "Type tag(s) and press enter after each one",
+                               categoryLabel = "Category",
+                               categoryChoicesLabels = c("No category"),
+                               categoryChoicesIDs = c("no-category")){
 
   ns <- NS(id)
 
   include_inputs_lst <- as.list(include_inputs)
   filter_by <- unlist(lapply(include_inputs_lst, function(x) if(x == "sources") c("source_title", "source_path") else x))
 
+  if(!length(categoryChoicesIDs) == length(categoryChoicesLabels))
+    stop("Category ids and category labels must be vectors of the same length.")
+
+  names(categoryChoicesIDs) <- categoryChoicesLabels
+
   input_options <- list(name = textInput(ns("name"), nameLabel),
                         description = textInput(ns("description"), descriptionLabel),
                         source_title = textInput(ns("source_title"), sourceLabel, value = "", placeholder = sourceTitleLabel),
                         source_path = textInput(ns("source_path"), " ", value = "", placeholder = sourcePathLabel),
                         license = selectInput(ns("license"), licenseLabel, choices = c("CC0", "CC-BY")),
-                        tags = chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = "Type tags"),
-                        category = selectizeInput(ns("category"), categoryLabel, choices = list("No category" = "no-category")))
+                        tags = chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = tagsPlaceholderLabel),
+                        category = selectizeInput(ns("category"), categoryLabel, choices = categoryChoicesIDs))
 
   input_options[filter_by]
 }
