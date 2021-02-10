@@ -67,7 +67,7 @@ server <- function(input, output, session) {
                  modalBodyInputs = c("name", "description", "sources", "category"),
                  categoryChoicesIDs = c("category1", "no-category", "category2"),
                  categoryChoicesLabels = c("Cat 1", "No category", "Cat 2"),
-                 formats = c("csv", "xlsx", "json"))
+                 formats = c("html", "jpeg", "pdf", "png"))
 
   })
 
@@ -77,7 +77,7 @@ server <- function(input, output, session) {
                  display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
-                 formats = c("html", "jpeg", "pdf", "png"))
+                 formats = c("csv", "xlsx", "json"))
 
   })
 
@@ -96,7 +96,7 @@ server <- function(input, output, session) {
     req(element_fringe())
     downloadDsServer(id = "download_save_pins",
                      element = reactive(element_fringe()),
-                     formats = c("html", "jpeg", "pdf", "png"),
+                     formats = c("csv", "xlsx", "json"),
                      elementType = "fringe",
                      user_name = user_name,
                      org_name = org_name)
@@ -107,7 +107,7 @@ server <- function(input, output, session) {
     req(element_dsviz())
     downloadDsServer(id = "download_0",
                      element = reactive(element_dsviz()),
-                     formats = c("txt", "docx", "html"),
+                     formats = c("html", "jpeg", "pdf", "png"),
                      elementType = "dsviz",
                      user_name = user_name)
   })
