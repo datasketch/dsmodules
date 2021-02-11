@@ -2,7 +2,7 @@
 downloadDsUI <- function(id, text = "Download",
                          formats = NULL,
                          class = NULL,
-                         display = "dropdown",#c("buttons", "dropdown"),
+                         display = "dropdown",
                          dropdownLabel = "Download",
                          dropdownWidth = 150,
                          getLinkLabel = "Save / Publish",
@@ -146,21 +146,22 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
     urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
 
     # update name field when name was not entered
-    if(!is.null(input$`modal_form-name`)){
+    observe({
       name_field <- "modal_form-name"
-    } else {
-      name_field <- paste0("modal_form-",id,"-name")
-    }
-
-    input_name <- input[[name_field]]
-
-    if(!is.null(input_name)){
-      if(!nzchar(input_name) & !is.null(urls())){
-        namePlaceholder <- sub('.*\\/', '', urls()$link)
-        updateTextInput(session, name_field,
-                        value = namePlaceholder)
+      if(is.null(input$`modal_form-name`)){
+        name_field <- paste0("modal_form-",id,"-name")
       }
-    }
+
+      input_name <- input[[name_field]]
+
+      if(!is.null(input_name)){
+        if(!nzchar(input_name) & !is.null(urls())){
+          namePlaceholder <- sub('.*\\/', '', urls()$link)
+          updateTextInput(session, name_field,
+                          value = namePlaceholder)
+        }
+      }
+    })
 
     # populate link, permalink and iframe fields after saving
       output$link <- renderUI({"link"
