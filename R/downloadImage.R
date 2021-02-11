@@ -1,5 +1,5 @@
 #' @export
-downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL, display = c("buttons", "dropdown"),
+downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL, display = "dropdown",
                             dropdownLabel = "Download", dropdownWidth = 150) {
 
   ns <- shiny::NS(id)
