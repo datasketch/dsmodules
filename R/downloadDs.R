@@ -156,8 +156,9 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
     if(!is.null(input_name)){
       if(!nzchar(input_name) & !is.null(urls())){
+        namePlaceholder <- sub('.*\\/', '', urls()$link)
         updateTextInput(session, name_field,
-                        value = sub('.*\\/', '', urls()$link))
+                        value = namePlaceholder)
       }
     }
 
