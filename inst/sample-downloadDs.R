@@ -6,7 +6,6 @@ library(dspins)
 library(homodatum)
 library(hgchmagic)
 
-
 user_name <- "brandon"
 org_name <- "test"
 
@@ -77,7 +76,7 @@ server <- function(input, output, session) {
                  display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  dropdownLabel = "Download",
-                 formats = c("csv", "xlsx", "json"))
+                 formats = c("html", "jpeg", "pdf", "png"))
 
   })
 
@@ -93,11 +92,11 @@ server <- function(input, output, session) {
   })
 
   observe({
-    req(element_fringe())
+    req(element_dsviz())
     downloadDsServer(id = "download_save_pins",
-                     element = reactive(element_fringe()),
-                     formats = c("csv", "xlsx", "json"),
-                     elementType = "fringe",
+                     element = reactive(element_dsviz()),
+                     formats = c("html", "jpeg", "pdf", "png"),
+                     elementType = "dsviz",
                      user_name = user_name,
                      org_name = org_name)
   })
