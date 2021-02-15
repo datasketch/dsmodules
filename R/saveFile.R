@@ -27,7 +27,7 @@ modalBody_saveFile <- function(id,
                         source_title = textInput(ns("source_title"), sourceLabel, value = "", placeholder = sourceTitleLabel),
                         source_path = textInput(ns("source_path"), " ", value = "", placeholder = sourcePathLabel),
                         license = selectInput(ns("license"), licenseLabel, choices = c("CC0", "CC-BY")),
-                        tags = chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = tagsPlaceholderLabel),
+                        tags = shinyinvoer::chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = tagsPlaceholderLabel),
                         category = selectizeInput(ns("category"), categoryLabel, choices = categoryChoicesIDs))
 
   input_options[filter_by]
