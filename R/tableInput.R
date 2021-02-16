@@ -65,12 +65,12 @@ tableInputServer <- function(id, infoList = NULL,
         # str(sampleFiles)
 
         if(all(unlist(lapply(sampleFiles, class)) == "character")){
-          sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
+          sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
                                          choices = sampleFiles, selected = sampleSelected)
         } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
           if(is.null(names(sampleFiles)))
             stop("sampleFiles list must be named")
-          sampleData_html <- selectInput(ns("inputDataSample"), sampleLabel,
+          sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
                                          choices = names(sampleFiles), selected = sampleSelected)
         }
         else{
@@ -81,15 +81,15 @@ tableInputServer <- function(id, infoList = NULL,
 
 
       tableInputControls <- list(
-        pasted = textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
-                               placeholder = pastePlaceholder, rows = pasteRows),
-        fileUpload =  fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
-                                placeholder = uploadPlaceholder, accept = accept_formats),
+        pasted = shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
+                                      placeholder = pastePlaceholder, rows = pasteRows),
+        fileUpload =  shiny::fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
+                                       placeholder = uploadPlaceholder, accept = accept_formats),
         sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
-        googleSheets = list(textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
-                                      placeholder = googleSheetPlaceholder),
-                            numericInput(ns("inputDataGoogleSheetSheet"),
-                                         googleSheetPageLabel, 1))
+        googleSheets = list(shiny::textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
+                                             placeholder = googleSheetPlaceholder),
+                            shiny::numericInput(ns("inputDataGoogleSheetSheet"),
+                                                googleSheetPageLabel, 1))
       )
       tableInputControls[[input$tableInput]]
     })
