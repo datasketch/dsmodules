@@ -15,7 +15,7 @@ downloadTextUI <- function(id, text = "Download", formats = NULL, class = NULL, 
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
   if (display == "dropdown") {
-    dropdownActionInput(ns("dropdown"), dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth)
+    shinyinvoer::dropdownActionInput(ns("dropdown"), dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth)
   } else {
     div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js")))),
         lapply(seq_along(choices_type), function(z) {
