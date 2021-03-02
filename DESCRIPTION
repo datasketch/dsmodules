@@ -14,7 +14,6 @@ Depends:
     R (>= 3.1.2)
 Imports:
     shiny,
-    shinyinvoer,
     htmltools,
     htmlwidgets,
     openxlsx,
@@ -33,6 +32,10 @@ Imports:
     knitr,
     rio,
     webshot
+Remotes: 
+    datasketch/dspins,
+    datasketch/shinyinvoer,
+    datasketch/homodatum
 Suggests:
     rlang,
     testthat (>= 2.1.0)
