@@ -31,7 +31,10 @@ Imports:
     pander,
     knitr,
     rio,
-    webshot
+    webshot,
+    dspins,
+    shinyinvoer,
+    homodatum
 Remotes: 
     datasketch/dspins,
     datasketch/shinyinvoer,
