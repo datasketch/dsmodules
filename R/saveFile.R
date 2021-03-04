@@ -78,9 +78,9 @@ modalFunction_saveFile <- function(...) {
 
   # add namespace to dsviz(), fringe(), or drop() function
   element_function_ns <- "dspins::"
-  if(elementType == "fringe") element_function_ns <- "homodatum::"
+  if(type == "fringe") element_function_ns <- "homodatum::"
 
-  element_function <- paste0(element_function_ns, elementType)
+  element_function <- paste0(element_function_ns, type)
 
   # run dsviz(), fringe(), or drop() with namespace
   el <- do.call(getfun(element_function), element_params)
