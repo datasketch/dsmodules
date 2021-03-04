@@ -66,3 +66,14 @@ from_formats_to_module <- function(formats) {
 discard_all_na_cols <- function(d){
   Filter(function(x) !all(is.na(x)), d)
 }
+
+#' Get function from string of namespace::function() to pass to do.call
+getfun <- function(x) {
+  if(length(grep("::", x))>0) {
+    parts <- strsplit(x, "::")[[1]]
+    getExportedValue(parts[1], parts[2])
+  } else {
+    x
+  }
+}
+
