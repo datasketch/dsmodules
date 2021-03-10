@@ -86,6 +86,6 @@ modalFunction_saveFile <- function(...) {
   el <- do.call(getfun(element_function), element_params)
 
   # save pin (if org_name is not NULL, saved in org_name, otherwise in user_name)
-  pins <- dspin_urls(element = el, user_name = user_name, org_name = org_name, bucket_id = bucket_id)
+  pins <- dspins::dspin_urls(element = el, user_name = user_name, org_name = org_name, bucket_id = bucket_id)
 
 }
