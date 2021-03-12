@@ -24,7 +24,9 @@ tableInputUI <- function(id, label,
 }
 
 #' @export
-tableInputServer <- function(id, infoList = NULL,
+tableInputServer <- function(id,
+                             showDecimalMarkOption = FALSE,
+                             infoList = NULL,
                              pasteLabel = "Paste", pasteValue = "",
                              pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
                              uploadLabel = "Choose CSV/XLS file", uploadButtonLabel = "Browse...",
@@ -34,35 +36,24 @@ tableInputServer <- function(id, infoList = NULL,
                              googleSheetLabel = "Data from Google Sheet", googleSheetValue = "",
                              googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
                              googleSheetPageLabel = "Sheet",
+                             decimalMarkLabel = "Decimal mark",
+                             decimalMarkChoiceLabels = c("Point", "Comma"),
                              ...){
 
   moduleServer(id,function(input, output, session) {
 
     output$tableInputControls <- shiny::renderUI({
 
-      # str(session)
-      # if(!exists(session))
-      #   stop("No session defined in server.")
-
       ns <- session$ns
 
-      # if (shiny::is.reactive(sampleFiles))
-      #   sampleFiles <- sampleFiles()
-
-      # if(input$tableInput == "sampleData"){
-      #   if (!all(unlist(lapply(sampleFiles, file.exists))))
-      #     stop("All Sample Files must exist")
-      # }
-
       accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
+
+      # define input UIs for pasted, fileUpload, sampleData, and googleSheets
 
       sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
         sampleData_html <- NULL
 
-        # message("sampleFiles")
-        # str(sampleFiles)
         sampleFiles <- eval_reactives(sampleFiles)
-        # str(sampleFiles)
 
         if(all(unlist(lapply(sampleFiles, class)) == "character")){
           sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
@@ -79,17 +70,35 @@ tableInputServer <- function(id, infoList = NULL,
         sampleData_html
       }
 
+      pastedUI <- shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
+                                       placeholder = pastePlaceholder, rows = pasteRows)
+
+      fileUploadUI <- shiny::fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
+                                       placeholder = uploadPlaceholder, accept = accept_formats)
+
+      decimalMarkUI <- shiny::radioButtons(ns("decimalMark"), label = decimalMarkLabel, choiceValues = c("point", "comma"),
+                                         choiceNames = decimalMarkChoiceLabels, selected = "point", inline = TRUE)
+
+      if(showDecimalMarkOption){
+        pastedUI <- list(pastedUI,
+                         decimalMarkUI)
+
+        fileUploadUI <- list(fileUploadUI,
+                             decimalMarkUI)
+      }
+
+      googleSheetsUI <- list(shiny::textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
+                                              placeholder = googleSheetPlaceholder),
+                             shiny::numericInput(ns("inputDataGoogleSheetSheet"),
+                                                 googleSheetPageLabel, 1))
+
+      # define list of input UIs
 
       tableInputControls <- list(
-        pasted = shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
-                                      placeholder = pastePlaceholder, rows = pasteRows),
-        fileUpload =  shiny::fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
-                                       placeholder = uploadPlaceholder, accept = accept_formats),
+        pasted = pastedUI,
+        fileUpload = fileUploadUI,
         sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
-        googleSheets = list(shiny::textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
-                                             placeholder = googleSheetPlaceholder),
-                            shiny::numericInput(ns("inputDataGoogleSheetSheet"),
-                                                googleSheetPageLabel, 1))
+        googleSheets = googleSheetsUI
       )
       tableInputControls[[input$tableInput]]
     })
@@ -103,19 +112,25 @@ tableInputServer <- function(id, infoList = NULL,
 
     inputData <- shiny::reactive({
       req(input$tableInput)
+
+      decimal_mark <- "."
+      if(!is.null(input$decimalMark)){
+        if(input$decimalMark == "comma") decimal_mark <- ","
+      }
+
       inputType <- input$tableInput
       if(inputType == "pasted"){
         if (is.null(input$inputDataPasted)) return()
         if(input$inputDataPasted == "")
           return()
-        df <- readr::read_tsv(input$inputDataPasted)
+        df <- readr::read_tsv(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark))
       }
       if(inputType ==  "fileUpload"){
         if(is.null(input$inputDataUpload)) return()
         path <- input$inputDataUpload$datapath
 
         if (grepl(".csv", path)) {
-          df <- readr::read_csv(path)
+          df <- readr::read_csv(path, locale = readr::locale(decimal_mark = decimal_mark))
         } else {
           df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
                          error = function(e) rio::import(path))
