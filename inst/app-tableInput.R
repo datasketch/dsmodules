@@ -51,6 +51,7 @@ server <- function(input,output,session){
                                 sampleSelected = "File1")
 
   inputData2 <- tableInputServer("dataIn2",
+                                 showDecimalMarkOption = TRUE,
                                  sampleFiles = list(Cars = cars,
                                                     Mtcars = mtcars))
 
