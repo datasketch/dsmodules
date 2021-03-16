@@ -79,7 +79,7 @@ saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 
   if (format == 'html') {
     htmlwidgets::saveWidget(viz, paste0(filename, ".", format))
   } else {
-    webshot2::webshot(tmp, paste0(filename, ".", format), vwidth = width, vheight = height, delay = 0.7)
+    webshot::webshot(tmp, paste0(filename, ".", format), vwidth = width, vheight = height, delay = 0.7)
   }
   file.copy(filename, filename)
 
