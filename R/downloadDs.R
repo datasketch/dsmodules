@@ -181,6 +181,8 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
       lib <- ifelse(grepl("ggplot|ggmagic", paste0(class(element), collapse = "")), "ggplot", "highcharter")
       names(lib) <- "lib"
       do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, lib = lib, opts_theme = opts_theme))
+    } else if(dwn_mdl == "downloadHtmlwidget"){
+      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, opts_theme = opts_theme))
     } else {
       do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats))
     }
