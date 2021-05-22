@@ -69,7 +69,7 @@ import_google_font <- function(viz, opts_theme) {
 #' @export
 add_logo_reactable <- function(table, opts_theme){
 
-  if (!opts_theme$branding_include) return(viz)
+  if (!opts_theme$branding_include) return(table)
 
   logo_path <- url_logo(logo = opts_theme$logo,
                         background_color = opts_theme$background_color)
