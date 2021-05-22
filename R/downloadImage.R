@@ -40,15 +40,8 @@ downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_pr
     ns <- session$ns
     img_format <- formats
 
-    if(!is.null(opts_theme)){
-      if(lib == "highcharter"){
-        element <- import_google_font(viz = element, opts_theme = opts_theme)
-
-        if("reactable" %in% class(element)){
-          element <- add_logo_reactable(table = table, opts_theme = opts_theme)
-        }
-
-      }
+    if(!is.null(opts_theme) & lib == "highcharter"){
+      element <- import_google_font(viz = element, opts_theme = opts_theme)
     }
 
     lapply(img_format, function(z) {
