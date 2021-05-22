@@ -16,6 +16,92 @@ is.empty <- function (x){
 }
 
 
+#' Import google font to raw HTML of the htmlwidget
+#'
+#' @param viz Visualization to which font should be added.
+#' @param font Google font to import.
+#'
+#' @return htmlwidget with added line of font import
+#' @export
+import_google_font <- function(viz, opts_theme) {
+
+  opts_fonts <- opts_theme[grepl("family", names(opts_theme))]
+  opts_fonts <- Filter(Negate(is.null), opts_fonts)
+  font_names <- unique(as.character(opts_fonts))
+
+  if(length(font_names) == 0) return(viz)
+
+  stopifnot(!is.null(viz), inherits(viz, "htmlwidget"))
+
+  # use current id of htmlwidget if already specified
+  elementId <- viz$elementId
+  if(is.null(elementId)) {
+    # borrow htmlwidgets unique id creator
+    elementId <- sprintf(
+      'htmlwidget-%s',
+      htmlwidgets:::createWidgetId()
+    )
+    viz$elementId <- elementId
+  }
+
+  fonts_in_url <- gsub(" ", "+", font_names)
+
+  for(font in fonts_in_url){
+    viz <- htmlwidgets::prependContent(
+      viz,
+      htmltools::tags$link(
+        href = sprintf("https://fonts.googleapis.com/css?family=%s", font),
+        rel = "stylesheet"
+      )
+    )
+  }
+  viz
+}
+
+#' Add logo to reactable
+#'
+#' @param table Reactable object
+#' @param path Path to logo png/jpg file
+#' @param width Width of logo in px; default is 150
+#' @param height Height of logo in px; default is NULL, resizes automatically to width.
+#'
+#' @return Reactable object with logo appended to htmlwidget
+#' @export
+add_logo_reactable <- function(table, opts_theme){
+
+  if (!opts_theme$branding_include) return(viz)
+
+  logo_path <- url_logo(logo = opts_theme$logo,
+                        background_color = opts_theme$background_color)
+  logo_width <- opts_theme$logo_width
+  logo_height <- opts_theme$logo_height
+
+  style <- 'float: right;padding-right:10px;'
+  if(!is.null(logo_width)){
+    style <- paste0(style, 'width:', logo_width, 'px;')
+  }
+  if(!is.null(logo_height)){
+    style <- paste0(style, 'height:', logo_height, 'px;')
+  }
+
+  html_img <- htmltools::img(src = logo_path,
+                             style = style)
+  htmlwidgets::appendContent(table, html_img)
+}
+
+
+url_logo <- function(logo, background_color) {
+  isUrl <- grepl("http", logo)
+  if (isUrl) logo_url <- logo
+  if (grepl("/", logo) & !isUrl) {
+    logo_path <- logo
+  } else {
+    logo_path <- dsvizopts::local_logo_path(logo, background_color)
+  }
+  logo_url <- knitr::image_uri(f = logo_path)
+  logo_url
+}
+
 
 is.reactive <- function(obj){
   all(class(obj) %in% c("reactiveExpr","reactive"))
