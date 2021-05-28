@@ -49,9 +49,13 @@ import_google_font <- function(viz, opts_theme) {
   for(font in fonts_in_url){
     viz <- htmlwidgets::prependContent(
       viz,
-      htmltools::tags$link(
-        href = sprintf("https://fonts.googleapis.com/css?family=%s", font),
-        rel = "stylesheet"
+      # htmltools::tags$link(
+      #   href = sprintf("https://fonts.googleapis.com/css?family=%s", font),
+      #   rel = "stylesheet"
+      # )
+
+      htmltools::tags$style(
+        paste0("@import url('https://fonts.googleapis.com/css?family=",font,"');")
       )
     )
   }
