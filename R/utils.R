@@ -49,11 +49,6 @@ import_google_font <- function(viz, opts_theme) {
   for(font in fonts_in_url){
     viz <- htmlwidgets::prependContent(
       viz,
-      # htmltools::tags$link(
-      #   href = sprintf("https://fonts.googleapis.com/css?family=%s", font),
-      #   rel = "stylesheet"
-      # )
-
       htmltools::tags$style(
         paste0("@import url('https://fonts.googleapis.com/css?family=",font,"');")
       )
@@ -65,15 +60,28 @@ import_google_font <- function(viz, opts_theme) {
 #' Add logo to reactable
 #'
 #' @param table Reactable object
-#' @param path Path to logo png/jpg file
-#' @param width Width of logo in px; default is 150
-#' @param height Height of logo in px; default is NULL, resizes automatically to width.
+#' @param opts_theme Theme options from dsvizopts
 #'
 #' @return Reactable object with logo appended to htmlwidget
 #' @export
 add_logo_reactable <- function(table, opts_theme){
 
   if (!opts_theme$branding_include) return(table)
+
+  html_img <- get_html_logo(opts_theme)
+  htmlwidgets::appendContent(table, html_img)
+}
+
+
+#' Get html logo
+#'
+#' @param opts_theme Theme options from dsvizopts
+#'
+#' @return HTML object for logo
+#' @export
+get_html_logo <- function(opts_theme){
+
+  if (!opts_theme$branding_include) return("")
 
   logo_path <- url_logo(logo = opts_theme$logo,
                         background_color = opts_theme$background_color)
@@ -88,9 +96,8 @@ add_logo_reactable <- function(table, opts_theme){
     style <- paste0(style, 'height:', logo_height, 'px;')
   }
 
-  html_img <- htmltools::img(src = logo_path,
-                             style = style)
-  htmlwidgets::appendContent(table, html_img)
+  htmltools::img(src = logo_path,
+                 style = style)
 }
 
 
