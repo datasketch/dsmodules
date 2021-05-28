@@ -6,24 +6,12 @@ test_that("google font stylesheet added", {
                                            col2 = c(1, 2)),
                                 style = "font-family: Lato;")
 
-  # table$dependencies <- list(
-  #   htmltools::htmlDependency(
-  #     name = "googlefonts",
-  #     version = as.character("2.0"),
-  #     src = c(href = "https://fonts.googleapis.com/css?family=Lato"),
-  #     stylesheet = ""
-  #   )
-  # )
-
   opts <- dsvizopts::merge_dsviz_options(title_family = "Lato")
 
   table_with_font <- import_google_font(viz = table, opts_theme = opts$theme)
 
-  expect_equal(table_with_font$prepend[[2]]$name, "link")
-  expect_equal(table_with_font$prepend[[2]]$attribs, list(href = "https://fonts.googleapis.com/css?family=Lato",
-                                                          rel = "stylesheet"))
-
-  htmlwidgets::saveWidget(table, file = "tests/testthat/table_with_font.html")
+  expect_equal(table_with_font$prepend[[2]]$name, "style")
+  expect_equal(table_with_font$prepend[[2]]$children[[1]], "@import url('https://fonts.googleapis.com/css?family=Lato');")
 
 })
 
