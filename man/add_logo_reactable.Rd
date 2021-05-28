@@ -9,11 +9,7 @@ add_logo_reactable(table, opts_theme)
 \arguments{
 \item{table}{Reactable object}
 
-\item{path}{Path to logo png/jpg file}
-
-\item{width}{Width of logo in px; default is 150}
-
-\item{height}{Height of logo in px; default is NULL, resizes automatically to width.}
+\item{opts_theme}{Theme options from dsvizopts}
 }
 \value{
 Reactable object with logo appended to htmlwidget
