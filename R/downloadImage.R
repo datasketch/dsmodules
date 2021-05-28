@@ -34,11 +34,15 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL,
 
 #' @param type Image library
 #' @export
-downloadImageServer <- function(id, element = NULL, lib = NULL, formats,  file_prefix = "plot") {
+downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_prefix = "plot", opts_theme = NULL) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
     img_format <- formats
+
+    if(!is.null(opts_theme) & lib == "highcharter"){
+      element <- import_google_font(viz = element, opts_theme = opts_theme)
+    }
 
     lapply(img_format, function(z) {
       buttonId <- ns(paste0("DownloadImg", z))

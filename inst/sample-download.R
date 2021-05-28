@@ -6,7 +6,14 @@ library(hgchmagic)
 library(ggmagic)
 library(reactable)
 
-ui <- panelsPage(panel(title = "Examples",
+styles <- "
+
+@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+
+"
+
+ui <- panelsPage(styles = styles,
+                 panel(title = "Examples",
                        body = div(h3("Text"),
                                   textAreaInput("text", "Text", rows = 5),
                                   downloadTextUI("dropdown_texto", dropdownLabel = "Dropdown", formats = c("txt", "docx", "html"), display = "dropdown"),
@@ -40,7 +47,9 @@ server <- function(input, output, session) {
 
   hg <- hgch_bar_Cat(sample_data("Cat"))
   gg <- ggplot(data.frame(a = c("w", "r"), b = 2:3), aes(x = a, y = b, fill = a)) + geom_bar(stat = "identity")
-  rc <- reactable(mtcars)
+
+  opts <- dsvizopts::merge_dsviz_options(text_family = "Lato", branding_include = TRUE)
+  rc <- reactable(mtcars, style = "font-family: Lato;")
 
   output$table <- renderTable(data.frame(a = 1:3, b = "f"))
   output$highchart <- renderHighchart(hg)
@@ -56,7 +65,7 @@ server <- function(input, output, session) {
   downloadImageServer("download_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"), file_prefix = "plot")
   downloadImageServer("dropdown_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"))
   downloadHtmlwidgetServer("download_html", element = rc, formats = "html")
-  downloadHtmlwidgetServer("dropdown_html", element = rc, formats = "html", file_prefix = "widget")
+  downloadHtmlwidgetServer("dropdown_html", element = rc, formats = "html", file_prefix = "widget", opts_theme = opts$theme)
 
 }
 

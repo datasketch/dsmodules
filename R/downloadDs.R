@@ -133,6 +133,7 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
   args <- list(...)
   element <- args$element
+  opts_theme <- args$opts_theme
   if(is.null(element)) stop("Need an 'element' to save.")
 
   moduleServer(id, function(input, output, session) {
@@ -175,12 +176,16 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
-    lb <- ""
+
     if (dwn_mdl == "downloadImage") {
-      lb <- ifelse(grepl("ggplot|ggmagic", paste0(class(element), collapse = "")), "ggplot", "highcharter")
-      names(lb) <- "lib"
+      lib <- ifelse(grepl("ggplot|ggmagic", paste0(class(element), collapse = "")), "ggplot", "highcharter")
+      names(lib) <- "lib"
+      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, lib = lib, opts_theme = opts_theme))
+    } else if(dwn_mdl == "downloadHtmlwidget"){
+      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, opts_theme = opts_theme))
+    } else {
+      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats))
     }
-    do.call(paste0(dwn_mdl, "Server"), c(list(id = id, element = element, formats = formats), lb))
   })
 
 }
