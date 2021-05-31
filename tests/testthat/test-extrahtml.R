@@ -19,8 +19,6 @@ test_that("google font stylesheet added", {
 
   map_with_font <- import_google_font(viz = map, opts_theme = opts$theme)
 
-  htmlwidgets::saveWidget(map_with_font, "tests/testthat/map_with_font.html")
-
 })
 
 test_that("logo added to reactable", {
