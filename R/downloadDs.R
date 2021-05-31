@@ -103,7 +103,8 @@ downloadDsUI <- function(id, text = "Download",
 
   md <- shinypanels::modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
 
-  download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(id), text = text, formats = formats, class = class,
+  download_id <- "downloadDSid"
+  download_module <- do.call(paste0(dwn_mdl, "UI"), list(id = ns(download_id), text = text, formats = formats, class = class,
                                                          display = display, dropdownLabel = dropdownLabel, dropdownWidth = dropdownWidth))
 
 
@@ -176,15 +177,16 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
+    download_id <- "downloadDSid"
 
     if (dwn_mdl == "downloadImage") {
       lib <- ifelse(grepl("ggplot|ggmagic", paste0(class(element), collapse = "")), "ggplot", "highcharter")
       names(lib) <- "lib"
-      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, lib = lib, opts_theme = opts_theme))
+      do.call(paste0(dwn_mdl, "Server"), list(id = download_id, element = element, formats = formats, lib = lib, opts_theme = opts_theme))
     } else if(dwn_mdl == "downloadHtmlwidget"){
-      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats, opts_theme = opts_theme))
+      do.call(paste0(dwn_mdl, "Server"), list(id = download_id, element = element, formats = formats, opts_theme = opts_theme))
     } else {
-      do.call(paste0(dwn_mdl, "Server"), list(id = id, element = element, formats = formats))
+      do.call(paste0(dwn_mdl, "Server"), list(id = download_id, element = element, formats = formats))
     }
   })
 
