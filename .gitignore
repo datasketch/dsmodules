@@ -17,3 +17,4 @@ vignettes/*.pdf
 .secrets
 .env
 inst/.env
+tests/testthat/.env
