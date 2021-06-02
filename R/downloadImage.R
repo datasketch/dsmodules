@@ -34,7 +34,7 @@ downloadImageUI <- function(id, text = "Download", formats = NULL, class = NULL,
 
 #' @param type Image library
 #' @export
-downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_prefix = "plot", opts_theme = NULL) {
+downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_prefix = "plot", opts_theme = NULL, page_title = NULL) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -56,7 +56,7 @@ downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_pr
         content = function(file) {
           element <- eval_reactives(element)
           if (lib == "highcharter") {
-            saveInteractive(viz = element, filename = file, format = z)
+            saveInteractive(viz = element, filename = file, format = z, page_title = page_title)
           } else if (lib == "ggplot") {
             saveStatic(viz = element, filename = file, format = z)
           } else {
@@ -71,7 +71,7 @@ downloadImageServer <- function(id, element = NULL, formats, lib = NULL, file_pr
 
 
 #' @export
-saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 500, ...) {
+saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 500, page_title = NULL, ...) {
 
   if (is.null(format)) {
     format <- tools::file_ext(filename) %||% "png"
@@ -81,7 +81,11 @@ saveInteractive <- function(viz, filename, format = NULL, width = 660, height = 
   htmltools::save_html(viz, tmp)
   tmpSave <- filename
   if (format == 'html') {
-    htmlwidgets::saveWidget(viz, paste0(filename, ".", format))
+    if(is.null(page_title)){
+      htmlwidgets::saveWidget(widget = viz, file = paste0(filename, ".", format))
+    } else {
+      htmlwidgets::saveWidget(widget = viz, file = paste0(filename, ".", format), title = page_title)
+    }
   } else {
     webshot::webshot(tmp, paste0(filename, ".", format), vwidth = width, vheight = height, delay = 0.7)
   }
