@@ -4,6 +4,7 @@ library(shinyinvoer)
 library(shinypanels)
 library(dspins)
 library(reactable)
+library(hgchmagic)
 
 # in ui: "download_server-download_server-hello"
 # in server: "download_example_module-download_example_module-download_server-download_example_module-download_server-hello"
@@ -29,19 +30,20 @@ downloadExampleServer <- function(id, r) {
                      display = "buttons",
                      modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                      dropdownLabel = "Download",
-                     formats = c("html"))
+                     formats = c("html", "jpeg", "pdf", "png"))
 
       })
 
 
       observe({
-        req(r$element_reactable)
+        req(r$element)
         downloadDsServer(id = "download_server",
-                         element = reactive(r$element_reactable),
-                         formats = c("html"),
+                         element = reactive(r$element),
+                         formats = c("html", "jpeg", "pdf", "png"),
                          type = "dsviz",
                          user_name = user_name,
-                         org_name = org_name)
+                         org_name = org_name,
+                         page_title = "some page title")
       })
 
     }
@@ -64,12 +66,13 @@ server <- function(input, output, session) {
 
   r <- reactiveValues()
 
-  element_reactable <- reactive({
-    reactable::reactable(data.frame(a = 1:3, b = "r"))
+  element <- reactive({
+    #reactable::reactable(data.frame(a = 1:3, b = "r"))
+    hgchmagic::hgch_bar_Cat(sample_data("Cat"))
   })
 
   observe({
-    r$element_reactable <- element_reactable()
+    r$element <- element()
   })
 
 
