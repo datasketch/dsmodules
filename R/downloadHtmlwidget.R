@@ -33,7 +33,7 @@ downloadHtmlwidgetUI <- function(id, text = "Download", formats = NULL, class = 
 }
 
 #' @export
-downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = "widget", opts_theme = NULL) {
+downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = "widget", opts_theme = NULL, page_title = NULL) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
@@ -56,7 +56,11 @@ downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = 
         },
         content = function(file) {
           element <- eval_reactives(element)
-          htmlwidgets::saveWidget(element, file = file, selfcontained = TRUE)
+          if(is.null(page_title)){
+            htmlwidgets::saveWidget(element, file = file, selfcontained = TRUE)
+          } else {
+            htmlwidgets::saveWidget(element, file = file, selfcontained = TRUE, title = page_title)
+          }
           session$sendCustomMessage('setButtonState', c('done', buttonId))
         })
     }
