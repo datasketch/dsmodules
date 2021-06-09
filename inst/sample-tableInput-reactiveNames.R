@@ -22,24 +22,28 @@ server <- function(input,output){
     l
   })
 
-  inputData <- callModule(tableInput, "dataIn",
-                          sampleFiles = sampleFiles
-  )
+  inputData <- dsmodules::tableInputServer("dataIn",
+                                           sampleFiles = sampleFiles)
+
   output$debug <- renderPrint({
     inputData()
   })
 
   output$tableInputSection <- renderUI({
+    choices = list("P1"="pasted",
+                   "FU"="fileUpload",
+                   "SAMPLE"="sampleData")
+
     choiceNames <- c(text(),
                      "File Upload",
                      "Sample")
-    tagList(
-      tableInputUI("dataIn",
-                   choices = list("P1"="pasted",
-                                  "FU"="fileUpload",
-                                  "SAMPLE"="sampleData"),
-                   selected = "sampleData")
-    )
+
+    names(choices) <- choiceNames
+
+    dsmodules::tableInputUI("dataIn",
+                            label = "some inut label",
+                            choices = choices,
+                            selected =  "sampleData")
   })
 
 }
