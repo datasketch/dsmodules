@@ -8,38 +8,44 @@ library(tidyverse)
 ui <- fluidPage(
   textInput("text","Text"),
   uiOutput("tableInputSection"),
-  verbatimTextOutput("debug")
+  tableOutput("debug")
 )
 
 server <- function(input,output){
 
   text <- reactive(input$text)
 
-  sampleFiles <- list("sample1.csv","sample2.csv")
-  sampleFiles <- reactive({
-    l <- list("sample1.csv","sample2.csv")
-    names(l) <- c("F1",text())
-    l
-  })
+  sampleFiles <- list("sample1" = "data_sample/sample1.csv",
+                      "sample2" = "data_sample/sample2.csv")
+  # sampleFiles <- reactive({
+  #   l <- sampleFiles
+  #   names(l) <- c("F1",text())
+  #   l
+  # })
 
-  inputData <- callModule(tableInput, "dataIn",
-                          sampleFiles = sampleFiles
-  )
-  output$debug <- renderPrint({
+  inputData <- dsmodules::tableInputServer("dataIn",
+                                           sampleFiles = sampleFiles)
+
+  output$debug <- renderTable({
+    req(inputData())
     inputData()
   })
 
   output$tableInputSection <- renderUI({
+    choices <- list("P1"="pasted",
+                   "FU"="fileUpload",
+                   "SAMPLE"="sampleData")
+
     choiceNames <- c(text(),
                      "File Upload",
                      "Sample")
-    tagList(
-      tableInputUI("dataIn",
-                   choices = list("P1"="pasted",
-                                  "FU"="fileUpload",
-                                  "SAMPLE"="sampleData"),
-                   selected = "sampleData")
-    )
+
+    names(choices) <- choiceNames
+
+    dsmodules::tableInputUI("dataIn",
+                            label = "some inut label",
+                            choices = choices,
+                            selected =  "sampleData")
   })
 
 }
