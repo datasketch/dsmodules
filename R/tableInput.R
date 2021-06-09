@@ -123,7 +123,10 @@ tableInputServer <- function(id,
         if (is.null(input$inputDataPasted)) return()
         if(input$inputDataPasted == "")
           return()
-        df <- readr::read_tsv(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark))
+
+        df <- tryCatch(readr::read_tsv(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark)),
+                       error=function(cond) return())
+
       }
       if(inputType ==  "fileUpload"){
         if(is.null(input$inputDataUpload)) return()
