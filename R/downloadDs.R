@@ -12,7 +12,7 @@ downloadDsUI <- function(id, text = "Download",
                          modalFullscreen = TRUE,
                          modalTitle = "Save / Publish",
                          modalBody = NULL,
-                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category"),
+                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category", "access"),
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
@@ -29,6 +29,8 @@ downloadDsUI <- function(id, text = "Download",
                          categoryLabel = "Category",
                          categoryChoicesLabels = c("No category"),
                          categoryChoicesIDs = c("no-category"),
+                         accessLabel = "Visibility",
+                         accessChoicesLabels = c("Public", "Private"),
                          ...) {
 
   ns <- NS(id)
@@ -110,7 +112,9 @@ downloadDsUI <- function(id, text = "Download",
                                     tagsPlaceholderLabel = tagsPlaceholderLabel,
                                     categoryLabel = categoryLabel,
                                     categoryChoicesLabels = categoryChoicesLabels,
-                                    categoryChoicesIDs = categoryChoicesIDs)
+                                    categoryChoicesIDs = categoryChoicesIDs,
+                                    accessLabel = accessLabel,
+                                    accessChoicesLabels = accessChoicesLabels)
   }
 
 
