@@ -75,6 +75,7 @@ server <- function(input, output, session) {
     downloadDsUI("download_save_pins",
                  display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
+                 vertical_line_after = 4,
                  dropdownLabel = "Download",
                  formats = c("html", "jpeg", "pdf", "png"))
 
