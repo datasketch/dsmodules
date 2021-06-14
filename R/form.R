@@ -1,11 +1,11 @@
 #' @export
-formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertical_line_after = NULL) {
+formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertical_line_after = NULL, on_success_body = "") {
 
   ns <- shiny::NS(id)
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
   bt <- div(shiny::singleton(
     shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js"))),
-    style = "text-align: center; display: flex; align-items: baseline;",
+    style = "text-align: center; display: flex; align-items: baseline; margin-top: 20px;",
     actionButton(ns("form_button"), button_label, style = "margin: 10px 0;"),
     span(class = "btn-loading-container",
          img(style = "display: none; margin-left: 18px;",
@@ -23,8 +23,6 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertic
                 style = "display: flex; flex-direction: column; justify-content: flex-start;",
                 tagList(input_ns))
 
-  form_width <- "450px"
-
   if(!is.null(vertical_line_after)){
     inputs_left <- input_ns[1:vertical_line_after]
     inputs_right <- input_ns[vertical_line_after + 1 : length(input_ns)]
@@ -32,30 +30,37 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertic
     inputs <- div(class = "flex-container",
                   style = "display: flex; flex-direction: row; justify-content: space-between;",
                   div(class = "flex-left",
-                      style = "width: 45%;",
+                      style = "width: 47%;",
                       tagList(inputs_left)),
                   div(class = "flex-right",
-                      style = "width: 45%;",
+                      style = "width: 47%;",
                       tagList(inputs_right)))
-
-    form_width <- "650px"
   }
 
-  div(class = "formUI",
-    tags$label(label, class = "control-label-formUI",
-               style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
-    div(style = "display: flex; justify-content: center;  margin: 20px 0;",
-        div(style = paste0("display: flex; flex-direction: column; justify-content: space-between; width: ",form_width,";"),
-            inputs,
-            bt
-        )
-    )
-  )
+  div(id = "form_complete",
+      class = "form_before_success",
+    div(id = "main_display",
+        class = "main_display_before_success",
+        div(class = "formUI",
+            tags$label(label, class = "control-label-formUI",
+                       style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
+            div(id = "form_inputs",
+                style = "display: flex; justify-content: center;  margin: 0px 25px;",
+                div(style = paste0("display: flex; flex-direction: column; justify-content: space-between; width: 100%;"),
+                    inputs,
+                    bt
+                )
+            ))),
+    div(id="additional_display",
+        class="additional_display_before_success",
+        # style="display: none;",
+        on_success_body
+    ))
 
 }
 
 #' @export
-formServer <- function(id, errorMessage = NULL, FUN, ...) {
+formServer <- function(id, errorMessage = NULL, show_additional_display_on_success = FALSE, FUN, ...) {
   moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
@@ -85,6 +90,14 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
         }
       } else {
         session$sendCustomMessage("setButtonState", c("done", ns("form_button")))
+        if(show_additional_display_on_success){
+          shinyjs::runjs(code = '$("#form_complete").removeClass("form_before_success");')
+          shinyjs::runjs(code = '$("#form_complete").addClass("form_after_success");')
+          shinyjs::runjs(code = '$("#main_display").removeClass("main_display_before_success");')
+          shinyjs::runjs(code = '$("#main_display").addClass("main_display_after_success");')
+          shinyjs::runjs(code = '$("#additional_display").removeClass("additional_display_before_success");')
+          shinyjs::runjs(code = '$("#additional_display").addClass("additional_display_after_success");')
+        }
         fun_result
       }
     })
