@@ -74,7 +74,7 @@ modalFunction_saveFile <- function(...) {
       tags <- list(tags)
     }
   }
-  browser()
+
   element_params <- list(element,
                          name = name,
                          description = args$description,

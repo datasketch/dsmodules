@@ -1,5 +1,5 @@
 #' @export
-formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertical_line_after = NULL, on_success_body = "") {
+formUI <- function(id, label, button_label = "Submit", input_list = NULL, max_inputs_first_column = NULL, on_success_body = "") {
 
   ns <- shiny::NS(id)
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
@@ -23,9 +23,9 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertic
                 style = "display: flex; flex-direction: column; justify-content: flex-start;",
                 tagList(input_ns))
 
-  if(!is.null(vertical_line_after)){
-    inputs_left <- input_ns[1:vertical_line_after]
-    inputs_right <- input_ns[vertical_line_after + 1 : length(input_ns)]
+  if(!is.null(max_inputs_first_column)){
+    inputs_left <- input_ns[1:max_inputs_first_column]
+    inputs_right <- input_ns[max_inputs_first_column + 1 : length(input_ns)]
 
     inputs <- div(class = "flex-container",
                   style = "display: flex; flex-direction: row; justify-content: space-between;",
