@@ -1,5 +1,5 @@
 #' @export
-formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
+formUI <- function(id, label, button_label = "Submit", input_list = NULL, vertical_line_after = NULL) {
 
   ns <- shiny::NS(id)
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
@@ -19,13 +19,34 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
 
   input_ns <- lapply(input_list, updateInputNS, ns)
 
+  inputs <- div(class = "flex-container",
+                style = "display: flex; flex-direction: column; justify-content: flex-start;",
+                tagList(input_ns))
+
+  form_width <- "450px"
+
+  if(!is.null(vertical_line_after)){
+    inputs_left <- input_ns[1:vertical_line_after]
+    inputs_right <- input_ns[vertical_line_after + 1 : length(input_ns)]
+
+    inputs <- div(class = "flex-container",
+                  style = "display: flex; flex-direction: row; justify-content: space-between;",
+                  div(class = "flex-left",
+                      style = "width: 45%;",
+                      tagList(inputs_left)),
+                  div(class = "flex-right",
+                      style = "width: 45%;",
+                      tagList(inputs_right)))
+
+    form_width <- "650px"
+  }
+
   div(class = "formUI",
     tags$label(label, class = "control-label-formUI",
                style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
     div(style = "display: flex; justify-content: center;  margin: 20px 0;",
-        div(style = "display: flex; flex-direction: column; justify-content: space-between; width: 450px;",
-            div(style = "display: flex; flex-direction: column; justify-content: flex-start;",
-                tagList(input_ns)),
+        div(style = paste0("display: flex; flex-direction: column; justify-content: space-between; width: ",form_width,";"),
+            inputs,
             bt
         )
     )
@@ -87,6 +108,9 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
 
 updateInputNS <- function(x, ns){
 
+  if(!is.null(x$attribs$class)){
+    if(x$attribs$class == "layout_item") return(x)
+  }
 
   if("shiny.tag.list" %in% class(x)){
     # chipsInput
