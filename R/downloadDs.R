@@ -6,6 +6,7 @@ downloadDsUI <- function(id, text = "Download",
                          dropdownLabel = "Download",
                          dropdownWidth = 150,
                          getLinkLabel = "Save / Publish",
+                         vertical_line_after = NULL,
                          modalFullscreen = TRUE,
                          modalTitle = "Save / Publish",
                          modalBody = NULL,
@@ -86,20 +87,21 @@ downloadDsUI <- function(id, text = "Download",
 
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        style = "display: flex; justify-content: center; padding: 2rem 4rem;",
-                       div(style = "margin: -20px 0;",
-                           formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody)),
-                       div(style = "background-color: #eee; margin: 0rem 3rem; width: 1px;"),
-                       div(style = "width: 340px;",
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalLinkLabel),
-                               uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                           radioButtons(ns("tab-formats"), "", modalFormatChoices),
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalPermalinkLabel),
-                               uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalIframeLabel),
-                               uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
+                       div(formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody, vertical_line_after = vertical_line_after)))
+
+  # ,
+  # div(style = "background-color: #eee; margin: 0rem 3rem; width: 1px;"),
+  # div(style = "width: 340px;",
+  #     div(class = "form-group",
+  #         tags$label(class = "control-label", modalLinkLabel),
+  #         uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
+  #     radioButtons(ns("tab-formats"), "", modalFormatChoices),
+  #     div(class = "form-group",
+  #         tags$label(class = "control-label", modalPermalinkLabel),
+  #         uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
+  #     div(class = "form-group",
+  #         tags$label(class = "control-label", modalIframeLabel),
+  #         uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;")))
 
   md <- shinypanels::modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
 
