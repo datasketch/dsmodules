@@ -1,5 +1,5 @@
 #' @export
-formUI <- function(id, label, button_label = "Submit", input_list = NULL, max_inputs_first_column = NULL, on_success_body = "") {
+formUI <- function(id, label, button_label = "Submit", input_list = NULL, max_inputs_first_column = NULL, additional_display_body = "") {
 
   ns <- shiny::NS(id)
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
@@ -54,7 +54,7 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL, max_in
     div(id="additional_display",
         class="additional_display_before_success",
         # style="display: none;",
-        on_success_body
+        additional_display_body
     ))
 
 }

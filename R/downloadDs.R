@@ -143,7 +143,7 @@ downloadDsUI <- function(id, text = "Download",
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
                        # style = "display: flex; justify-content: center; padding: 2rem 4rem;",
                        div(formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody, max_inputs_first_column = max_inputs_first_column,
-                                  on_success_body = displayLinksBody)))
+                                  additional_display_body = displayLinksBody)))
 
   md <- shinypanels::modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
 
