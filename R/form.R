@@ -121,8 +121,9 @@ formServer <- function(id, errorMessage = NULL, show_additional_display_on_succe
 
 updateInputNS <- function(x, ns){
 
-  if(!is.null(x$attribs$class)){
-    if(x$attribs$class == "layout_item") return(x)
+  if(identical(x$attribs$role, "radiogroup")){
+    x$attribs$id <- ns(x$attribs$id)
+    return(x)
   }
 
   if("shiny.tag.list" %in% class(x)){
