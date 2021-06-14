@@ -7,6 +7,8 @@ downloadDsUI <- function(id, text = "Download",
                          dropdownWidth = 150,
                          getLinkLabel = "Save / Publish",
                          vertical_line_after = NULL,
+                         displayLinks = TRUE,
+                         displayLinksBody = NULL,
                          modalFullscreen = TRUE,
                          modalTitle = "Save / Publish",
                          modalBody = NULL,
@@ -58,6 +60,32 @@ downloadDsUI <- function(id, text = "Download",
                  #tab_id_here input[type='radio'] {
                  display: none;
                  }
+                 .form_before_success {
+                 display: flex;
+                 justify-content: center;
+                 padding: 2rem 2rem;
+                 flex-direction: row;
+                 width: 800px;
+                 }
+                 .form_after_success {
+                 display: flex;
+                 justify-content: space-between;
+                 padding: 2rem 2rem;
+                 flex-direction: row;
+                 width: 1100px;
+                 }
+                 .main_display_before_success {
+                 width: 700px;
+                 }
+                 .main_display_after_success {
+                 width: 70%;
+                 }
+                 .additional_display_before_success {
+                 display: none;
+                 }
+                 .additional_display_after_success {
+                 width: 30%;
+                 }
                  "
   tab_styles <- gsub("tab_id_here", ns("tab-formats"), tab_styles)
   # provisonal
@@ -85,23 +113,33 @@ downloadDsUI <- function(id, text = "Download",
                                     categoryChoicesIDs = categoryChoicesIDs)
   }
 
-  modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
-                       style = "display: flex; justify-content: center; padding: 2rem 4rem;",
-                       div(formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody, vertical_line_after = vertical_line_after)))
 
-  # ,
-  # div(style = "background-color: #eee; margin: 0rem 3rem; width: 1px;"),
-  # div(style = "width: 340px;",
-  #     div(class = "form-group",
-  #         tags$label(class = "control-label", modalLinkLabel),
-  #         uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-  #     radioButtons(ns("tab-formats"), "", modalFormatChoices),
-  #     div(class = "form-group",
-  #         tags$label(class = "control-label", modalPermalinkLabel),
-  #         uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-  #     div(class = "form-group",
-  #         tags$label(class = "control-label", modalIframeLabel),
-  #         uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;")))
+  if(displayLinks){
+
+    if(is.null(displayLinksBody)){
+
+      displayLinksBody <- div(div(style = "border-left: 1px solid #eee; height: 300px; position: absolute; top: 25%;"),
+                             div(style = "margin-left: 25px;",
+                                 div(class = "form-group",
+                                     tags$label(class = "control-label", modalLinkLabel),
+                                     uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
+                                 radioButtons(ns("tab-formats"), "", modalFormatChoices),
+                                 div(class = "form-group",
+                                     tags$label(class = "control-label", modalPermalinkLabel),
+                                     uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
+                                 div(class = "form-group",
+                                     tags$label(class = "control-label", modalIframeLabel),
+                                     uiOutput(ns("iframe"), class = "form-control", style = "min-height: 100px; overflow-x: auto;"))))
+
+    }
+
+  }
+
+
+  modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
+                       # style = "display: flex; justify-content: center; padding: 2rem 4rem;",
+                       div(formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody, vertical_line_after = vertical_line_after,
+                                  on_success_body = displayLinksBody)))
 
   md <- shinypanels::modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
 
@@ -132,7 +170,7 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = TRUE, modalFunction = NULL, ...) {
 
   args <- list(...)
   element <- args$element
@@ -148,7 +186,7 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
       modalFunction <- modalFunction_saveFile
     }
 
-    urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
+    urls <- formServer("modal_form", errorMessage = errorMessage, show_additional_display_on_success = displayLinks, FUN = modalFunction, ...)
 
     # update name field when name was not entered
     observe({
@@ -169,14 +207,15 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
     })
 
     # populate link, permalink and iframe fields after saving
-      output$link <- renderUI({"link"
-        if(!is.null(urls())) urls()$link})
+    output$link <- renderUI({"link"
+      if(!is.null(urls())) urls()$link})
 
-      output$permalink <- renderUI({"permalink"
-        if(!is.null(urls())) urls()$permalink})
+    output$permalink <- renderUI({"permalink"
+      if(!is.null(urls())) urls()$permalink
+    })
 
-      output$iframe <- renderUI({"iframe"
-        if(!is.null(urls())) urls()$iframe_embed})
+    output$iframe <- renderUI({"iframe"
+      if(!is.null(urls())) urls()$iframe_embed})
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
