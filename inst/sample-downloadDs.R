@@ -10,7 +10,8 @@ user_name <- "brandon"
 org_name <- "test"
 
 
-ui <- panelsPage(panel(title = "Examples",
+ui <- panelsPage(shinyjs::useShinyjs(),
+                 panel(title = "Examples",
                        body = div(h3("Ds download module"),
                                   h4("Rendered both from server and from ui"),
                                   br(),
