@@ -240,17 +240,17 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
     # populate link, permalink and iframe fields after saving
     output$link <- renderUI({"link"
       req(r$links)
-      links$share[[input$`tab-formats`]]$link
+      r$links$share[[input$`tab-formats`]]$link
       })
 
     output$permalink <- renderUI({"permalink"
       req(r$links)
-      links$share[[input$`tab-formats`]]$permalink
+      r$links$share[[input$`tab-formats`]]$permalink
     })
 
     output$iframe <- renderUI({"iframe"
       req(r$links)
-      links$share[[input$`tab-formats`]]$embed
+      r$links$share[[input$`tab-formats`]]$embed
       })
 
     element <- eval_reactives(element)
