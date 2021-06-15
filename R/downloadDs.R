@@ -123,17 +123,42 @@ downloadDsUI <- function(id, text = "Download",
     if(is.null(displayLinksBody)){
 
       displayLinksBody <- div(div(style = "border-left: 1px solid #eee; height: 300px; position: absolute; top: 25%;"),
-                             div(style = "margin-left: 25px;",
-                                 div(class = "form-group",
-                                     tags$label(class = "control-label", modalLinkLabel),
-                                     uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                                 radioButtons(ns("tab-formats"), "", modalFormatChoices),
-                                 div(class = "form-group",
-                                     tags$label(class = "control-label", modalPermalinkLabel),
-                                     uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                                 div(class = "form-group",
-                                     tags$label(class = "control-label", modalIframeLabel),
-                                     uiOutput(ns("iframe"), class = "form-control", style = "min-height: 100px; overflow-x: auto;"))))
+                              div(style = "margin-left: 25px;",
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalLinkLabel),
+                                      div(uiOutput(ns("link"),
+                                                   class = "form-control",
+                                                   style = "min-height: 27px; overflow-x: auto; width: 80% !important; float: left;"),
+                                          shinyCopy2clipboard::CopyButton(
+                                            "copybtn_link",
+                                            label = "",
+                                            icon = icon("copy"),
+                                            text = "No Text Found"
+                                          ))),
+                                  radioButtons(ns("tab-formats"), "", modalFormatChoices),
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalPermalinkLabel),
+                                      div(
+                                        uiOutput(ns("permalink"),
+                                                 class = "form-control",
+                                                 style = "min-height: 27px; overflow-x: auto; width: 80% !important; float: left;"),
+                                        shinyCopy2clipboard::CopyButton(
+                                          "copybtn_permalink",
+                                          label = "",
+                                          icon = icon("copy"),
+                                          text = "No Text Found"
+                                        ))),
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalIframeLabel),
+                                      div(uiOutput(ns("iframe"),
+                                                   class = "form-control",
+                                                   style = "min-height: 100px; overflow-x: auto; width: 80% !important; float: left;"),
+                                          shinyCopy2clipboard::CopyButton(
+                                            "copybtn_iframe",
+                                            label = "",
+                                            icon = icon("copy"),
+                                            text = "No Text Found"
+                                          )))))
 
     }
 
@@ -240,17 +265,17 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
     # populate link, permalink and iframe fields after saving
     output$link <- renderUI({"link"
       req(r$links)
-      r$links$share[[input$`tab-formats`]]$link
+      text <- r$links$share[[input$`tab-formats`]]$link
       })
 
     output$permalink <- renderUI({"permalink"
       req(r$links)
-      r$links$share[[input$`tab-formats`]]$permalink
+      text <- r$links$share[[input$`tab-formats`]]$permalink
     })
 
     output$iframe <- renderUI({"iframe"
       req(r$links)
-      r$links$share[[input$`tab-formats`]]$embed
+      text <- r$links$share[[input$`tab-formats`]]$embed
       })
 
     element <- eval_reactives(element)
