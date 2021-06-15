@@ -133,7 +133,8 @@ downloadDsUI <- function(id, text = "Download",
                                             "copybtn_link",
                                             label = "",
                                             icon = icon("copy"),
-                                            text = "No Text Found"
+                                            text = "No Text Found",
+                                            modal = TRUE
                                           ))),
                                   radioButtons(ns("tab-formats"), "", modalFormatChoices),
                                   div(class = "form-group",
@@ -146,7 +147,8 @@ downloadDsUI <- function(id, text = "Download",
                                           "copybtn_permalink",
                                           label = "",
                                           icon = icon("copy"),
-                                          text = "No Text Found"
+                                          text = "No Text Found",
+                                          modal = TRUE
                                         ))),
                                   div(class = "form-group",
                                       tags$label(class = "control-label", modalIframeLabel),
@@ -154,10 +156,11 @@ downloadDsUI <- function(id, text = "Download",
                                                    class = "form-control",
                                                    style = "min-height: 100px; overflow-x: auto; width: 80% !important; float: left;"),
                                           shinyCopy2clipboard::CopyButton(
-                                            "copybtn_iframe",
+                                            "copybtn_embed",
                                             label = "",
                                             icon = icon("copy"),
-                                            text = "No Text Found"
+                                            text = "No Text Found",
+                                            modal = TRUE
                                           )))))
 
     }
@@ -244,39 +247,68 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
 
     observe({
       req(r$element_slug)
-      type <- args$type
+      if(displayLinks){
 
-      formats <- NULL
-      if(type == "fringe"){
-        formats <- c("csv", "json")
-      } else if(type == "dsviz"){
-        viz_type <- dspins::dsviz_type(element)
-        if(viz_type == "gg")
-          formats <- c("png", "svg")
-        if(viz_type == "htmlwidget")
-          formats <- c("html", "png")
+        type <- args$type
+
+        formats <- NULL
+        if(type == "fringe"){
+          formats <- c("csv", "json")
+        } else if(type == "dsviz"){
+          viz_type <- dspins::dsviz_type(element)
+          if(viz_type == "gg")
+            formats <- c("png", "svg")
+          if(viz_type == "htmlwidget")
+            formats <- c("html", "png")
+        }
+
+        all_links <- dspins::create_ds_links(slug = r$element_slug, folder = args$user_name, formats = formats, element_type = type)
+
+        links_share_selected <- all_links$share[[input$`tab-formats`]]
+
+        r$links <- list(link = links_share_selected$link,
+                        permalink = links_share_selected$permalink,
+                        embed = links_share_selected$embed)
+
       }
+    })
 
-      links <- dspins::create_ds_links(slug = r$element_slug, folder = args$user_name, formats = formats, element_type = type)
-      r$links <- links
-
+    observe({
+      req(r$links)
+      if(displayLinks){
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_link",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$link))
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_permalink",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$permalink))
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_embed",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$embed))
+      }
     })
 
     # populate link, permalink and iframe fields after saving
     output$link <- renderUI({"link"
       req(r$links)
-      text <- r$links$share[[input$`tab-formats`]]$link
-      })
+      r$links$link
+    })
 
     output$permalink <- renderUI({"permalink"
       req(r$links)
-      text <- r$links$share[[input$`tab-formats`]]$permalink
+      r$links$permalink
     })
 
     output$iframe <- renderUI({"iframe"
       req(r$links)
-      text <- r$links$share[[input$`tab-formats`]]$embed
-      })
+      r$links$embed
+    })
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)
