@@ -120,9 +120,10 @@ formServer <- function(id, errorMessage = NULL, show_additional_display_on_succe
 
 
 updateInputNS <- function(x, ns){
-
   if(identical(x$attribs$role, "radiogroup")){
     x$attribs$id <- ns(x$attribs$id)
+    x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
+    x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
     return(x)
   }
 
