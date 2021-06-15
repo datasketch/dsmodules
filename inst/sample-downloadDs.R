@@ -11,6 +11,7 @@ org_name <- "test"
 
 
 ui <- panelsPage(shinyjs::useShinyjs(),
+                 shinyCopy2clipboard::use_copy(),
                  panel(title = "Examples",
                        body = div(h3("Ds download module"),
                                   h4("Rendered both from server and from ui"),
