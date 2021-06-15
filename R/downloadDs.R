@@ -174,7 +174,7 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = TRUE, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FALSE, modalFunction = NULL, ...) {
 
   args <- list(...)
   element <- args$element
