@@ -32,6 +32,7 @@ Imports:
     knitr,
     rio,
     webshot,
+    shinyjs,
     homodatum (>= 0.1.0),
     shinyinvoer (>= 0.1),
     dspins (>= 0.1.0)
