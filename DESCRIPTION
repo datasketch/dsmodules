@@ -1,6 +1,6 @@
 Package: dsmodules
 Title: Shiny Modules for Datasketch Apps 
-Version: 0.4.1
+Version: 0.4.2
 Authors@R: 
     person(given = "Juan Pablo",
            family = "Marin Diaz",
@@ -33,6 +33,7 @@ Imports:
     rio,
     webshot,
     shinyjs,
+    shinyCopy2clipboard,
     homodatum (>= 0.1.0),
     shinyinvoer (>= 0.1),
     dspins (>= 0.1.0)
