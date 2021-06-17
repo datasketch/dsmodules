@@ -1,5 +1,7 @@
 #' @export
-downloadDsUI <- function(id, text = "Download",
+downloadDsUI <- function(id,
+                         plan = "basic",
+                         text = "Download",
                          formats = NULL,
                          class = NULL,
                          display = "dropdown",
@@ -31,6 +33,8 @@ downloadDsUI <- function(id, text = "Download",
                          categoryChoicesIDs = c("no-category"),
                          accessLabel = "Visibility",
                          accessChoicesLabels = c("Public", "Private"),
+                         upgradeButtonLabel = "Upgrade now",
+                         upgradeText = "To use this feature please upgrade to our Pro plan.",
                          ...) {
 
   ns <- NS(id)
@@ -101,6 +105,7 @@ downloadDsUI <- function(id, text = "Download",
   if(is.null(modalBody)){
 
     modalBody <- modalBody_saveFile(id = id,
+                                    plan = plan,
                                     include_inputs = modalBodyInputs,
                                     nameLabel = nameLabel,
                                     descriptionLabel = descriptionLabel,
@@ -114,7 +119,9 @@ downloadDsUI <- function(id, text = "Download",
                                     categoryChoicesLabels = categoryChoicesLabels,
                                     categoryChoicesIDs = categoryChoicesIDs,
                                     accessLabel = accessLabel,
-                                    accessChoicesLabels = accessChoicesLabels)
+                                    accessChoicesLabels = accessChoicesLabels,
+                                    upgradeButtonLabel = upgradeButtonLabel,
+                                    upgradeText = upgradeText)
   }
 
 
