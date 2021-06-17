@@ -120,32 +120,69 @@ formServer <- function(id, errorMessage = NULL, show_additional_display_on_succe
 
 
 updateInputNS <- function(x, ns){
-  if(identical(x$attribs$role, "radiogroup")){
-    x$attribs$id <- ns(x$attribs$id)
-    x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
-    x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
-    return(x)
-  }
 
-  if("shiny.tag.list" %in% class(x)){
-    # chipsInput
-    if(x[[2]]$attribs$class == "shinyinvoer-chips-input"){
-      x[[2]]$attribs$id <- ns(x[[2]]$attribs$id)
+  # radiobutton
+  condition <- tryCatch(
+    x$attribs$role,
+    error=function(e) e
+  )
+
+  if(!inherits(condition, "error")){
+    if(identical(condition, "radiogroup")){
+      x$attribs$id <- ns(x$attribs$id)
+      x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
+      x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
       return(x)
     }
   }
+
+
+  #chipsinput
+  condition <- tryCatch(
+    x[[2]]$attribs$class,
+    error=function(e) e
+  )
+
+  if(!inherits(condition, "error")){
+    if("shiny.tag.list" %in% class(x)){
+      if(identical(condition, "shinyinvoer-chips-input")){
+        x[[2]]$attribs$id <- ns(x[[2]]$attribs$id)
+        return(x)
+      }
+    }
+  }
+
+
   # textInput
-  if(x$children[[2]]$name == "input"){
-    x$children[[2]]$attribs$id <- ns(x$children[[2]]$attribs$id )
-    return(x)
+  condition <- tryCatch(
+    x$children[[2]]$name,
+    error=function(e) e
+  )
+
+  if(!inherits(condition, "error")){
+    if(identical(condition, "input")){
+      x$children[[2]]$attribs$id <- ns(x$children[[2]]$attribs$id )
+      return(x)
+    }
   }
+
+
   # selectInput
-  if(x$children[[2]]$children[[1]]$name == "select"){
-    x$children[[2]]$children[[1]]$attribs$id <- ns(x$children[[2]]$children[[1]]$attribs$id)
-    x$children[[2]]$children[[2]]$attribs$`data-for` <- ns(x$children[[2]]$children[[2]]$attribs$`data-for`)
-    return(x)
+  condition <- tryCatch(
+    x$children[[2]]$children[[1]]$name,
+    error=function(e) e
+  )
+
+  if(!inherits(condition, "error")){
+    if(identical(condition, "select")){
+      x$children[[2]]$children[[1]]$attribs$id <- ns(x$children[[2]]$children[[1]]$attribs$id)
+      x$children[[2]]$children[[2]]$attribs$`data-for` <- ns(x$children[[2]]$children[[2]]$attribs$`data-for`)
+      return(x)
+    }
   }
-  stop("Input unknown to form")
+
+  warning("Input unknown to form")
+  return(x)
 }
 
 
