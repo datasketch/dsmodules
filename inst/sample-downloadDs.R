@@ -8,6 +8,7 @@ library(hgchmagic)
 
 user_name <- "brandon"
 org_name <- "test"
+plan <- "pro"
 
 
 ui <- panelsPage(shinyjs::useShinyjs(),
@@ -76,6 +77,7 @@ server <- function(input, output, session) {
   output$download_server_default_modal_form <- renderUI({
     downloadDsUI("download_save_pins",
                  display = "buttons",
+                 plan = plan,
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                  max_inputs_first_column = 4,
                  dropdownLabel = "Download",
