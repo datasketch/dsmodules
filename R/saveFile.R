@@ -1,5 +1,6 @@
 modalBody_saveFile <- function(id,
                                include_inputs,
+                               plan = "basic",
                                nameLabel = "Name",
                                descriptionLabel = "Description",
                                sourceLabel = "Source",
@@ -12,7 +13,10 @@ modalBody_saveFile <- function(id,
                                categoryChoicesLabels = c("No category"),
                                categoryChoicesIDs = c("no-category"),
                                accessLabel = "Visibility",
-                               accessChoicesLabels = c("Public", "Private")){
+                               accessChoicesLabels = c("Public", "Private"),
+                               upgradeButtonLabel = "Upgrade now",
+                               upgradeText = "To use this feature please upgrade to our Pro plan."
+                               ){
 
   ns <- NS(id)
 
@@ -27,6 +31,14 @@ modalBody_saveFile <- function(id,
   accessChoicesIDs <- c("public", "private")
   names(accessChoicesIDs) <- accessChoicesLabels
 
+  access <- div(div(class = "control-label", accessLabel),
+                p( style = "margin-bottom: 15px;margin-top: 10px;",
+                   upgradeText),
+                shiny::actionButton(inputId='url_upgrade', label = upgradeButtonLabel,
+                                    onclick ="window.open('https://datasketch.co/dashboard/upgrade', '_blank')"))
+
+  if(!plan == "basic") access <- radioButtons(ns("access"), label = accessLabel, choices = accessChoicesIDs, selected = "public", inline = TRUE)
+
   input_options <- list(name = textInput(ns("name"), nameLabel),
                         description = textInput(ns("description"), descriptionLabel),
                         source_title = textInput(ns("source_title"), sourceLabel, value = "", placeholder = sourceTitleLabel),
@@ -34,7 +46,7 @@ modalBody_saveFile <- function(id,
                         license = selectInput(ns("license"), licenseLabel, choices = c("CC0", "CC-BY")),
                         tags = shinyinvoer::chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = tagsPlaceholderLabel),
                         category = selectizeInput(ns("category"), categoryLabel, choices = categoryChoicesIDs),
-                        access = radioButtons(ns("access"), label = accessLabel, choices = accessChoicesIDs, selected = "public", inline = TRUE)
+                        access = access
                         )
 
   input_options[filter_by]
@@ -75,6 +87,9 @@ modalFunction_saveFile <- function(...) {
     }
   }
 
+  access <- args$access
+  if(is.null(access)) access <- "public"
+
   element_params <- list(element,
                          name = name,
                          description = args$description,
@@ -83,7 +98,7 @@ modalFunction_saveFile <- function(...) {
                          license = args$license,
                          tags = tags,
                          category = args$category,
-                         access = args$access)
+                         access = access)
 
   # add namespace to dsviz(), fringe(), or drop() function
   element_function_ns <- "dspins::"
