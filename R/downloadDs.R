@@ -220,7 +220,7 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
 
     urls <- formServer("modal_form", errorMessage = errorMessage, show_additional_display_on_success = displayLinks, FUN = modalFunction, ...)
 
-    r <- reactiveValues(element_slug = NULL,
+    r <- reactiveValues(element_name = NULL,
                         links = NULL)
 
     # update name field when name was not entered
@@ -232,12 +232,12 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
 
       input_name <- input[[name_field]]
 
-      r$element_slug <- input_name
+      r$element_name <- input_name
 
       if(!is.null(input_name)){
         if(!nzchar(input_name) & !is.null(urls())){
           namePlaceholder <- sub('.*\\/', '', urls()$link)
-          r$element_slug <- namePlaceholder
+          r$element_name <- namePlaceholder
           updateTextInput(session, name_field,
                           value = namePlaceholder)
         }
@@ -246,10 +246,11 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
 
 
     observe({
-      req(r$element_slug)
+      req(r$element_name)
       if(displayLinks){
 
         type <- args$type
+        element_slug <- dspins::create_slug(r$element_name)
 
         formats <- NULL
         if(type == "fringe"){
@@ -262,7 +263,10 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
             formats <- c("html", "png")
         }
 
-        all_links <- dspins::create_ds_links(slug = r$element_slug, folder = args$user_name, formats = formats, element_type = type)
+        folder <- args$org_name
+        if(is.null(folder)) folder <- args$user_name
+
+        all_links <- dspins::create_ds_links(slug = element_slug, folder = folder, formats = formats, element_type = type)
 
         links_share_selected <- all_links$share[[input$`tab-formats`]]
 
