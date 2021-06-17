@@ -6,10 +6,13 @@ downloadDsUI <- function(id, text = "Download",
                          dropdownLabel = "Download",
                          dropdownWidth = 150,
                          getLinkLabel = "Save / Publish",
+                         max_inputs_first_column = NULL,
+                         displayLinks = TRUE,
+                         displayLinksBody = NULL,
                          modalFullscreen = TRUE,
                          modalTitle = "Save / Publish",
                          modalBody = NULL,
-                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category"),
+                         modalBodyInputs = c("name", "description", "sources", "license", "tags", "category", "access"),
                          modalButtonLabel = "Submit",
                          modalLinkLabel = "Link",
                          modalFormatChoices = c("HTML" = "html"),
@@ -26,6 +29,8 @@ downloadDsUI <- function(id, text = "Download",
                          categoryLabel = "Category",
                          categoryChoicesLabels = c("No category"),
                          categoryChoicesIDs = c("no-category"),
+                         accessLabel = "Visibility",
+                         accessChoicesLabels = c("Public", "Private"),
                          ...) {
 
   ns <- NS(id)
@@ -57,6 +62,32 @@ downloadDsUI <- function(id, text = "Download",
                  #tab_id_here input[type='radio'] {
                  display: none;
                  }
+                 .form_before_success {
+                 display: flex;
+                 justify-content: center;
+                 padding: 2rem 2rem;
+                 flex-direction: row;
+                 width: 800px;
+                 }
+                 .form_after_success {
+                 display: flex;
+                 justify-content: space-between;
+                 padding: 2rem 2rem;
+                 flex-direction: row;
+                 width: 1100px;
+                 }
+                 .main_display_before_success {
+                 width: 700px;
+                 }
+                 .main_display_after_success {
+                 width: 70%;
+                 }
+                 .additional_display_before_success {
+                 display: none;
+                 }
+                 .additional_display_after_success {
+                 width: 30%;
+                 }
                  "
   tab_styles <- gsub("tab_id_here", ns("tab-formats"), tab_styles)
   # provisonal
@@ -81,25 +112,66 @@ downloadDsUI <- function(id, text = "Download",
                                     tagsPlaceholderLabel = tagsPlaceholderLabel,
                                     categoryLabel = categoryLabel,
                                     categoryChoicesLabels = categoryChoicesLabels,
-                                    categoryChoicesIDs = categoryChoicesIDs)
+                                    categoryChoicesIDs = categoryChoicesIDs,
+                                    accessLabel = accessLabel,
+                                    accessChoicesLabels = accessChoicesLabels)
   }
 
+
+  if(displayLinks){
+
+    if(is.null(displayLinksBody)){
+
+      displayLinksBody <- div(div(style = "border-left: 1px solid #eee; height: 300px; position: absolute; top: 25%;"),
+                              div(style = "margin-left: 25px;",
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalLinkLabel),
+                                      div(uiOutput(ns("link"),
+                                                   class = "form-control",
+                                                   style = "min-height: 27px; overflow-x: auto; width: 80% !important; float: left;"),
+                                          shinyCopy2clipboard::CopyButton(
+                                            "copybtn_link",
+                                            label = "",
+                                            icon = icon("copy"),
+                                            text = "No Text Found",
+                                            modal = TRUE
+                                          ))),
+                                  radioButtons(ns("tab-formats"), "", modalFormatChoices),
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalPermalinkLabel),
+                                      div(
+                                        uiOutput(ns("permalink"),
+                                                 class = "form-control",
+                                                 style = "min-height: 27px; overflow-x: auto; width: 80% !important; float: left;"),
+                                        shinyCopy2clipboard::CopyButton(
+                                          "copybtn_permalink",
+                                          label = "",
+                                          icon = icon("copy"),
+                                          text = "No Text Found",
+                                          modal = TRUE
+                                        ))),
+                                  div(class = "form-group",
+                                      tags$label(class = "control-label", modalIframeLabel),
+                                      div(uiOutput(ns("iframe"),
+                                                   class = "form-control",
+                                                   style = "min-height: 100px; overflow-x: auto; width: 80% !important; float: left;"),
+                                          shinyCopy2clipboard::CopyButton(
+                                            "copybtn_embed",
+                                            label = "",
+                                            icon = icon("copy"),
+                                            text = "No Text Found",
+                                            modal = TRUE
+                                          )))))
+
+    }
+
+  }
+
+
   modal_content <- div(singleton(tags$head(tags$style(HTML(tab_styles)))),
-                       style = "display: flex; justify-content: center; padding: 2rem 4rem;",
-                       div(style = "margin: -20px 0;",
-                           formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody)),
-                       div(style = "background-color: #eee; margin: 0rem 3rem; width: 1px;"),
-                       div(style = "width: 340px;",
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalLinkLabel),
-                               uiOutput(ns("link"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                           radioButtons(ns("tab-formats"), "", modalFormatChoices),
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalPermalinkLabel),
-                               uiOutput(ns("permalink"), class = "form-control", style = "min-height: 27px; overflow-x: auto;")),
-                           div(class = "form-group",
-                               tags$label(class = "control-label", modalIframeLabel),
-                               uiOutput(ns("iframe"), class = "form-control", style = "min-height: 173px; overflow-x: auto;"))))
+                       # style = "display: flex; justify-content: center; padding: 2rem 4rem;",
+                       div(formUI(ns("modal_form"), "", button_label = modalButtonLabel, input_list = modalBody, max_inputs_first_column = max_inputs_first_column,
+                                  additional_display_body = displayLinksBody)))
 
   md <- shinypanels::modal(id = paste0("md-", ns("get_link")), title = modalTitle, modal_content) # provisional, fullscreen = modalFullscreen)
 
@@ -130,7 +202,7 @@ downloadDsUI <- function(id, text = "Download",
 }
 
 #' @export
-downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = NULL, ...) {
+downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FALSE, modalFunction = NULL, ...) {
 
   args <- list(...)
   element <- args$element
@@ -146,7 +218,10 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
       modalFunction <- modalFunction_saveFile
     }
 
-    urls <- formServer("modal_form", errorMessage = errorMessage, FUN = modalFunction, ...)
+    urls <- formServer("modal_form", errorMessage = errorMessage, show_additional_display_on_success = displayLinks, FUN = modalFunction, ...)
+
+    r <- reactiveValues(element_name = NULL,
+                        links = NULL)
 
     # update name field when name was not entered
     observe({
@@ -157,24 +232,87 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, modalFunction = N
 
       input_name <- input[[name_field]]
 
+      r$element_name <- input_name
+
       if(!is.null(input_name)){
         if(!nzchar(input_name) & !is.null(urls())){
           namePlaceholder <- sub('.*\\/', '', urls()$link)
+          r$element_name <- namePlaceholder
           updateTextInput(session, name_field,
                           value = namePlaceholder)
         }
       }
     })
 
+
+    observe({
+      req(r$element_name)
+      if(displayLinks){
+
+        type <- args$type
+        element_slug <- dspins::create_slug(r$element_name)
+
+        formats <- NULL
+        if(type == "fringe"){
+          formats <- c("csv", "json")
+        } else if(type == "dsviz"){
+          viz_type <- dspins::dsviz_type(element)
+          if(viz_type == "gg")
+            formats <- c("png", "svg")
+          if(viz_type == "htmlwidget")
+            formats <- c("html", "png")
+        }
+
+        folder <- args$org_name
+        if(is.null(folder)) folder <- args$user_name
+
+        all_links <- dspins::create_ds_links(slug = element_slug, folder = folder, formats = formats, element_type = type)
+
+        links_share_selected <- all_links$share[[input$`tab-formats`]]
+
+        r$links <- list(link = links_share_selected$link,
+                        permalink = links_share_selected$permalink,
+                        embed = links_share_selected$embed)
+
+      }
+    })
+
+    observe({
+      req(r$links)
+      if(displayLinks){
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_link",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$link))
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_permalink",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$permalink))
+        shinyCopy2clipboard::CopyButtonUpdate(session,
+                                              id = "copybtn_embed",
+                                              label = "",
+                                              icon = icon("copy"),
+                                              text = as.character(r$links$embed))
+      }
+    })
+
     # populate link, permalink and iframe fields after saving
-      output$link <- renderUI({"link"
-        if(!is.null(urls())) urls()$link})
+    output$link <- renderUI({"link"
+      req(r$links)
+      r$links$link
+    })
 
-      output$permalink <- renderUI({"permalink"
-        if(!is.null(urls())) urls()$permalink})
+    output$permalink <- renderUI({"permalink"
+      req(r$links)
+      r$links$permalink
+    })
 
-      output$iframe <- renderUI({"iframe"
-        if(!is.null(urls())) urls()$iframe_embed})
+    output$iframe <- renderUI({"iframe"
+      req(r$links)
+      r$links$embed
+    })
 
     element <- eval_reactives(element)
     dwn_mdl <- from_formats_to_module(formats)

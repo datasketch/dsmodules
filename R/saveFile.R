@@ -10,7 +10,9 @@ modalBody_saveFile <- function(id,
                                tagsPlaceholderLabel = "Type tag(s) and press enter after each one",
                                categoryLabel = "Category",
                                categoryChoicesLabels = c("No category"),
-                               categoryChoicesIDs = c("no-category")){
+                               categoryChoicesIDs = c("no-category"),
+                               accessLabel = "Visibility",
+                               accessChoicesLabels = c("Public", "Private")){
 
   ns <- NS(id)
 
@@ -22,13 +24,18 @@ modalBody_saveFile <- function(id,
 
   names(categoryChoicesIDs) <- categoryChoicesLabels
 
+  accessChoicesIDs <- c("public", "private")
+  names(accessChoicesIDs) <- accessChoicesLabels
+
   input_options <- list(name = textInput(ns("name"), nameLabel),
                         description = textInput(ns("description"), descriptionLabel),
                         source_title = textInput(ns("source_title"), sourceLabel, value = "", placeholder = sourceTitleLabel),
                         source_path = textInput(ns("source_path"), " ", value = "", placeholder = sourcePathLabel),
                         license = selectInput(ns("license"), licenseLabel, choices = c("CC0", "CC-BY")),
                         tags = shinyinvoer::chipsInput(inputId = ns("tags"), label = tagsLabel, placeholder = tagsPlaceholderLabel),
-                        category = selectizeInput(ns("category"), categoryLabel, choices = categoryChoicesIDs))
+                        category = selectizeInput(ns("category"), categoryLabel, choices = categoryChoicesIDs),
+                        access = radioButtons(ns("access"), label = accessLabel, choices = accessChoicesIDs, selected = "public", inline = TRUE)
+                        )
 
   input_options[filter_by]
 }
@@ -67,6 +74,7 @@ modalFunction_saveFile <- function(...) {
       tags <- list(tags)
     }
   }
+
   element_params <- list(element,
                          name = name,
                          description = args$description,
@@ -74,7 +82,8 @@ modalFunction_saveFile <- function(...) {
                                              path = args$source_path)),
                          license = args$license,
                          tags = tags,
-                         category = args$category)
+                         category = args$category,
+                         access = args$access)
 
   # add namespace to dsviz(), fringe(), or drop() function
   element_function_ns <- "dspins::"

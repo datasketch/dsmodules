@@ -1,11 +1,11 @@
 #' @export
-formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
+formUI <- function(id, label, button_label = "Submit", input_list = NULL, max_inputs_first_column = NULL, additional_display_body = "") {
 
   ns <- shiny::NS(id)
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
   bt <- div(shiny::singleton(
     shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js"))),
-    style = "text-align: center; display: flex; align-items: baseline;",
+    style = "text-align: center; display: flex; align-items: baseline; margin-top: 20px;",
     actionButton(ns("form_button"), button_label, style = "margin: 10px 0;"),
     span(class = "btn-loading-container",
          img(style = "display: none; margin-left: 18px;",
@@ -19,22 +19,48 @@ formUI <- function(id, label, button_label = "Submit", input_list = NULL) {
 
   input_ns <- lapply(input_list, updateInputNS, ns)
 
-  div(class = "formUI",
-    tags$label(label, class = "control-label-formUI",
-               style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
-    div(style = "display: flex; justify-content: center;  margin: 20px 0;",
-        div(style = "display: flex; flex-direction: column; justify-content: space-between; width: 450px;",
-            div(style = "display: flex; flex-direction: column; justify-content: flex-start;",
-                tagList(input_ns)),
-            bt
-        )
-    )
-  )
+  inputs <- div(class = "flex-container",
+                style = "display: flex; flex-direction: column; justify-content: flex-start;",
+                tagList(input_ns))
+
+  if(!is.null(max_inputs_first_column)){
+    inputs_left <- input_ns[1:max_inputs_first_column]
+    inputs_right <- input_ns[max_inputs_first_column + 1 : length(input_ns)]
+
+    inputs <- div(class = "flex-container",
+                  style = "display: flex; flex-direction: row; justify-content: space-between;",
+                  div(class = "flex-left",
+                      style = "width: 47%;",
+                      tagList(inputs_left)),
+                  div(class = "flex-right",
+                      style = "width: 47%;",
+                      tagList(inputs_right)))
+  }
+
+  div(id = "form_complete",
+      class = "form_before_success",
+    div(id = "main_display",
+        class = "main_display_before_success",
+        div(class = "formUI",
+            tags$label(label, class = "control-label-formUI",
+                       style = "font-weight:500; color: #435b69; margin-bottom: 10px;"),
+            div(id = "form_inputs",
+                style = "display: flex; justify-content: center;  margin: 0px 25px;",
+                div(style = paste0("display: flex; flex-direction: column; justify-content: space-between; width: 100%;"),
+                    inputs,
+                    bt
+                )
+            ))),
+    div(id="additional_display",
+        class="additional_display_before_success",
+        # style="display: none;",
+        additional_display_body
+    ))
 
 }
 
 #' @export
-formServer <- function(id, errorMessage = NULL, FUN, ...) {
+formServer <- function(id, errorMessage = NULL, show_additional_display_on_success = FALSE, FUN, ...) {
   moduleServer(id, function(input, output, session) {
 
     ns <- session$ns
@@ -64,6 +90,14 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
         }
       } else {
         session$sendCustomMessage("setButtonState", c("done", ns("form_button")))
+        if(show_additional_display_on_success){
+          shinyjs::runjs(code = '$("#form_complete").removeClass("form_before_success");')
+          shinyjs::runjs(code = '$("#form_complete").addClass("form_after_success");')
+          shinyjs::runjs(code = '$("#main_display").removeClass("main_display_before_success");')
+          shinyjs::runjs(code = '$("#main_display").addClass("main_display_after_success");')
+          shinyjs::runjs(code = '$("#additional_display").removeClass("additional_display_before_success");')
+          shinyjs::runjs(code = '$("#additional_display").addClass("additional_display_after_success");')
+        }
         fun_result
       }
     })
@@ -86,7 +120,12 @@ formServer <- function(id, errorMessage = NULL, FUN, ...) {
 
 
 updateInputNS <- function(x, ns){
-
+  if(identical(x$attribs$role, "radiogroup")){
+    x$attribs$id <- ns(x$attribs$id)
+    x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
+    x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
+    return(x)
+  }
 
   if("shiny.tag.list" %in% class(x)){
     # chipsInput

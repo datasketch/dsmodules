@@ -10,7 +10,9 @@ user_name <- "brandon"
 org_name <- "test"
 
 
-ui <- panelsPage(panel(title = "Examples",
+ui <- panelsPage(shinyjs::useShinyjs(),
+                 shinyCopy2clipboard::use_copy(),
+                 panel(title = "Examples",
                        body = div(h3("Ds download module"),
                                   h4("Rendered both from server and from ui"),
                                   br(),
@@ -48,9 +50,9 @@ server <- function(input, output, session) {
   })
 
   # function to be passed to modalFunction (alternative to using default modalFunction)
-  dspin_urls_ <- function(x, user_name, ...) {
-    x <- eval_reactives(x)
-    f <- fringe(x)
+  dspin_urls_ <- function(element, user_name, ...) {
+    element <- eval_reactives(element)
+    f <- fringe(element)
     dspins_user_board_connect(user_name)
     Sys.setlocale(locale = "en_US.UTF-8")
     dspin_urls(element = f, user_name = user_name)
@@ -75,6 +77,7 @@ server <- function(input, output, session) {
     downloadDsUI("download_save_pins",
                  display = "buttons",
                  modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
+                 max_inputs_first_column = 4,
                  dropdownLabel = "Download",
                  formats = c("html", "jpeg", "pdf", "png"))
 
@@ -87,7 +90,7 @@ server <- function(input, output, session) {
                      element = reactive(element_fringe()),
                      formats = c("csv", "xlsx", "json"),
                      errorMessage = "some error message",
-                     modalFunction = dspin_urls_, reactive(element_fringe()),
+                     modalFunction = dspin_urls_,
                      user_name = user_name)
   })
 
@@ -96,6 +99,7 @@ server <- function(input, output, session) {
     downloadDsServer(id = "download_save_pins",
                      element = reactive(element_dsviz()),
                      formats = c("html", "jpeg", "pdf", "png"),
+                     displayLinks = TRUE,
                      type = "dsviz",
                      user_name = user_name,
                      org_name = org_name)
