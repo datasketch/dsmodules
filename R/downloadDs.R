@@ -225,16 +225,22 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
       modalFunction <- modalFunction_saveFile
     }
 
-    urls <- formServer("modal_form", errorMessage = errorMessage, show_additional_display_on_success = displayLinks, FUN = modalFunction, ...)
-
     r <- reactiveValues(element_name = NULL,
-                        links = NULL)
+                        links = NULL,
+                        urls = NULL)
+
+    observe({
+      req(input$`modal_form-form_button`)
+      urls <- formServer("modal_form", errorMessage = errorMessage, show_additional_display_on_success = displayLinks, FUN = modalFunction, ...)
+      r$urls <- urls()
+    })
 
     # update name field when name was not entered
     observe({
+      req(r$urls)
       name_field <- "modal_form-name"
       if(is.null(input$`modal_form-name`)){
-        name_field <- paste0("modal_form-",id,"-name")
+        name_field <- paste0("modal_form-", ns("name"))
       }
 
       input_name <- input[[name_field]]
@@ -242,8 +248,8 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
       r$element_name <- input_name
 
       if(!is.null(input_name)){
-        if(!nzchar(input_name) & !is.null(urls())){
-          namePlaceholder <- sub('.*\\/', '', urls()$link)
+        if(!nzchar(input_name) & !is.null(r$urls)){
+          namePlaceholder <- sub('.*\\/', '', r$urls$link)
           r$element_name <- namePlaceholder
           updateTextInput(session, name_field,
                           value = namePlaceholder)
