@@ -123,12 +123,12 @@ updateInputNS <- function(x, ns){
 
   # radiobutton
   condition <- tryCatch(
-    x$attribs$role,
+    x$children[[2]]$attribs$class,
     error=function(e) e
   )
 
   if(!inherits(condition, "error")){
-    if(identical(condition, "radiogroup")){
+    if(identical(condition, "shiny-options-group")){
       x$attribs$id <- ns(x$attribs$id)
       x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
       x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
