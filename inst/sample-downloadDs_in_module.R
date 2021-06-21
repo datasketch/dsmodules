@@ -30,6 +30,7 @@ downloadExampleServer <- function(id, r) {
                      display = "buttons",
                      modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                      dropdownLabel = "Download",
+                     max_inputs_first_column = 4,
                      formats = c("html", "jpeg", "pdf", "png"))
 
       })
@@ -41,6 +42,7 @@ downloadExampleServer <- function(id, r) {
                          element = reactive(r$element),
                          formats = c("html", "jpeg", "pdf", "png"),
                          type = "dsviz",
+                         displayLinks = TRUE,
                          user_name = user_name,
                          org_name = org_name,
                          page_title = "some page title")
@@ -52,7 +54,9 @@ downloadExampleServer <- function(id, r) {
 
 
 
-ui <- panelsPage(panel(title = "Examples",
+ui <- panelsPage(shinyjs::useShinyjs(),
+                 shinyCopy2clipboard::use_copy(),
+                 panel(title = "Examples",
                        body = div(h3("Ds download module called from shiny module"),
                                   br(),
                                   br(),
