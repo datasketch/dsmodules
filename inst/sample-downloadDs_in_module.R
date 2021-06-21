@@ -11,6 +11,7 @@ library(hgchmagic)
 
 user_name <- "brandon"
 org_name <- "test"
+plan <- "pro"
 
 downloadExampleUI <- function(id){
   ns <- NS(id)
@@ -27,6 +28,7 @@ downloadExampleServer <- function(id, r) {
 
       output$download <- renderUI({
         downloadDsUI(ns("download_server"),
+                     plan = plan,
                      display = "buttons",
                      modalFormatChoices = c("HTML" = "html", "PNG" = "png"),
                      dropdownLabel = "Download",
@@ -71,8 +73,8 @@ server <- function(input, output, session) {
   r <- reactiveValues()
 
   element <- reactive({
-    #reactable::reactable(data.frame(a = 1:3, b = "r"))
-    hgchmagic::hgch_bar_Cat(sample_data("Cat"))
+    reactable::reactable(data.frame(a = 1:3, b = "r"))
+    #hgchmagic::hgch_bar_Cat(sample_data("Cat"))
   })
 
   observe({
