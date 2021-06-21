@@ -136,6 +136,22 @@ updateInputNS <- function(x, ns){
     }
   }
 
+  # radiobutton second try
+  condition <- tryCatch(
+    x$attribs$`data-shinyjs-resettable-type`,
+    error=function(e) e
+  )
+
+  if(!inherits(condition, "error")){
+    if(identical(condition, "RadioButtons")){
+      browser()
+      x$attribs$id <- ns(x$attribs$id)
+      x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[1]]$children[[1]]$attribs$name)
+      x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name <- ns(x$children[[2]]$children[[1]][[2]]$children[[1]]$attribs$name)
+      return(x)
+    }
+  }
+
 
   #chipsinput
   condition <- tryCatch(
