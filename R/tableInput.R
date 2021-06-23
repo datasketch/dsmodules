@@ -154,8 +154,10 @@ tableInputServer <- function(id,
 
         if(all(unlist(lapply(sampleFiles, class)) == "character")){
           file <- as.character(inputDataSample)
+          if(!grepl(".csv", file)) return()
           df <- readr::read_csv(file)
         }else if(all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+          if(!inputDataSample %in% names(sampleFiles)) return()
           df <- sampleFiles[[inputDataSample]]
         }
         else{
