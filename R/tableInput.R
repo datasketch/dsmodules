@@ -134,6 +134,8 @@ tableInputServer <- function(id,
 
         if (grepl(".csv", path)) {
           df <- readr::read_csv(path, locale = readr::locale(decimal_mark = decimal_mark))
+        } else if (grepl(".xlsx", path)){
+          df <- openxlsx::read.xlsx(path, detectDates = TRUE)
         } else {
           df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
                          error = function(e) rio::import(path))
