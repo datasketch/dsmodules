@@ -340,7 +340,6 @@ downloadDsServer <- function(id, formats, errorMessage = NULL, displayLinks = FA
       params$opts_theme <- opts_theme
       params$page_title <- page_title
     } else if(dwn_mdl == "downloadHtmlwidget"){
-      params$opts_theme <- opts_theme
       params$page_title <- page_title
     }
     do.call(paste0(dwn_mdl, "Server"), params)

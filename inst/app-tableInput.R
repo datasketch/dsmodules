@@ -2,11 +2,13 @@ library(shiny)
 library(tidyverse)
 library(dsmodules)
 library(shinyinvoer)
+library(shinyjs)
 ## Data upload module
 
 
 
 ui <- fluidPage(
+  shinyjs::useShinyjs(),
   column(6,
          tableInputUI("dataIn", "Input Data 1", choices = list("Muestra" = "sampleData",
                                                                "Copiar & Pegar" = "pasted",
@@ -28,7 +30,7 @@ ui <- fluidPage(
                       selected = "sampleData")
   ),
   column(6,
-         verbatimTextOutput("debug")
+         uiOutput("debug")
   )
 )
 
@@ -46,22 +48,27 @@ server <- function(input,output,session){
   })
 
   inputData <- tableInputServer("dataIn",
+                                showAdvancedOptionsButton = TRUE,
                                 sampleFiles = list( File1 = "data_sample/sample1.csv",
                                                     File2 = "data_sample/sample2.csv" ),
                                 sampleSelected = "File1")
 
   inputData2 <- tableInputServer("dataIn2",
-                                 showDecimalMarkOption = TRUE,
                                  sampleFiles = list(Cars = cars,
                                                     Mtcars = mtcars))
 
   inputData3 <- tableInputServer("dataIn3",
                                  sampleFiles = dataset)
-  output$debug <- renderPrint({
-    l <- list(inputData1 = inputData(),
-              inputData2 = inputData2(),
-              inputData3 = inputData3())
-    l
+
+
+  output$tableInputData <- renderTable(inputData())
+  output$tableInputData1 <- renderTable(inputData2())
+  output$tableInputData2 <- renderTable(inputData3())
+
+  output$debug <- renderUI({
+    div(tableOutput("tableInputData"),
+        tableOutput("tableInputData1"),
+        tableOutput("tableInputData2"))
   })
 
 }

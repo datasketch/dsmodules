@@ -10,22 +10,28 @@ tableInputUI <- function(id, label,
   #names(choices) <- choiceNames
 
   #info_style <- ifelse(is.null(uiOutput(ns("tableInputInfo"))), "display:flex;", "display:none;")
+  styles <- ".unticked {
+                 display: none;
+                 }
+                 .ticked {
+                 display: block;
+                 }
+                 "
 
-  shiny::tagList(
-    shiny::div(id = ns("tableInput"), class="tableInput",
-               shiny:::shinyInputLabel("inputId", label = label),
-               shiny::radioButtons(ns("tableInput"), "",
-                                   choices = choices, selected = selected,
-                                   inline = choicesInline),
-               shiny::uiOutput(ns("tableInputControls"))),
-    shiny::div(class = "box-tableInputInfo", #style = info_style,
-               shiny::uiOutput(ns("tableInputInfo"))))
+  shiny::tagList(singleton(tags$head(tags$style(HTML(styles)))),
+                 shiny::div(id = ns("tableInput"), class="tableInput",
+                            shiny:::shinyInputLabel("inputId", label = label),
+                            shiny::radioButtons(ns("tableInput"), "",
+                                                choices = choices, selected = selected,
+                                                inline = choicesInline),
+                            shiny::uiOutput(ns("tableInputControls"))),
+                 shiny::div(class = "box-tableInputInfo", #style = info_style,
+                            shiny::uiOutput(ns("tableInputInfo"))))
 
 }
 
 #' @export
 tableInputServer <- function(id,
-                             showDecimalMarkOption = FALSE,
                              infoList = NULL,
                              pasteLabel = "Paste", pasteValue = "",
                              pastePlaceholder = "Select your data and paste it here", pasteRows = 5,
@@ -36,72 +42,118 @@ tableInputServer <- function(id,
                              googleSheetLabel = "Data from Google Sheet", googleSheetValue = "",
                              googleSheetPlaceholder = "https://docs.google.com/spreadsheets/...",
                              googleSheetPageLabel = "Sheet",
+                             showAdvancedOptionsButton = FALSE,
+                             advancedOptionsLabel = "Advanced options",
+                             delimiterLabel = "Delimiter",
+                             delimiterChoiceLabels = c("Comma", "Tab", "Space", "Semi-colon"),
                              decimalMarkLabel = "Decimal mark",
                              decimalMarkChoiceLabels = c("Point", "Comma"),
                              ...){
 
   moduleServer(id,function(input, output, session) {
 
-    output$tableInputControls <- shiny::renderUI({
+    ns <- session$ns
 
-      ns <- session$ns
+    accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
 
-      accept_formats <- c("text/csv", "text/comma-separated-values, text/plain", ".csv", ".xls", ".xlsx")
+    # define input UIs for pasted, fileUpload, sampleData, and googleSheets
 
-      # define input UIs for pasted, fileUpload, sampleData, and googleSheets
+    sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
+      sampleData_html <- NULL
 
-      sampleDataUI <- function(sampleLable, sampleFiles, sampleSelected){
-        sampleData_html <- NULL
+      sampleFiles <- eval_reactives(sampleFiles)
 
-        sampleFiles <- eval_reactives(sampleFiles)
-
-        if(all(unlist(lapply(sampleFiles, class)) == "character")){
-          sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
-                                         choices = sampleFiles, selected = sampleSelected)
-        } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
-          if(is.null(names(sampleFiles)))
-            stop("sampleFiles list must be named")
-          sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
-                                         choices = names(sampleFiles), selected = sampleSelected)
-        }
-        else{
-          stop("All sample data must be either file paths or data.frames")
-        }
-        sampleData_html
+      if(all(unlist(lapply(sampleFiles, class)) == "character")){
+        sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
+                                              choices = sampleFiles, selected = sampleSelected)
+      } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+        if(is.null(names(sampleFiles)))
+          stop("sampleFiles list must be named")
+        sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
+                                              choices = names(sampleFiles), selected = sampleSelected)
       }
+      else{
+        stop("All sample data must be either file paths or data.frames")
+      }
+      sampleData_html
+    }
 
-      pastedUI <- shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
-                                       placeholder = pastePlaceholder, rows = pasteRows)
+    googleSheetsUI <- list(shiny::textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
+                                            placeholder = googleSheetPlaceholder),
+                           shiny::numericInput(ns("inputDataGoogleSheetSheet"),
+                                               googleSheetPageLabel, 1))
 
-      fileUploadUI <- shiny::fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
-                                       placeholder = uploadPlaceholder, accept = accept_formats)
+    pastedUI <- shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, value = pasteValue,
+                                     placeholder = pastePlaceholder, rows = pasteRows)
 
-      decimalMarkUI <- shiny::radioButtons(ns("decimalMark"), label = decimalMarkLabel, choiceValues = c("point", "comma"),
+    fileUploadUI <- shiny::fileInput(ns("inputDataUpload"), uploadLabel,buttonLabel = uploadButtonLabel,
+                                     placeholder = uploadPlaceholder, accept = accept_formats)
+
+    advancedOptionsButton <- shiny::checkboxInput(ns("advancedOptions"), label = advancedOptionsLabel)
+
+    delimiterUI <- shiny::radioButtons(ns("delimiter"), label = delimiterLabel, choiceValues = c("comma", "tab", "space", "semi-colon"),
+                                       choiceNames = delimiterChoiceLabels, selected = "comma", inline = TRUE)
+
+    decimalMarkUI <- shiny::radioButtons(ns("decimalMark"), label = decimalMarkLabel, choiceValues = c("point", "comma"),
                                          choiceNames = decimalMarkChoiceLabels, selected = "point", inline = TRUE)
 
-      if(showDecimalMarkOption){
-        pastedUI <- list(pastedUI,
-                         decimalMarkUI)
+    observe({
 
-        fileUploadUI <- list(fileUploadUI,
-                             decimalMarkUI)
+      if(input$tableInput == "pasted"){
+        updateRadioButtons(session, "delimiter", selected = "tab")
       }
 
-      googleSheetsUI <- list(shiny::textInput(ns("inputDataSheet"), googleSheetLabel, value = googleSheetValue,
-                                              placeholder = googleSheetPlaceholder),
-                             shiny::numericInput(ns("inputDataGoogleSheetSheet"),
-                                                 googleSheetPageLabel, 1))
+    })
 
+    # observe({
+    #   if(!is.null(input$delimiter)){
+    #     if(input$delimiter == "comma"){
+    #       if(input$decimalMark == "comma"){
+    #         updateRadioButtons(session, "decimalMark", selected = "point")
+    #       }
+    #     }
+    #   }
+    # })
+
+
+    if(showAdvancedOptionsButton){
+
+      advancedOptions <- div(id = "adv_opts", class = "unticked",
+                             delimiterUI,
+                             decimalMarkUI)
+
+
+      pastedUI <- list(pastedUI,
+                       advancedOptionsButton,
+                       advancedOptions)
+
+      fileUploadUI <- list(fileUploadUI,
+                           advancedOptionsButton,
+                           advancedOptions)
+
+    }
+
+    observeEvent(input$advancedOptions,{
+      if(input$advancedOptions){
+        shinyjs::runjs(code = '$("#adv_opts").removeClass("unticked");
+                          $("#adv_opts").addClass("ticked");')
+      } else {
+        shinyjs::runjs(code = '$("#adv_opts").removeClass("ticked");
+                          $("#adv_opts").addClass("unticked");')
+      }
+    })
+
+
+
+    output$tableInputControls <- shiny::renderUI({
       # define list of input UIs
-
-      tableInputControls <- list(
-        pasted = pastedUI,
-        fileUpload = fileUploadUI,
-        sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
-        googleSheets = googleSheetsUI
-      )
+      tableInputControls <- list(pasted = pastedUI,
+                                 fileUpload = fileUploadUI,
+                                 sampleData = sampleDataUI(sampleLable, sampleFiles, sampleSelected),
+                                 googleSheets = googleSheetsUI)
       tableInputControls[[input$tableInput]]
     })
+
 
     output$tableInputInfo <- shiny::renderUI({
       ns <- session$ns
@@ -110,8 +162,21 @@ tableInputServer <- function(id,
       tableInputInfo
     })
 
+
     inputData <- shiny::reactive({
       req(input$tableInput)
+
+      delimiter <- ","
+      if(input$tableInput == "pasted"){
+        delimiter <- "\t"
+      }
+      if(!is.null(input$delimiter)){
+        if(!input$delimiter %in% c("comma", "tab", "space", "semi-colon")) stop("Delimiter needs to be one of 'comma', 'tab', 'space', or 'semi-colon'.")
+        if(input$delimiter == "comma") delimiter <- ","
+        if(input$delimiter == "tab") delimiter <- "\t"
+        if(input$delimiter == "space") delimiter <- " "
+        if(input$delimiter == "semi-colon") delimiter <- ";"
+      }
 
       decimal_mark <- "."
       if(!is.null(input$decimalMark)){
@@ -124,7 +189,7 @@ tableInputServer <- function(id,
         if(input$inputDataPasted == "")
           return()
 
-        df <- tryCatch(readr::read_tsv(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark)),
+        df <- tryCatch(readr::read_delim(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark), delim = delimiter),
                        error=function(cond) return())
 
       }
@@ -133,7 +198,9 @@ tableInputServer <- function(id,
         path <- input$inputDataUpload$datapath
 
         if (grepl(".csv", path)) {
-          df <- readr::read_csv(path, locale = readr::locale(decimal_mark = decimal_mark))
+          df <- readr::read_delim(path, locale = readr::locale(decimal_mark = decimal_mark), delim = delimiter)
+        } else if (grepl(".xlsx", path)){
+          df <- openxlsx::read.xlsx(path, detectDates = TRUE)
         } else {
           df <- tryCatch(rio::import(path, fread = FALSE, check.names = FALSE),
                          error = function(e) rio::import(path))

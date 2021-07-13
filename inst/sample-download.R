@@ -5,6 +5,7 @@ library(shinypanels)
 library(hgchmagic)
 library(ggmagic)
 library(reactable)
+library(lfltmagic)
 
 styles <- "
 
@@ -26,6 +27,11 @@ ui <- panelsPage(styles = styles,
                                   br(),
                                   h3("Images"),
                                   br(),
+                                  h3("Maps"),
+                                  leafletOutput("leaflet"),
+                                  downloadImageUI("dropdown_leaflet", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "html"), display = "dropdown"),
+                                  downloadImageUI("download_leaflet", "Download", c("jpeg", "pdf", "png", "html")),
+                                  br(),
                                   h3("Interactive"),
                                   highchartOutput("highchart"),
                                   downloadImageUI("dropdown_highchart", dropdownLabel = "Dropdown", formats = c("jpeg", "pdf", "png", "html"), display = "dropdown"),
@@ -45,16 +51,20 @@ ui <- panelsPage(styles = styles,
 
 server <- function(input, output, session) {
 
+  opts <- dsvizopts::merge_dsviz_options(text_family = "Lato", branding_include = TRUE,
+                                         title = "display a title")
+
   hg <- hgch_bar_Cat(sample_data("Cat"))
   gg <- ggplot(data.frame(a = c("w", "r"), b = 2:3), aes(x = a, y = b, fill = a)) + geom_bar(stat = "identity")
+  lflt <- lflt_choropleth_Gnm(sample_data("Gnm"), opts = opts)
 
-  opts <- dsvizopts::merge_dsviz_options(text_family = "Lato", branding_include = TRUE)
   rc <- reactable(mtcars, style = "font-family: Lato;")
 
   output$table <- renderTable(data.frame(a = 1:3, b = "f"))
   output$highchart <- renderHighchart(hg)
   output$ggplot <- renderPlot(gg)
   output$reactable <- renderReactable(rc)
+  output$leaflet <- renderLeaflet(lflt)
 
   downloadTextServer("download_textoo", element = reactive(input$text), formats = c("txt", "docx", "html"), file_prefix = "text")
   downloadTextServer("dropdown_texto", element = reactive(input$text), formats = c("txt", "docx", "html"))
@@ -62,10 +72,12 @@ server <- function(input, output, session) {
   downloadTableServer("dropdown_table", element = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json"))
   downloadImageServer("download_highchart", element = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"), file_prefix = "plot")
   downloadImageServer("dropdown_highchart", element = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"))
+  downloadImageServer("download_leaflet", element = lflt, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"), file_prefix = "map", opts_theme = opts$theme)
+  downloadImageServer("dropdown_leaflet", element = lflt, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"), opts_theme = opts$theme)
   downloadImageServer("download_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"), file_prefix = "plot")
   downloadImageServer("dropdown_ggplot", element = gg, lib = "ggplot", formats = c("jpeg", "pdf", "png"))
   downloadHtmlwidgetServer("download_html", element = rc, formats = "html")
-  downloadHtmlwidgetServer("dropdown_html", element = rc, formats = "html", file_prefix = "widget", opts_theme = opts$theme)
+  downloadHtmlwidgetServer("dropdown_html", element = rc, formats = "html", file_prefix = "widget")
 
 }
 

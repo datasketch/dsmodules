@@ -33,17 +33,10 @@ downloadHtmlwidgetUI <- function(id, text = "Download", formats = NULL, class = 
 }
 
 #' @export
-downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = "widget", opts_theme = NULL, page_title = NULL) {
+downloadHtmlwidgetServer <- function(id, element = NULL, formats, file_prefix = "widget", page_title = NULL) {
 
   moduleServer(id, function(input, output, session) {
     ns <- session$ns
-
-    if(!is.null(opts_theme)){
-      if("reactable" %in% class(element)){
-        element <- import_google_font(viz = element, opts_theme = opts_theme)
-        element <- add_logo_reactable(table = element, opts_theme = opts_theme)
-      }
-    }
 
     lapply(formats, function(z) {
       buttonId <- ns("downloadWidget")
