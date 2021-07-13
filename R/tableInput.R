@@ -19,14 +19,14 @@ tableInputUI <- function(id, label,
                  "
 
   shiny::tagList(singleton(tags$head(tags$style(HTML(styles)))),
-    shiny::div(id = ns("tableInput"), class="tableInput",
-               shiny:::shinyInputLabel("inputId", label = label),
-               shiny::radioButtons(ns("tableInput"), "",
-                                   choices = choices, selected = selected,
-                                   inline = choicesInline),
-               shiny::uiOutput(ns("tableInputControls"))),
-    shiny::div(class = "box-tableInputInfo", #style = info_style,
-               shiny::uiOutput(ns("tableInputInfo"))))
+                 shiny::div(id = ns("tableInput"), class="tableInput",
+                            shiny:::shinyInputLabel("inputId", label = label),
+                            shiny::radioButtons(ns("tableInput"), "",
+                                                choices = choices, selected = selected,
+                                                inline = choicesInline),
+                            shiny::uiOutput(ns("tableInputControls"))),
+                 shiny::div(class = "box-tableInputInfo", #style = info_style,
+                            shiny::uiOutput(ns("tableInputInfo"))))
 
 }
 
@@ -97,39 +97,50 @@ tableInputServer <- function(id,
     decimalMarkUI <- shiny::radioButtons(ns("decimalMark"), label = decimalMarkLabel, choiceValues = c("point", "comma"),
                                          choiceNames = decimalMarkChoiceLabels, selected = "point", inline = TRUE)
 
+    observe({
 
-      if(showAdvancedOptionsButton){
-
-        advancedOptions_pasted <- div(id = "adv_opts_pasted", class = "unticked",
-                                      decimalMarkUI)
-
-        advancedOptions_fileUpload <- div(id = "adv_opts_upload", class = "unticked",
-                                          delimiterUI,
-                                          decimalMarkUI)
-
-
-        pastedUI <- list(pastedUI,
-                         advancedOptionsButton,
-                         advancedOptions_pasted)
-
-        fileUploadUI <- list(fileUploadUI,
-                             advancedOptionsButton,
-                             advancedOptions_fileUpload)
-
+      if(input$tableInput == "pasted"){
+        updateRadioButtons(session, "delimiter", selected = "tab")
       }
 
+    })
+
+    # observe({
+    #   if(!is.null(input$delimiter)){
+    #     if(input$delimiter == "comma"){
+    #       if(input$decimalMark == "comma"){
+    #         updateRadioButtons(session, "decimalMark", selected = "point")
+    #       }
+    #     }
+    #   }
+    # })
+
+
+    if(showAdvancedOptionsButton){
+
+      advancedOptions <- div(id = "adv_opts", class = "unticked",
+                             delimiterUI,
+                             decimalMarkUI)
+
+
+      pastedUI <- list(pastedUI,
+                       advancedOptionsButton,
+                       advancedOptions)
+
+      fileUploadUI <- list(fileUploadUI,
+                           advancedOptionsButton,
+                           advancedOptions)
+
+    }
+
     observeEvent(input$advancedOptions,{
-         if(input$advancedOptions){
-           shinyjs::runjs(code = '$("#adv_opts_pasted").removeClass("unticked");
-                          $("#adv_opts_pasted").addClass("ticked");
-                          $("#adv_opts_upload").removeClass("unticked");
-                          $("#adv_opts_upload").addClass("ticked");')
-         } else {
-           shinyjs::runjs(code = '$("#adv_opts_pasted").removeClass("ticked");
-                          $("#adv_opts_pasted").addClass("unticked");
-                          $("#adv_opts_upload").removeClass("ticked");
-                          $("#adv_opts_upload").addClass("unticked");')
-         }
+      if(input$advancedOptions){
+        shinyjs::runjs(code = '$("#adv_opts").removeClass("unticked");
+                          $("#adv_opts").addClass("ticked");')
+      } else {
+        shinyjs::runjs(code = '$("#adv_opts").removeClass("ticked");
+                          $("#adv_opts").addClass("unticked");')
+      }
     })
 
 
@@ -156,16 +167,15 @@ tableInputServer <- function(id,
       req(input$tableInput)
 
       delimiter <- ","
+      if(input$tableInput == "pasted"){
+        delimiter <- "\t"
+      }
       if(!is.null(input$delimiter)){
         if(!input$delimiter %in% c("comma", "tab", "space", "semi-colon")) stop("Delimiter needs to be one of 'comma', 'tab', 'space', or 'semi-colon'.")
         if(input$delimiter == "comma") delimiter <- ","
         if(input$delimiter == "tab") delimiter <- "\t"
         if(input$delimiter == "space") delimiter <- " "
         if(input$delimiter == "semi-colon") delimiter <- ";"
-
-        if(input$delimiter == "comma"){
-          updateRadioButtons(session, "decimalMark", selected = "point")
-        }
       }
 
       decimal_mark <- "."
@@ -179,7 +189,7 @@ tableInputServer <- function(id,
         if(input$inputDataPasted == "")
           return()
 
-        df <- tryCatch(readr::read_tsv(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark)),
+        df <- tryCatch(readr::read_delim(input$inputDataPasted, locale = readr::locale(decimal_mark = decimal_mark), delim = delimiter),
                        error=function(cond) return())
 
       }
