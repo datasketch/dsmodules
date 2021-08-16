@@ -99,7 +99,7 @@ tableInputServer <- function(id,
 
     observe({
 
-      if(input$tableInput == "pasted"){
+      if(identical(input$tableInput,"pasted")){
         updateRadioButtons(session, "delimiter", selected = "tab")
       }
 
@@ -167,7 +167,7 @@ tableInputServer <- function(id,
       req(input$tableInput)
 
       delimiter <- ","
-      if(input$tableInput == "pasted"){
+      if(identical(input$tableInput,"pasted")){
         delimiter <- "\t"
       }
       if(!is.null(input$delimiter)){
