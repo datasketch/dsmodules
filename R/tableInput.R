@@ -92,10 +92,10 @@ tableInputServer <- function(id,
     advancedOptionsButton <- shiny::checkboxInput(ns("advancedOptions"), label = advancedOptionsLabel)
 
     delimiterUI <- shiny::radioButtons(ns("delimiter"), label = delimiterLabel, choiceValues = c("comma", "tab", "space", "semi-colon"),
-                                       choiceNames = delimiterChoiceLabels, selected = "comma", inline = TRUE)
+                                       choiceNames = delimiterChoiceLabels, selected = "comma", inline = FALSE)
 
     decimalMarkUI <- shiny::radioButtons(ns("decimalMark"), label = decimalMarkLabel, choiceValues = c("point", "comma"),
-                                         choiceNames = decimalMarkChoiceLabels, selected = "point", inline = TRUE)
+                                         choiceNames = decimalMarkChoiceLabels, selected = "point", inline = FALSE)
 
     observe({
 
