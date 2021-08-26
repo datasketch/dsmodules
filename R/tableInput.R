@@ -236,10 +236,14 @@ tableInputServer <- function(id,
         if (is.null(input$inputDataSheet)) return()
         if (input$inputDataSheet == "") return()
         library(googlesheets4)
-        googlesheets4::sheets_deauth()
+        googlesheets4::gs4_deauth()
         id_file <- gsub(".*\\/d\\/|\\/edit.*", '', input$inputDataSheet)
-        googlesheets4::sheets_get(id_file)
-        df <- googlesheets4::read_sheet(id_file)
+        googlesheets4::gs4_get(id_file)
+
+        sheet <- input$inputDataGoogleSheetSheet
+        if(is.null(sheet)) sheet <- 1
+
+        df <- googlesheets4::read_sheet(id_file, sheet = sheet)
       }
       df <- discard_all_na_cols(df)
       return(df)
