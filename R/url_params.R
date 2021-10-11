@@ -32,20 +32,21 @@ url_params_server <- function(id){
 }
 
 
-get_url_params <- function(session){
-  parseQueryString(session$clientData$url_search)
-}
-
+#' @export
 url_params_data <- function(url_params){
   if(is.null(url_params)) return()
   if(is.reactive(url_params))
     url_params <- url_params()
-  str(url_params)
   d <- url_params$data
-  str(d)
   data <- read_data_from_url(d)
   data
 }
+
+get_url_params <- function(session){
+  parseQueryString(session$clientData$url_search)
+}
+
+
 
 is_url <- function(x){
   grepl("^http", x)
