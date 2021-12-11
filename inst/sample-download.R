@@ -68,8 +68,8 @@ server <- function(input, output, session) {
 
   downloadTextServer("download_textoo", element = reactive(input$text), formats = c("txt", "docx", "html"), file_prefix = "text")
   downloadTextServer("dropdown_texto", element = reactive(input$text), formats = c("txt", "docx", "html"))
-  downloadTableServer("download_table", element = list(data.frame(a = 1:3, b = "f"), data.frame(a = 1:9, b = "Z")), formats = c("csv", "xlsx", "json"), file_prefix = "table", zip = TRUE)
-  downloadTableServer("dropdown_table", element = data.frame(a = 1:3, b = "f"), formats = c("csv", "xlsx", "json"))
+  downloadTableServer("download_table", element = reactive(list(xx=data.frame(a = 1:3, b = "f"), yy=data.frame(a = 1:9, b = "Z"))), formats = c("csv", "xlsx", "json"), file_prefix = "table", zip = TRUE)
+  downloadTableServer("dropdown_table", element = reactive(data.frame(a = 1:3, b = "f")), formats = c("csv", "xlsx", "json"))
   downloadImageServer("download_highchart", element = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"), file_prefix = "plot")
   downloadImageServer("dropdown_highchart", element = hg, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"))
   downloadImageServer("download_leaflet", element = lflt, lib = "highcharter", formats = c("jpeg", "pdf", "png", "html"), file_prefix = "map", opts_theme = opts$theme)

@@ -99,7 +99,7 @@ saveTable <- function(tbl, filename, format = NULL, ...) {
 
 #'@export
 saveZip <- function(list_tbl, filename, format = NULL, ...) {
-
+print(as.data.frame(list_tbl[[1]]))
   if (is.null(format)) format <- tools::file_ext(filename) %||% "csv"
 
   tmp <- tempdir()
@@ -109,22 +109,22 @@ saveZip <- function(list_tbl, filename, format = NULL, ...) {
 
   if (format == "csv") {
     purrr::map(seq_along(list_tbl), function(i) {
-      readr::write_csv(list_tbl[[i]], paste0(filename,"_", i, ".csv"))
+      readr::write_csv(list_tbl[[i]], paste0(names(list_tbl)[i],"_", i, ".csv"))
     })
   }
   if (format == "xlsx") {
     purrr::map(seq_along(list_tbl), function(i) {
-      openxlsx::write.xlsx(list_tbl[[i]], paste0(filename,"_", i, ".xlsx"))
+      openxlsx::write.xlsx(list_tbl[[i]], paste0(names(list_tbl)[i],"_", i, ".xlsx"))
     })
   }
   if (format == "json") {
     purrr::map(seq_along(list_tbl), function(i) {
-      jsonlite::write_json(list_tbl[[i]], paste0(filename,"_", i,".json"))
+      jsonlite::write_json(list_tbl[[i]], paste0(names(list_tbl)[i],"_", i,".json"))
     })
   }
 
   purrr::map(seq_along(list_tbl), function(i){
-    zip(paste0(filename, ".zip"), paste0(filename,"_", i, "." ,format))
+    zip(paste0(filename, ".zip"), paste0(names(list_tbl)[i],"_", i, "." ,format))
   })
 
   unzip(paste0(filename, ".zip"))
