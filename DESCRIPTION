@@ -43,8 +43,8 @@ Suggests:
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
-Remotes:  
+RoxygenNote: 7.1.2
+Remotes: 
     datasketch/homodatum,
     datasketch/shinyinvoer,
     datasketch/dspins,
