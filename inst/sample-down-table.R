@@ -50,7 +50,7 @@ server <- function(input, output, session) {
   # formats <- list("vizz1" = c("html", "png", "jpg"), "vizz2" = c("png", "jpg"), "table" = c("csv", "xlsx"))
   # lib <- list("vizz1" = "highcharter")
   observe({
-    dsmodules::downloaDistinctFormatsServer("dropdown_table",
+    dsmodules::downloadDistinctFormatsServer("dropdown_table",
                                             element = list("vizz1" = hgchViz(),  "table" = df(), "table2" = df2()),
                                             formats = list("vizz1" = c( "png", "jpg"),  "table" = "csv", "tbae" = "csv "),
                                             lib = list("vizz1" = "highcharter", "table" = "table", "tbae" = "table")

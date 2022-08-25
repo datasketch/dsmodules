@@ -3,7 +3,7 @@
 export(actionBusyButton)
 export(actionBusyButtonUI)
 export(add_logo_reactable)
-export(downloaDistinctFormatsServer)
+export(downloadDistinctFormatsServer)
 export(downloadDistinctFormatsUI)
 export(downloadDsServer)
 export(downloadDsUI)

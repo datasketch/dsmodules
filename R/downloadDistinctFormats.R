@@ -31,7 +31,7 @@ downloadDistinctFormatsUI <-
   }
 
 #' @export
-downloaDistinctFormatsServer <-
+downloadDistinctFormatsServer <-
   function (id, element = NULL, formats, lib, file_prefix = "downFile") {
 
     moduleServer(id, function(input, output, session) {
