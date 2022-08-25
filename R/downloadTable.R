@@ -131,3 +131,87 @@ print(as.data.frame(list_tbl[[1]]))
 
 }
 
+
+#'@export
+downloadTableServer2 <- function(id, element = NULL, formats, file_prefix = "table", zip = FALSE) {
+  moduleServer(id, function(input, output, session) {
+    ns <- session$ns
+    tbl_formats <- formats
+
+    lapply(tbl_formats, function(z) {
+      buttonId <- ns(paste0("DownloadTbl", z))
+
+      output[[paste0("DownloadTbl", z)]] <- shiny::downloadHandler(
+        filename = function() {
+          session$sendCustomMessage("setButtonState", c("loading", buttonId))
+          file_prefix <- eval_reactives(file_prefix)
+          if (zip) {
+            ext_file <- paste0("_",z, ".zip")
+          } else {
+            ext_file <- paste0(".", z)
+          }
+          paste0(file_prefix, "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)), ext_file)
+
+        },
+        content = function(file) {
+          element <- eval_reactives(element)
+          str(element)
+          if (zip) {
+            x <- saveZip2(element, filename = file, format = z)
+          } else {
+            x <- saveTable(element, filename = file, format = z)
+          }
+          x
+          session$sendCustomMessage("setButtonState", c("done", buttonId))
+        })
+    })
+  })
+
+}
+
+#'@export
+saveZip2 <- function(list_tbl, filename, format = NULL, ...) {
+
+  if (is.null(format)) format <- tools::file_ext(filename) %||% "csv"
+
+  tmp <- tempdir()
+  filename <- gsub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
+  filename <- gsub(".csv|.xlsx|.json", "",filename)
+
+  print(paste0(tmp, "/", filename, ".zip"))
+
+  if (format == "csv") {
+    purrr::map(seq_along(list_tbl), function(i) {
+      print(paste0(tmp, "/", names(list_tbl)[i],"_", i, ".csv"))
+      readr::write_csv(list_tbl[[i]], paste0(tmp, "/", names(list_tbl)[i],"_", i, ".csv"))
+    })
+  }
+  if (format == "xlsx") {
+    purrr::map(seq_along(list_tbl), function(i) {
+      print(paste0(tmp, "/", names(list_tbl)[i],"_", i, ".xlsx"))
+      openxlsx::write.xlsx(list_tbl[[i]], paste0(tmp, "/", names(list_tbl)[i],"_", i, ".xlsx"))
+    })
+  }
+  if (format == "json") {
+    purrr::map(seq_along(list_tbl), function(i) {
+      print(paste0(tmp, "/", names(list_tbl)[i],"_", i,".json"))
+      jsonlite::write_json(list_tbl[[i]], paste0(tmp, "/", names(list_tbl)[i],"_", i,".json"))
+    })
+  }
+
+  purrr::map(seq_along(list_tbl), function(i){
+    zip(paste0(tmp, "/", filename, ".zip"), paste0(tmp, "/", names(list_tbl)[i],"_", i, "." ,format))
+  })
+
+  tryCatch(
+    unzip(paste0(tmp, "/", filename, ".zip")),
+    error = function(e) {
+      print('****')
+      print(tmp)
+      print(filename)
+      print(e)
+      print('****')
+    }
+  )
+
+}
