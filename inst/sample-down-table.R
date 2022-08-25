@@ -19,8 +19,8 @@ ui <- panelsPage(styles = styles,
                          highchartOutput("vizExp"),
                          dsmodules::downloadDistinctFormatsUI("dropdown_table",
                                                               dropdownLabel = "Descargar",
-                                                              text = "Descargar",
-                                                              formats = c( "png", "jpg", "tabla 1", "xlsx", "tabla 2"),
+                                                              text = c( "Descarga png", "Descarga jpg", "Descarga csv", "csv2"),
+                                                              formats = c( "png", "jpg", "csv", "csv "),
                                                               display = "dropdown", dropdownWidth = 300)
                        )
                  ))
@@ -52,7 +52,7 @@ server <- function(input, output, session) {
   observe({
     dsmodules::downloaDistinctFormatsServer("dropdown_table",
                                             element = list("vizz1" = hgchViz(),  "table" = df(), "table2" = df2()),
-                                            formats = list("vizz1" = c( "png", "jpg"),  "table" = c("csv", "xlsx"), "tbae" = "csv2"),
+                                            formats = list("vizz1" = c( "png", "jpg"),  "table" = "csv", "tbae" = "csv "),
                                             lib = list("vizz1" = "highcharter", "table" = "table", "tbae" = "table")
     )
   })

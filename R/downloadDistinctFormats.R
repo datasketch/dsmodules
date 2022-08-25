@@ -15,11 +15,7 @@ downloadDistinctFormatsUI <-
     addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
     if (display == "dropdown") {
-      purrr::map(seq_along(dropdownLabel), function(dl) {
-        dl <- dropdownLabel[[dl]]
-        print(dl)
-      shinyinvoer::dropdownActionInput(ns("dropdown"),  dl, choices = formats_id, choicesType = choices_type, width = dropdownWidth)
-      })
+      shinyinvoer::dropdownActionInput(ns("dropdown"),  dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth)
     } else {
       shiny::div(shiny::tagList(shiny::singleton(shiny::tags$body(shiny::tags$script(src = "downloadInfo/downloadGen.js")))),
                  lapply(seq_along(choices_type), function(z) {
@@ -40,7 +36,6 @@ downloaDistinctFormatsServer <-
 
     moduleServer(id, function(input, output, session) {
       ns <- session$ns
-
       purrr::map(seq_along(formats), function (ln) {
         file_format <- formats[[ln]]
         element <- element[[ln]]
@@ -48,7 +43,7 @@ downloaDistinctFormatsServer <-
           buttonId <- ns(paste0("DownloadDistFormats", z))
           output[[paste0("DownloadDistFormats", z)]] <- shiny::downloadHandler(
             filename = function() {
-              z <- gsub("[0-9]", "", z)
+              z <- gsub("[0-9]| ", "", z)
               session$sendCustomMessage('setButtonState', c('loading', buttonId))
               file_prefix <- eval_reactives(file_prefix)
               paste0(file_prefix, "_", gsub("[ _:]", "-", substr(as.POSIXct(Sys.time()), 1, 19)), ".", z)
@@ -56,8 +51,7 @@ downloaDistinctFormatsServer <-
             content = function(file) {
               element <- eval_reactives(element)
               lib <- lib[[ln]]
-              z <- gsub("[0-9]", "", z)
-              print(z)
+              z <- gsub("[0-9]| ", "", z)
               if (lib == "highcharter") {
                 saveInteractive(viz = element, filename = file, format = z)
               } else if (lib == "ggplot") {
