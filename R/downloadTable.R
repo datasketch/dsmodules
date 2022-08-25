@@ -14,6 +14,7 @@ downloadTableUI <- function(id, text = "Download", formats = NULL, class = NULL,
 
   addResourcePath(prefix = "downloadInfo", directoryPath = system.file("js", package = "dsmodules"))
 
+
   if (display == "dropdown") {
     shinyinvoer::dropdownActionInput(ns("dropdown"), dropdownLabel, choices = formats_id, choicesType = choices_type, width = dropdownWidth)
   } else {

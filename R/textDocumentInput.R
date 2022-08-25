@@ -29,10 +29,10 @@ textDocumentInput <- function(input, output, session,
     if (shiny::is.reactive(sampleFiles))
       sampleFiles <- sampleFiles()
 
-    if (!is.null(input$textDocumentInput) && input$textDocumentInput == "sampleData") {
-      if (!all(unlist(lapply(sampleFiles, file.exists))))
-        stop("All sample files must exist")
-    }
+    # if (!is.null(input$textDocumentInput) && input$textDocumentInput == "sampleData") {
+    #   if (!all(unlist(lapply(sampleFiles, file.exists))))
+    #     stop("All sample files must exist")
+    # }
 
     textDocumentInputControls <- list(pasted = shiny::textAreaInput(ns("inputDataPasted"), label = pasteLabel, placeholder = pastePlaceholder, rows = pasteRows),
                                       fileUpload = shiny::fileInput(ns("inputDataUpload"), uploadLabel, buttonLabel = uploadButtonLabel, placeholder = uploadPlaceholder,
@@ -95,8 +95,12 @@ textDocumentInput <- function(input, output, session,
       if (is.null(input$inputDataSample))
         return()
       file <- input$inputDataSample
+      if (grepl(".txt", as.character(input$inputDataSample))) {
       tx <- readLines(file) %>%
         paste(collapse = "<br/>")
+      } else {
+        tx <-  as.character(input$inputDataSample[[1]])
+      }
     } else if (inputType == "url") {
       if (is.null(input$inputURL))
         return()
