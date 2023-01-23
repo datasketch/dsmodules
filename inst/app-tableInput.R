@@ -39,9 +39,9 @@ server <- function(input,output,session){
   dataset <- reactive({
     datasets <- input$reactive_dataset
     l <- lapply(datasets, function(x){
-      if(x == "Cars") return(cars)
-      if(x == "Mtcars") return(mtcars)
-      iris
+      if(x == "Cars") return(head(cars))
+      if(x == "Mtcars") return(head(mtcars))
+      head(iris)
     })
     names(l) <- datasets
     l
@@ -54,8 +54,8 @@ server <- function(input,output,session){
                                 sampleSelected = "File1")
 
   inputData2 <- tableInputServer("dataIn2",
-                                 sampleFiles = list(Cars = cars,
-                                                    Mtcars = mtcars))
+                                 sampleFiles = list(Cars = tibble::tibble(head(cars)),
+                                                    Mtcars = head(mtcars)))
 
   inputData3 <- tableInputServer("dataIn3",
                                  sampleFiles = dataset)

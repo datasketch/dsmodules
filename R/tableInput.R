@@ -66,7 +66,7 @@ tableInputServer <- function(id,
       if(all(unlist(lapply(sampleFiles, class)) == "character")){
         sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
                                               choices = sampleFiles, selected = sampleSelected)
-      } else if (all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+      } else if (all(unlist(lapply(sampleFiles, function(x) "data.frame" %in% class(x))))){
         if(is.null(names(sampleFiles)))
           stop("sampleFiles list must be named")
         sampleData_html <- shiny::selectInput(ns("inputDataSample"), sampleLabel,
@@ -223,7 +223,7 @@ tableInputServer <- function(id,
           file <- as.character(inputDataSample)
           if(!grepl(".csv", file)) return()
           df <- readr::read_csv(file)
-        }else if(all(unlist(lapply(sampleFiles, class)) == "data.frame")){
+        }else if(all(unlist(lapply(sampleFiles, function(x) "data.frame" %in% class(x))))){
           if(!inputDataSample %in% names(sampleFiles)) return()
           df <- sampleFiles[[inputDataSample]]
         }
