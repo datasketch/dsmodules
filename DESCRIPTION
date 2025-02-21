@@ -1,6 +1,6 @@
 Package: dsmodules
 Title: Shiny Modules for Datasketch Apps 
-Version: 0.5.7
+Version: 0.5.8
 Authors@R: 
     person(given = "Juan Pablo",
            family = "Marin Diaz",

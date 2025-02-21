@@ -87,7 +87,7 @@ saveTable <- function(tbl, filename, format = NULL, ...) {
   tmpSave <- filename
   filename <- gsub("([^.]+)\\.[[:alnum:]]+$", "\\1", filename)
   if (format == "csv") {
-    write.csv(tbl, paste0(filename, ".csv"))
+    write.csv(tbl, paste0(filename, ".csv"), na = "", row.names = FALSE)
   }
   if (format == "xlsx") {
     openxlsx::write.xlsx(tbl, paste0(filename, ".xlsx"))
